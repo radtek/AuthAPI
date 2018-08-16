@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>authapi</name>
-    <description>Auth API implemented by using Spring Boot</description>
+    <description>Auth API implemented by using Spring Boot for XiaoleiTech</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
