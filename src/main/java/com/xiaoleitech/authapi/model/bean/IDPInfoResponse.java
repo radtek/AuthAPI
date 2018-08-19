@@ -1,22 +1,9 @@
-package com.xiaoleitech.authapi.pojo;
+package com.xiaoleitech.authapi.model.bean;
 
-public class IDPInfoResponse {
-    public int getError_code() {
-        return error_code;
-    }
+import org.springframework.stereotype.Component;
 
-    public void setError_code(int error_code) {
-        this.error_code = error_code;
-    }
-
-    public String getError_message() {
-        return error_message;
-    }
-
-    public void setError_message(String error_message) {
-        this.error_message = error_message;
-    }
-
+@Component
+public class IDPInfoResponse extends AuthAPIResponse {
     public String getVersion() {
         return version;
     }
@@ -41,8 +28,6 @@ public class IDPInfoResponse {
         this.supported_android_app_version = supported_android_app_version;
     }
 
-    private int error_code;
-    private String error_message;
     private String version;
     private String supported_ios_app_version;
     private String supported_android_app_version;

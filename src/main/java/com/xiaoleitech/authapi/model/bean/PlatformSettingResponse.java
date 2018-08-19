@@ -1,28 +1,10 @@
-package com.xiaoleitech.authapi.pojo;
+package com.xiaoleitech.authapi.model.bean;
 
-public class PlatformSettingResponse {
-    private int error_code;
-    private String error_message;
+public class PlatformSettingResponse extends AuthAPIResponse {
     private String platform_name;
     private String platform_logo_url;
     // 0: not use ssl, 1: RSA2048/SHA256, 2: SM2/SM3
     private int use_ssl;
-
-    public int getError_code() {
-        return error_code;
-    }
-
-    public void setError_code(int error_code) {
-        this.error_code = error_code;
-    }
-
-    public String getError_message() {
-        return error_message;
-    }
-
-    public void setError_message(String error_message) {
-        this.error_message = error_message;
-    }
 
     public String getPlatform_name() {
         return platform_name;

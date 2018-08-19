@@ -1,4 +1,4 @@
-package com.xiaoleitech.authapi.pojo;
+package com.xiaoleitech.authapi.model.bean;
 
 public class ErrorInfo {
     public int getError_code() {

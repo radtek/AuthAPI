@@ -1,15 +1,6 @@
-package com.xiaoleitech.authapi.pojo;
+package com.xiaoleitech.authapi.model.bean;
 
-public class RegisterDeviceResponse {
-
-    public String getDevice_id() {
-        return device_id;
-    }
-
-    public void setDevice_id(String device_id) {
-        this.device_id = device_id;
-    }
-
+public class AuthAPIResponse {
     public int getError_code() {
         return error_code;
     }
@@ -28,5 +19,4 @@ public class RegisterDeviceResponse {
 
     private int error_code;
     private String error_message;
-    private String device_id;
 }
