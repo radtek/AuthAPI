@@ -16,12 +16,14 @@ public interface DevicesMapper {
     @Insert("INSERT INTO devices(" +
             "device_uuid, imei, state, protect_method_capability, " +
             "device_model, device_tee, device_se, device_type, " +
-            "device_token)" +//, created_at, updated_at) " +
+//            "device_token)" +//, created_at, updated_at) " +
+            "device_token, created_at, updated_at) " +
             "VALUES (" +
             "#{device_uuid}, #{imei}, #{state}, #{protect_method_capability}, " +
             "#{device_model}, #{device_tee}, #{device_se}, " +
-            "#{device_type}, #{device_token})")
-//, #{created_at}, #{updated_at})")
+//            "#{device_type}, #{device_token})")
+            "#{device_type}, #{device_token}, " +
+            "#{created_at, jdbcType=TIMESTAMP }, #{updated_at, jdbcType=TIMESTAMP })")
     int insertDevice(Devices device);
 
 }

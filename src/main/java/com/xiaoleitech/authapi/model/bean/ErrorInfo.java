@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.model.bean;
 
+// TODO: Deprecated
 public class ErrorInfo {
     public int getError_code() {
         return error_code;

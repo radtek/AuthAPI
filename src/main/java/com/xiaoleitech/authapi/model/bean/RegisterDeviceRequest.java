@@ -1,67 +1,28 @@
 package com.xiaoleitech.authapi.model.bean;
 
+import lombok.Data;
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.NotBlank;
+
+@Data
 public class RegisterDeviceRequest {
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
-    }
-
-    public String getProtect_method_capability() {
-        return protect_method_capability;
-    }
-
-    public void setProtect_method_capability(String protect_method_capability) {
-        this.protect_method_capability = protect_method_capability;
-    }
-
-    public int getDevice_type() {
-        return device_type;
-    }
-
-    public void setDevice_type(int device_type) {
-        this.device_type = device_type;
-    }
-
-    public String getDevice_model() {
-        return device_model;
-    }
-
-    public void setDevice_model(String device_model) {
-        this.device_model = device_model;
-    }
-
-    public int getDevice_tee() {
-        return device_tee;
-    }
-
-    public void setDevice_tee(int device_tee) {
-        this.device_tee = device_tee;
-    }
-
-    public int getDevice_se() {
-        return device_se;
-    }
-
-    public void setDevice_se(int device_se) {
-        this.device_se = device_se;
-    }
-
-    public String getDevice_token() {
-        return device_token;
-    }
-
-    public void setDevice_token(String device_token) {
-        this.device_token = device_token;
-    }
-
+    @NotBlank(message = "IMEI不能为空！")
     private String imei;
+    @NotBlank(message = "验证方式不能为空！")
     private String protect_method_capability;
+    // TODO: Find the way to react with the input int params blank, NotNull has no effect.
+    // Binding result is :Failed to convert property value of type 'java.lang.String' to required type 'int' for property 'device_type';
+    // nested exception is java.lang.NumberFormatException: For input string: \"\"
+    //@NotNull(message = "必须填写设备类型！")
+    @Range(min = 1, max = 9, message = "设备类型取值范围1--9！")
     private int device_type;
+    @NotBlank(message = "设备型号不能为空！")
     private String device_model;
+    @Range(min = 1, max = 9, message = "TEE取值范围1--9！")
     private int device_tee;
+    @Range(min = 1, max = 9, message = "SE取值范围1--9！")
     private int device_se;
+    @NotBlank(message = "设备令牌不能为空！")
     private String device_token;
 }

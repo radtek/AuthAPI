@@ -3,9 +3,12 @@ package com.xiaoleitech.authapi.service.registration;
 import com.xiaoleitech.authapi.mapper.DevicesMapper;
 import com.xiaoleitech.authapi.model.bean.RegisterDeviceRequest;
 import com.xiaoleitech.authapi.model.bean.RegisterDeviceResponse;
+import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.model.pojo.Devices;
+import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,24 +19,34 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
     RegisterDeviceResponse registerDeviceResponse;
     private final
     DevicesMapper devicesMapper;
+    private final SystemErrorResponse systemErrorResponse;
 
     @Autowired
-    public RegisterDeviceServiceImpl(RegisterDeviceResponse registerDeviceResponse, DevicesMapper devicesMapper) {
+    public RegisterDeviceServiceImpl(RegisterDeviceResponse registerDeviceResponse, DevicesMapper devicesMapper, SystemErrorResponse systemErrorResponse) {
         this.registerDeviceResponse = registerDeviceResponse;
         this.devicesMapper = devicesMapper;
+        this.systemErrorResponse = systemErrorResponse;
     }
 
     @Override
-    public RegisterDeviceResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest) {
-        String imei = registerDeviceRequest.getImei();
-        List<Devices> searchedDevices = devicesMapper.selectDevicesByIMEI(imei);
-        if (searchedDevices.size() > 0) {
-            registerDeviceResponse.setError_code(1029);
-            registerDeviceResponse.setError_message("设备已注册");
-            registerDeviceResponse.setDevice_id("DEV_NULL");
+    public RegisterDeviceResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
+        // Check if there are any data-binding error. If any, return the warning message to the caller
+        if (systemErrorResponse.checkRequestParams(bindingResult, registerDeviceResponse) != ErrorCodeEnum.ERROR_OK) {
             return registerDeviceResponse;
         }
 
+        // Find the device record, see if it is already registered.
+        String imei = registerDeviceRequest.getImei();
+        List<Devices> searchedDevices = devicesMapper.selectDevicesByIMEI(imei);
+        if (searchedDevices.size() > 0) {
+            systemErrorResponse.fillErrorResponse(registerDeviceResponse, ErrorCodeEnum.ERROR_DEVICE_REGISTERED);
+            return registerDeviceResponse;
+        }
+
+        // TODO: extra data validation if needed
+
+        // Prepare the insert record data
+        // TODO: need catch the exception
         Devices device = new Devices();
         device.setDevice_uuid(UUID.randomUUID().toString());
         device.setImei(registerDeviceRequest.getImei());
@@ -44,11 +57,12 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
         device.setDevice_se(registerDeviceRequest.getDevice_se());
         device.setDevice_token(registerDeviceRequest.getDevice_token());
         java.util.Date utilDate = new java.util.Date();
-        java.sql.Time currentTime = new java.sql.Time(utilDate.getTime());
+        java.sql.Timestamp currentTime = new java.sql.Timestamp(utilDate.getTime());
         device.setCreated_at(currentTime);
         device.setUpdated_at(currentTime);
         int num = devicesMapper.insertDevice(device);
 
+        //
         registerDeviceResponse.setError_code(200);
         registerDeviceResponse.setError_message("OK");
         registerDeviceResponse.setDevice_id("DEV_0001");
