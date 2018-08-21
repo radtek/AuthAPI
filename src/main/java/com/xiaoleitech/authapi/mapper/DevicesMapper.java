@@ -4,6 +4,7 @@ import com.xiaoleitech.authapi.model.pojo.Devices;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,17 +14,41 @@ public interface DevicesMapper {
     @Select("SELECT * FROM devices WHERE imei=#{imei}")
     List<Devices> selectDevicesByIMEI(@Param("imei") String imei);
 
+    @Select("SELECT * FROM devices WHERE device_uuid=#{device_uuid}")
+    List<Devices> selectDevicesByUuid(@Param("device_uuid") String uuid);
+
     @Insert("INSERT INTO devices(" +
             "device_uuid, imei, state, protect_method_capability, " +
             "device_model, device_tee, device_se, device_type, " +
-//            "device_token)" +//, created_at, updated_at) " +
             "device_token, created_at, updated_at) " +
             "VALUES (" +
             "#{device_uuid}, #{imei}, #{state}, #{protect_method_capability}, " +
             "#{device_model}, #{device_tee}, #{device_se}, " +
-//            "#{device_type}, #{device_token})")
             "#{device_type}, #{device_token}, " +
             "#{created_at, jdbcType=TIMESTAMP }, #{updated_at, jdbcType=TIMESTAMP })")
-    int insertDevice(Devices device);
+    int insertOneDevice(Devices device);
+
+    @Update("UPDATE devices " +
+            "SET state=#{state}, updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
+            "WHERE imei=#{imei}")
+    int updateDeviceRegisterStatusByImei(Devices device);
+
+    @Update("UPDATE devices " +
+            "SET state=#{state}, updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
+            "WHERE device_uuid=#{device_uuid}")
+    int updateDeviceRegisterStatusByUuid(Devices device);
+
+    @Update("UPDATE devices " +
+            "SET " +
+            "state=#{state}, " +
+            "protect_method_capability=#{protect_method_capability}, " +
+            "device_model=#{device_model}, " +
+            "device_tee=#{device_tee}, " +
+            "device_se=#{device_se}, " +
+            "device_type=#{device_type}, " +
+            "device_token=#{device_token}, " +
+            "updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
+            "WHERE device_uuid=#{device_uuid}")
+    int updateDeviceRecord(Devices device);
 
 }
