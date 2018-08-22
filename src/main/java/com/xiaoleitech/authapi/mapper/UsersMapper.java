@@ -4,6 +4,7 @@ import com.xiaoleitech.authapi.model.pojo.Users;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -41,4 +42,27 @@ public interface UsersMapper {
             "#{auth_latitude}, #{auth_longitude}, #{auth_at, jdbcType=TIMESTAMP}, #{verify_token}, " +
             "#{face_enrolled}, #{user_state}, #{created_at, jdbcType=TIMESTAMP}, #{updated_at, jdbcType=TIMESTAMP}) ")
     int insertOneUser(Users user);
+
+    @Update("UPDATE users SET( " +
+            "device_id=#{device_id}, real_name=#{real_name}, phone_no=#{phone_no}, " +
+            "sex=#{sex}, birthday=#{birthday, jdbcType=TIMESTAMP}, hukou_address=#{hukou_address}, " +
+            "real_address=#{real_address}, id_no=#{id_no}, id_expire_at=#{id_expire_at, jdbcType=TIMESTAMP}, " +
+            "protect_methods=#{protect_methods}, password=#{password}, password_salt=#{password_salt}, " +
+            "second_factor_attempt_fail_count=#{second_factor_attempt_fail_count}, " +
+            "password_attempt_fail_count=#{password_attempt_fail_count}, second_factor_lock_to=#{second_factor_lock_to, jdbcType=TIMESTAMP}, " +
+            "password_lock_to=#{password_lock_to, jdbcType=TIMESTAMP}, authenticated=#{authenticated}, protect_method=#{protect_method}, " +
+            "auth_latitude=#{auth_latitude}, auth_longitude=#{auth_longitude}, auth_at=#{auth_at, jdbcType=TIMESTAMP}, " +
+            "verify_token=#{verify_token}, face_enrolled=#{face_enrolled}, user_state=#{user_state}, " +
+            "created_at=#{created_at, jdbcType=TIMESTAMP}, updated_at=#{updated_at, jdbcType=TIMESTAMP}) " +
+            "WHERE " +
+            "user_uuid=#{user_uuid}")
+    int updateOneUserByUserUuid(Users user);
+
+    // TODO: 实际应用中，可能需要更新状态及少数几个字段，另外再开方法实现
+    @Update("UPDATE users SET( " +
+            "user_state=#{user_state}, updated_at=#{updated_at, jdbcType=TIMESTAMP}) " +
+            "WHERE " +
+            "user_uuid=#{user_uuid}")
+    int updateUserStateByUserUuid(Users user);
+
 }

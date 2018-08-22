@@ -145,6 +145,8 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
 
         // 更新此设备记录的所有可能存在变化的字段
         int num = devicesMapper.updateDeviceRecord(device);
+
+        // 如果更新没有执行成功，则统一设置为 ERROR_CANNOT_ENROLL 错误码，后续再根据实际应用需要做错误码细化
         return (num == 1) ? ErrorCodeEnum.ERROR_OK : ErrorCodeEnum.ERROR_CANNOT_ENROLL;
     }
 

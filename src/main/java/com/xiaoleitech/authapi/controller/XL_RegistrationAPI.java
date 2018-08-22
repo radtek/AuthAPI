@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+//@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class XL_RegistrationAPI {
     private final RegisterDeviceService registerDeviceService;
     private final RegisterUserService registerUserService;
@@ -20,6 +21,7 @@ public class XL_RegistrationAPI {
         this.registerUserService = registerUserService;
     }
 
+    //    @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
     @RequestMapping(value = "/api/register_device", method = RequestMethod.POST)
     public @ResponseBody
     RegisterDeviceResponse register_device(@ModelAttribute @Valid RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
@@ -34,9 +36,10 @@ public class XL_RegistrationAPI {
         return registerDeviceService.unregisterDevice(uuid);
     }
 
+
     @RequestMapping(value = "/api/register_user", method = RequestMethod.POST)
     public @ResponseBody
-    RegisterUserResponse registerUser(@ModelAttribute @Valid RegisterUserRequest registerUserRequest, BindingResult bindingResult) {
+    AuthAPIResponse registerUser(@ModelAttribute @Valid RegisterUserRequest registerUserRequest, BindingResult bindingResult) {
         return registerUserService.registerUser(registerUserRequest, bindingResult);
     }
 

@@ -25,4 +25,9 @@ public class UsersTableHelper {
         List<Users> usersList = usersMapper.selectUsersByIdNo(idNo);
         return (usersList.size() == 0) ? null : usersList.get(0);
     }
+
+    public Users getUserByUuid(String uuid) {
+        List<Users> usersList = usersMapper.selectUsersByUuid(uuid);
+        return (usersList.size() == 0) ? null : usersList.get(0);
+    }
 }

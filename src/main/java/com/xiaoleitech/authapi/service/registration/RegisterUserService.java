@@ -1,7 +1,7 @@
 package com.xiaoleitech.authapi.service.registration;
 
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.RegisterUserRequest;
-import com.xiaoleitech.authapi.model.bean.RegisterUserResponse;
 import com.xiaoleitech.authapi.model.bean.UnregisterUserResponse;
 import org.springframework.validation.BindingResult;
 
@@ -30,7 +30,7 @@ public interface RegisterUserService {
      * }
      * @implNote verify user's phone_no before register_user
      */
-    RegisterUserResponse registerUser(RegisterUserRequest registerUserRequest, BindingResult bindingResult);
+    AuthAPIResponse registerUser(RegisterUserRequest registerUserRequest, BindingResult bindingResult);
 
     /**
      * 用户反注册 (APP)
