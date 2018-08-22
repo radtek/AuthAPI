@@ -1,8 +1,7 @@
 package com.xiaoleitech.authapi.service.registration;
 
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.RegisterDeviceRequest;
-import com.xiaoleitech.authapi.model.bean.RegisterDeviceResponse;
-import com.xiaoleitech.authapi.model.bean.UnregisterDeviceResponse;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -27,7 +26,7 @@ public interface RegisterDeviceService {
      * 				[device_id: device_id]  // if errorcode == 0
      *            }
      */
-    RegisterDeviceResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult);
+    AuthAPIResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult);
 
     /**
      * 设备反注册 (APP)
@@ -39,6 +38,6 @@ public interface RegisterDeviceService {
      * error_message: error_message
      * }
      */
-    UnregisterDeviceResponse unregisterDevice(@RequestParam("device_id") String deviceID);
+    AuthAPIResponse unregisterDevice(@RequestParam("device_id") String deviceID);
 
 }

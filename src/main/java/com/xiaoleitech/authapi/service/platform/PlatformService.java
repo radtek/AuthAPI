@@ -1,6 +1,6 @@
 package com.xiaoleitech.authapi.service.platform;
 
-import com.xiaoleitech.authapi.model.bean.PlatformSettingResponse;
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 
 public interface PlatformService {
     /**
@@ -15,5 +15,5 @@ public interface PlatformService {
      * use_ssl: use_ssl // 0: not use ssl, 1: RSA2048/SHA256, 2: SM2/SM3
      * }
      */
-    PlatformSettingResponse getPlatformSetting();
+    AuthAPIResponse getPlatformSetting();
 }

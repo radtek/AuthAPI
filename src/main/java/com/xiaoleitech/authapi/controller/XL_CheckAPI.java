@@ -1,6 +1,6 @@
 package com.xiaoleitech.authapi.controller;
 
-import com.xiaoleitech.authapi.model.bean.IDPInfoResponse;
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.service.check.GetIDPInfoService;
 import com.xiaoleitech.authapi.service.check.PingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class XL_CheckAPI {
 
     @RequestMapping(value = "/api/get_idp_info", method = RequestMethod.GET)
     public @ResponseBody
-    IDPInfoResponse get_idp_info() {
+    AuthAPIResponse get_idp_info() {
         return getIDPInfoService.getIDPInfo();
     }
 }

@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.service.check;
 
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.IDPInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class GetIDPInfoServiceImpl implements GetIDPInfoService {
     }
 
     @Override
-    public IDPInfoResponse getIDPInfo() {
+    public AuthAPIResponse getIDPInfo() {
         // TODO get_idp_info: 1. retrieve the real version.
         // TODO get_idp_info: 2. Treat with the exception.
         idpInfoResponse.setError_code(200);

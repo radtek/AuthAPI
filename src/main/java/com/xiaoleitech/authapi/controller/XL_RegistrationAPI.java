@@ -1,6 +1,8 @@
 package com.xiaoleitech.authapi.controller;
 
-import com.xiaoleitech.authapi.model.bean.*;
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
+import com.xiaoleitech.authapi.model.bean.RegisterDeviceRequest;
+import com.xiaoleitech.authapi.model.bean.RegisterUserRequest;
 import com.xiaoleitech.authapi.service.registration.RegisterDeviceService;
 import com.xiaoleitech.authapi.service.registration.RegisterUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ public class XL_RegistrationAPI {
     //    @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
     @RequestMapping(value = "/api/register_device", method = RequestMethod.POST)
     public @ResponseBody
-    RegisterDeviceResponse register_device(@ModelAttribute @Valid RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
+    AuthAPIResponse register_device(@ModelAttribute @Valid RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
         System.out.println(registerDeviceRequest);
 
         return registerDeviceService.registerDevcie(registerDeviceRequest, bindingResult);
@@ -32,7 +34,7 @@ public class XL_RegistrationAPI {
 
     @RequestMapping(value = "/api/deregister_device", method = RequestMethod.GET)
     public @ResponseBody
-    UnregisterDeviceResponse unregisterDevice(@RequestParam("device_id") String uuid) {
+    AuthAPIResponse unregisterDevice(@RequestParam("device_id") String uuid) {
         return registerDeviceService.unregisterDevice(uuid);
     }
 
@@ -45,7 +47,7 @@ public class XL_RegistrationAPI {
 
     @RequestMapping(value = "/api/deregister_user", method = RequestMethod.GET)
     public @ResponseBody
-    UnregisterUserResponse unregisterUser(@RequestParam("user_id") String userUuid, @RequestParam("verify_token") String verifyToken) {
+    AuthAPIResponse unregisterUser(@RequestParam("user_id") String userUuid, @RequestParam("verify_token") String verifyToken) {
         return registerUserService.unregisterUser(userUuid, verifyToken);
     }
 }

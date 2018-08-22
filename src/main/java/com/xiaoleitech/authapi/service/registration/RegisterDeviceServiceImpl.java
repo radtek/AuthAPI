@@ -3,6 +3,7 @@ package com.xiaoleitech.authapi.service.registration;
 import com.xiaoleitech.authapi.helper.DevicesTableHelper;
 import com.xiaoleitech.authapi.helper.UtilsHelper;
 import com.xiaoleitech.authapi.mapper.DevicesMapper;
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.RegisterDeviceRequest;
 import com.xiaoleitech.authapi.model.bean.RegisterDeviceResponse;
 import com.xiaoleitech.authapi.model.bean.UnregisterDeviceResponse;
@@ -37,12 +38,13 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
 
     @Transactional
     @Override
-    public RegisterDeviceResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
+    public AuthAPIResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
         ErrorCodeEnum errorCode;
+        AuthAPIResponse authAPIResponse = new AuthAPIResponse();
 
         // Check if there are any data-binding error. If any, return the warning message to the caller
-        if (systemErrorResponse.checkRequestParams(bindingResult, registerDeviceResponse) != ErrorCodeEnum.ERROR_OK) {
-            return registerDeviceResponse;
+        if (systemErrorResponse.checkRequestParams(bindingResult, authAPIResponse) != ErrorCodeEnum.ERROR_OK) {
+            return authAPIResponse;
         }
 
         // TODO: extra data validation if needed
@@ -61,16 +63,16 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
                 // 更新设备记录（状态、型号、令牌、TEE、SE、更新时间...）
                 errorCode = updateDevice(registerDeviceRequest, device, DeviceStateEnum.DEV_REGISTER_AND_BINDING);
                 if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                    systemErrorResponse.fillErrorResponse(registerDeviceResponse, errorCode);
-                    return registerDeviceResponse;
+                    systemErrorResponse.fillErrorResponse(authAPIResponse, errorCode);
+                    return authAPIResponse;
                 }
             }
         } else {
             // 系统中找不到该设备，增加一条设备新记录
             errorCode = addNewDeviceRecord(registerDeviceRequest);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                systemErrorResponse.fillErrorResponse(registerDeviceResponse, errorCode);
-                return registerDeviceResponse;
+                systemErrorResponse.fillErrorResponse(authAPIResponse, errorCode);
+                return authAPIResponse;
             }
         }
 
@@ -83,13 +85,14 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
 
     @Transactional
     @Override
-    public UnregisterDeviceResponse unregisterDevice(@RequestParam("device_id") String deviceID) {
+    public AuthAPIResponse unregisterDevice(@RequestParam("device_id") String deviceID) {
+        AuthAPIResponse authAPIResponse = new AuthAPIResponse();
         Devices device = devicesTableHelper.getDeviceByUuid(deviceID);
 
         // 系统中找不到指定ID的设备，返回无效设备错误信息
         if (device == null) {
-            systemErrorResponse.fillErrorResponse(unregisterDeviceResponse, ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
-            return unregisterDeviceResponse;
+            systemErrorResponse.fillErrorResponse(authAPIResponse, ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
+            return authAPIResponse;
         }
 
         // 设置设备状态（设备注销）和更新时间

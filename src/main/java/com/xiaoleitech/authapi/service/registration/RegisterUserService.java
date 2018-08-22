@@ -2,7 +2,6 @@ package com.xiaoleitech.authapi.service.registration;
 
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.RegisterUserRequest;
-import com.xiaoleitech.authapi.model.bean.UnregisterUserResponse;
 import org.springframework.validation.BindingResult;
 
 public interface RegisterUserService {
@@ -43,5 +42,5 @@ public interface RegisterUserService {
      * error_message: error_message
      * }
      */
-    UnregisterUserResponse unregisterUser(String userUuid, String verifyToken);
+    AuthAPIResponse unregisterUser(String userUuid, String verifyToken);
 }

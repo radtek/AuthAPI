@@ -1,6 +1,6 @@
 package com.xiaoleitech.authapi.controller;
 
-import com.xiaoleitech.authapi.model.bean.PlatformSettingResponse;
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.service.platform.PlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +23,7 @@ public class XL_PlatformAPI {
     //    @RequestMapping(value = "{name}", method = RequestMethod.GET)
     @RequestMapping(value = "/api/get_platform_setting", method = RequestMethod.GET)
     public @ResponseBody
-    PlatformSettingResponse get_platform_setting() {
+    AuthAPIResponse get_platform_setting() {
         return platformService.getPlatformSetting();
     }
 }

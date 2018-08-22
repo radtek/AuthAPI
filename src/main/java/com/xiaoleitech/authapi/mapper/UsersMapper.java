@@ -26,7 +26,7 @@ public interface UsersMapper {
     @Insert("INSERT INTO users( " +
             "device_id, user_uuid, real_name, phone_no, " +
             "sex, birthday, hukou_address, real_address, " +
-            "id_no, id_expire_at, protect_methods, password, " +
+            "id_no, id_expire_at, protect_methods, auth_key, password, " +
             "password_salt, second_factor_attempt_fail_count, " +
             "password_attempt_fail_count, second_factor_lock_to, " +
             "password_lock_to, authenticated, protect_method, " +
@@ -35,7 +35,7 @@ public interface UsersMapper {
             "VALUES ( " +
             "#{device_id}, #{user_uuid}, #{real_name}, #{phone_no}, " +
             "#{sex}, #{birthday, jdbcType=TIMESTAMP}, #{hukou_address}, #{real_address}, " +
-            "#{id_no}, #{id_expire_at, jdbcType=TIMESTAMP}, #{protect_methods}, #{password}, " +
+            "#{id_no}, #{id_expire_at, jdbcType=TIMESTAMP}, #{protect_methods}, #{auth_key}, #{password}, " +
             "#{password_salt}, #{second_factor_attempt_fail_count}, " +
             "#{password_attempt_fail_count}, #{second_factor_lock_to, jdbcType=TIMESTAMP}, " +
             "#{password_lock_to, jdbcType=TIMESTAMP}, #{authenticated}, #{protect_method}, " +
@@ -43,7 +43,7 @@ public interface UsersMapper {
             "#{face_enrolled}, #{user_state}, #{created_at, jdbcType=TIMESTAMP}, #{updated_at, jdbcType=TIMESTAMP}) ")
     int insertOneUser(Users user);
 
-    @Update("UPDATE users SET( " +
+    @Update("UPDATE users SET " +
             "device_id=#{device_id}, real_name=#{real_name}, phone_no=#{phone_no}, " +
             "sex=#{sex}, birthday=#{birthday, jdbcType=TIMESTAMP}, hukou_address=#{hukou_address}, " +
             "real_address=#{real_address}, id_no=#{id_no}, id_expire_at=#{id_expire_at, jdbcType=TIMESTAMP}, " +
@@ -53,7 +53,7 @@ public interface UsersMapper {
             "password_lock_to=#{password_lock_to, jdbcType=TIMESTAMP}, authenticated=#{authenticated}, protect_method=#{protect_method}, " +
             "auth_latitude=#{auth_latitude}, auth_longitude=#{auth_longitude}, auth_at=#{auth_at, jdbcType=TIMESTAMP}, " +
             "verify_token=#{verify_token}, face_enrolled=#{face_enrolled}, user_state=#{user_state}, " +
-            "created_at=#{created_at, jdbcType=TIMESTAMP}, updated_at=#{updated_at, jdbcType=TIMESTAMP}) " +
+            "created_at=#{created_at, jdbcType=TIMESTAMP}, updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
             "WHERE " +
             "user_uuid=#{user_uuid}")
     int updateOneUserByUserUuid(Users user);

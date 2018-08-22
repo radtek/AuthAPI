@@ -1,6 +1,6 @@
 package com.xiaoleitech.authapi.service.check;
 
-import com.xiaoleitech.authapi.model.bean.IDPInfoResponse;
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 
 public interface GetIDPInfoService {
     /**
@@ -15,5 +15,5 @@ public interface GetIDPInfoService {
      * supported_android_app_version: version
      * }
      */
-    IDPInfoResponse getIDPInfo();
+    AuthAPIResponse getIDPInfo();
 }

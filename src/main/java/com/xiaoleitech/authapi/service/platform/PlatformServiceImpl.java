@@ -1,12 +1,13 @@
 package com.xiaoleitech.authapi.service.platform;
 
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.PlatformSettingResponse;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PlatformServiceImpl implements PlatformService {
     @Override
-    public PlatformSettingResponse getPlatformSetting() {
+    public AuthAPIResponse getPlatformSetting() {
         PlatformSettingResponse platformSettingResponse = new PlatformSettingResponse();
 
         // TODO get_platform_setting: 1. Implement the real code for: platform_name, logo_url, use_ssl
