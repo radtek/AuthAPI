@@ -8,8 +8,8 @@ public interface GetIDPInfoService {
      * get https://server/api/get_idp_info
      *
      * @return {
-     * error_code: errorcode,
-     * error_message: error_message,
+     * error_code: errorCode,
+     * error_message: errorMessage,
      * version: version,
      * supported_ios_app_version: version,
      * supported_android_app_version: version

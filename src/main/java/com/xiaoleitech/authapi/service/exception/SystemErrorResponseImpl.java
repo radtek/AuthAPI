@@ -35,13 +35,28 @@ public class SystemErrorResponseImpl implements SystemErrorResponse {
         errorMsg.insert(0, ErrorCodeEnum.ERROR_PARAMETER.getMsg() + ": ");
         authAPIResponse.setError_message(errorMsg.toString());
 
-        // Return the errro code.
+        // Return the error code.
         return ErrorCodeEnum.ERROR_PARAMETER;
     }
 
     @Override
     public void fillErrorResponse(AuthAPIResponse authAPIResponse, ErrorCodeEnum errorCodeEnum) {
-        authAPIResponse.setError_code(errorCodeEnum.getCode());
+        if (errorCodeEnum == ErrorCodeEnum.ERROR_OK)
+            authAPIResponse.setError_code(ErrorCodeEnum.ERROR_HTTP_SUCCESS.getCode());
+        else
+            authAPIResponse.setError_code(errorCodeEnum.getCode());
         authAPIResponse.setError_message(errorCodeEnum.getMsg());
+    }
+
+    @Override
+    public AuthAPIResponse getGeneralResponse(ErrorCodeEnum errorCode) {
+        AuthAPIResponse authAPIResponse = new AuthAPIResponse();
+        if (errorCode == ErrorCodeEnum.ERROR_OK)
+            authAPIResponse.setError_code(ErrorCodeEnum.ERROR_HTTP_SUCCESS.getCode());
+        else
+            authAPIResponse.setError_code(errorCode.getCode());
+        authAPIResponse.setError_message(errorCode.getMsg());
+
+        return authAPIResponse;
     }
 }

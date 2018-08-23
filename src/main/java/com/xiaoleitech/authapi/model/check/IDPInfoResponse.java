@@ -1,5 +1,6 @@
-package com.xiaoleitech.authapi.model.bean;
+package com.xiaoleitech.authapi.model.check;
 
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import org.springframework.stereotype.Component;
 
 @Component

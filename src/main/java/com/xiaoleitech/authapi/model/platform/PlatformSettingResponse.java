@@ -1,4 +1,6 @@
-package com.xiaoleitech.authapi.model.bean;
+package com.xiaoleitech.authapi.model.platform;
+
+import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 
 public class PlatformSettingResponse extends AuthAPIResponse {
     private String platform_name;

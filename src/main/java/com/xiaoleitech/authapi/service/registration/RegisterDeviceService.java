@@ -1,7 +1,7 @@
 package com.xiaoleitech.authapi.service.registration;
 
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
-import com.xiaoleitech.authapi.model.bean.RegisterDeviceRequest;
+import com.xiaoleitech.authapi.model.registration.RegisterDeviceRequest;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -21,9 +21,9 @@ public interface RegisterDeviceService {
      * @return Response of the register_device API.
      * 		return:
      *                        {
-     * 				error_code: errercode,
-     * 				error_message: error_message,
-     * 				[device_id: device_id]  // if errorcode == 0
+     * 				error_code: errorCode,
+     * 				error_message: errorMessage,
+     * 				[device_id: device_id]  // if errorCode == 0
      *            }
      */
     AuthAPIResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult);
@@ -34,8 +34,8 @@ public interface RegisterDeviceService {
      *
      * @param deviceID 系统定义的UUID，存于devices主表中
      * @return {
-     * error_code: errercode,
-     * error_message: error_message
+     * error_code: errorCode,
+     * error_message: errorMessage
      * }
      */
     AuthAPIResponse unregisterDevice(@RequestParam("device_id") String deviceID);

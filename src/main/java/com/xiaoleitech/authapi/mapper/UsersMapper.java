@@ -13,7 +13,11 @@ import java.util.List;
 public interface UsersMapper {
     // 根据用户UUID查找用户记录
     @Select("SELECT * FROM users WHERE user_uuid=#{user_uuid}")
-    List<Users> selectUsersByUuid(@Param("user_uuid") String uuid);
+    List<Users> selectUsersByUserUuid(@Param("user_uuid") String uuid);
+
+    // 根据设备UUID查找用户记录
+    @Select("SELECT * FROM users WHERE device_id=#{device_id}")
+    List<Users> selectUsersByDeviceUuid(@Param("device_id") String deviceUuid);
 
     // 根据电话号码查找用户记录
     @Select("SELECT * FROM users WHERE phone_no=#{phone_no}")

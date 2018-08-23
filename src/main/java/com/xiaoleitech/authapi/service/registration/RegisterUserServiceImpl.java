@@ -4,12 +4,10 @@ import com.xiaoleitech.authapi.helper.UsersTableHelper;
 import com.xiaoleitech.authapi.helper.UtilsHelper;
 import com.xiaoleitech.authapi.mapper.UsersMapper;
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
-import com.xiaoleitech.authapi.model.bean.RegisterUserRequest;
-import com.xiaoleitech.authapi.model.bean.RegisterUserResponse;
-import com.xiaoleitech.authapi.model.bean.UnregisterUserResponse;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.model.enumeration.UserStateEnum;
 import com.xiaoleitech.authapi.model.pojo.Users;
+import com.xiaoleitech.authapi.model.registration.*;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,14 +23,27 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     private final UsersMapper usersMapper;
     private final SystemErrorResponse systemErrorResponse;
     private final UsersTableHelper usersTableHelper;
+    private final UpdateUserResponse updateUserResponse;
+    private final RecoverUserResponse recoverUserResponse;
+    private final GetAuthKeyResponse getAuthKeyResponse;
 
     @Autowired
-    public RegisterUserServiceImpl(RegisterUserResponse registerUserResponse, UnregisterUserResponse unregisterUserResponse, UsersMapper usersMapper, SystemErrorResponse systemErrorResponse, UsersTableHelper usersTableHelper) {
+    public RegisterUserServiceImpl(RegisterUserResponse registerUserResponse,
+                                   UnregisterUserResponse unregisterUserResponse,
+                                   UsersMapper usersMapper,
+                                   SystemErrorResponse systemErrorResponse,
+                                   UsersTableHelper usersTableHelper,
+                                   UpdateUserResponse updateUserResponse,
+                                   RecoverUserResponse recoverUserResponse,
+                                   GetAuthKeyResponse getAuthKeyResponse) {
         this.registerUserResponse = registerUserResponse;
         this.unregisterUserResponse = unregisterUserResponse;
         this.usersMapper = usersMapper;
         this.systemErrorResponse = systemErrorResponse;
         this.usersTableHelper = usersTableHelper;
+        this.updateUserResponse = updateUserResponse;
+        this.recoverUserResponse = recoverUserResponse;
+        this.getAuthKeyResponse = getAuthKeyResponse;
     }
 
     @Transactional
@@ -59,34 +70,32 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         if (user == null) {
             errorCode = addNewUserRecord(registerUserRequest);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                systemErrorResponse.fillErrorResponse(authAPIResponse, errorCode);
-                return authAPIResponse;
+                return systemErrorResponse.getGeneralResponse(errorCode);
             }
         } else {
             // 如果查到该用户，检查用户状态
             if ((user.getUser_state() != UserStateEnum.USER_NOT_REGISTERED.getState()) &&
                     (user.getUser_state() != UserStateEnum.USER_UNREGISTERED.getState())) {
                 // 用户状态不是未注册和未注销，则返回用户不能重复注册的错误信息
-                systemErrorResponse.fillErrorResponse(authAPIResponse, ErrorCodeEnum.ERROR_USER_REGISTERED);
-                return authAPIResponse;
+                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_REGISTERED);
             }
 
             // 更新用户状态及相应数据（身份、地址、号码等等，以API传入的数据为准）
             errorCode = updateUserRecord(registerUserRequest, user, UserStateEnum.USER_REG_BINDING_L1);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                systemErrorResponse.fillErrorResponse(authAPIResponse, errorCode);
-                return authAPIResponse;
+                return systemErrorResponse.getGeneralResponse(errorCode);
             }
         }
 
-        // Request 的服务成功执行，返回
-        systemErrorResponse.fillErrorResponse(registerUserResponse, ErrorCodeEnum.ERROR_HTTP_SUCCESS);
         // User 使用 phone_no 来检索（有必要改成UUID检索）
         user = usersTableHelper.getUserByPhoneNo(registerUserRequest.getPhone_no());
         registerUserResponse.setPassword_salt(user.getPassword_salt());
         registerUserResponse.setAuth_key(user.getAuth_key());
         registerUserResponse.setUser_id(user.getUser_uuid());
         registerUserResponse.setUser_state(user.getUser_state());
+
+        // Request 的服务成功执行，返回
+        systemErrorResponse.fillErrorResponse(registerUserResponse, ErrorCodeEnum.ERROR_HTTP_SUCCESS);
 
         return registerUserResponse;
     }
@@ -98,28 +107,97 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // TODO: 是否需要检查 verifyToken
 
         // 读取用户记录
-        Users user = usersTableHelper.getUserByUuid(userUuid);
+        Users user = usersTableHelper.getUserByUserUuid(userUuid);
 
         // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
         if (user == null) {
-            systemErrorResponse.fillErrorResponse(authAPIResponse, ErrorCodeEnum.ERROR_USER_NOT_FOUND);
-            return authAPIResponse;
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
         }
 
-        // 设置用户状态（未注册，逻辑删除）和更新时间
+        // 设置用户状态（未注册，逻辑删除）
         user.setUser_state(UserStateEnum.USER_UNREGISTERED.getState());
-        user.setUpdated_at(UtilsHelper.getCurrentSystemTimestamp());
 
-        // 更新用户记录，在目前代码逻辑中，也可以采用 updateUserStateByUserUuid
-        int num = usersMapper.updateOneUserByUserUuid(user);
-
-        // 成功更新一条记录，返回成功信息，否则返回内部错误
-        systemErrorResponse.fillErrorResponse(unregisterUserResponse,
-                (num == 1) ? ErrorCodeEnum.ERROR_HTTP_SUCCESS : ErrorCodeEnum.ERROR_INTERNAL_ERROR);
-        return unregisterUserResponse;
+        // 成功更新一条记录，并返回执行结果 (Response)
+        return systemErrorResponse.getGeneralResponse(usersTableHelper.updateOneUserRecord(user));
     }
 
-    private ErrorCodeEnum copyUserParamsFromRequest(RegisterUserRequest registerUserRequest, Users user) {
+    @Transactional
+    @Override
+    public AuthAPIResponse updateUser(UpdateUserRequest updateUserRequest, BindingResult bindingResult) {
+        // 读取用户记录
+        Users user = usersTableHelper.getUserByUserUuid(updateUserRequest.getUser_id());
+
+        // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
+        if (user == null) {
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+        }
+
+        // 更新用户记录，只更新请求中包含的字段
+        // TODO: 是否有更好的方法简化下面代码。(查阅lombok的 @NonNull，set null时会抛出异常)
+        if (updateUserRequest.getVerify_token() != null)
+            user.setVerify_token(updateUserRequest.getVerify_token());
+        if (updateUserRequest.getPassword() != null)
+            user.setPassword(updateUserRequest.getPassword());
+        if (updateUserRequest.getUser_realname() != null)
+            user.setReal_name(updateUserRequest.getUser_realname());
+        if (updateUserRequest.getId_no() != null)
+            user.setId_no(updateUserRequest.getId_no());
+        if (updateUserRequest.getId_expire_at() != null)
+            user.setId_expire_at(updateUserRequest.getId_expire_at());
+        if (updateUserRequest.getProtect_methods() != null)
+            user.setProtect_methods(updateUserRequest.getProtect_methods());
+        // TODO: 如果Request中没有 face_enrolled 参数，则使用默认值 0。各种状态值需要Review，避免用0表示某个明确的状态值
+        user.setFace_enrolled(updateUserRequest.getFace_enrolled());
+
+        // 成功更新一条记录，并返回执行结果 (Response)
+        return systemErrorResponse.getGeneralResponse(usersTableHelper.updateOneUserRecord(user));
+    }
+
+    @Transactional
+    @Override
+    public AuthAPIResponse recoverUser(String deviceUuid, String password, String phoneNumber) {
+        // 读取用户记录
+        Users user = usersTableHelper.getUserByDeviceUuid(deviceUuid);
+
+        // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
+        if (user == null) {
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+        }
+
+        // 检查手机号码，验证密码
+        if (user.getPhone_no() != phoneNumber)
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_DEVICE);
+        if (user.getPassword() != password)
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+
+        // 设置用户状态（已注册，已绑定设备、手机号，已激活）
+        user.setUser_state(UserStateEnum.USER_REG_BINDING_L1.getState());
+
+        // 更新用户记录，如果失败则返回处理的错误码 (Response)
+        ErrorCodeEnum errorCode = usersTableHelper.updateOneUserRecord(user);
+        if (errorCode != ErrorCodeEnum.ERROR_OK)
+            return systemErrorResponse.getGeneralResponse(errorCode);
+
+        // 填充响应数据：用户UUID，密码盐，认证秘钥，保护方法
+        recoverUserResponse.setUser_id(user.getUser_uuid());
+        recoverUserResponse.setPassword_salt(user.getPassword_salt());
+        recoverUserResponse.setAuth_key(user.getAuth_key());
+        recoverUserResponse.setProtect_methods(user.getProtect_methods());
+        systemErrorResponse.fillErrorResponse(recoverUserResponse, ErrorCodeEnum.ERROR_HTTP_SUCCESS);
+
+        return recoverUserResponse;
+    }
+
+    @Transactional
+    @Override
+    public AuthAPIResponse getAuthKey(String appId, String password, String phoneNumber) {
+
+        // TODO: 没有实现。需要查appId
+        systemErrorResponse.fillErrorResponse(getAuthKeyResponse, ErrorCodeEnum.ERROR_NOT_IMPLEMENTED);
+        return getAuthKeyResponse;
+    }
+
+    protected ErrorCodeEnum copyUserParamsFromRequest(RegisterUserRequest registerUserRequest, Users user) {
         // 使用 Request 数据填充 user
         user.setPhone_no(registerUserRequest.getPhone_no());
         user.setPassword(registerUserRequest.getPassword());
@@ -159,14 +237,9 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // user里存放了数据库中的用户旧资料，将 Post 请求中的新资料覆盖到记录中
         copyUserParamsFromRequest(registerUserRequest, user);
 
-        // 设置用户的状态和更新时间
+        // 设置用户的状态
         user.setUser_state(userState.getState());
-        user.setUpdated_at(UtilsHelper.getCurrentSystemTimestamp());
 
-        // 更新整条用户记录，成功执行，则返回1（更新记录的数量）
-        int num = usersMapper.updateOneUserByUserUuid(user);
-
-        // 如果更新没有执行成功，则统一设置为 ERROR_CANNOT_ENROLL 错误码，后续再根据实际应用需要做错误码细化
-        return (num == 1) ? ErrorCodeEnum.ERROR_OK : ErrorCodeEnum.ERROR_CANNOT_ENROLL;
+        return usersTableHelper.updateOneUserRecord(user);
     }
 }

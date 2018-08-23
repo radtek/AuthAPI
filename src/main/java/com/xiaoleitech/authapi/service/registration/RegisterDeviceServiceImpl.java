@@ -4,12 +4,12 @@ import com.xiaoleitech.authapi.helper.DevicesTableHelper;
 import com.xiaoleitech.authapi.helper.UtilsHelper;
 import com.xiaoleitech.authapi.mapper.DevicesMapper;
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
-import com.xiaoleitech.authapi.model.bean.RegisterDeviceRequest;
-import com.xiaoleitech.authapi.model.bean.RegisterDeviceResponse;
-import com.xiaoleitech.authapi.model.bean.UnregisterDeviceResponse;
 import com.xiaoleitech.authapi.model.enumeration.DeviceStateEnum;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.model.pojo.Devices;
+import com.xiaoleitech.authapi.model.registration.RegisterDeviceRequest;
+import com.xiaoleitech.authapi.model.registration.RegisterDeviceResponse;
+import com.xiaoleitech.authapi.model.registration.UnregisterDeviceResponse;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,18 +61,21 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
                 return registerDeviceResponse;
             } else {
                 // 更新设备记录（状态、型号、令牌、TEE、SE、更新时间...）
-                errorCode = updateDevice(registerDeviceRequest, device, DeviceStateEnum.DEV_REGISTER_AND_BINDING);
+                // 使用Request数据填充Device
+                copyDeviceParamsFromRequest(registerDeviceRequest, device);
+
+                // 设置Device的状态
+                device.setState(DeviceStateEnum.DEV_REGISTER_AND_BINDING.getState());
+                errorCode = devicesTableHelper.updateOneDeviceRecord(device);
                 if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                    systemErrorResponse.fillErrorResponse(authAPIResponse, errorCode);
-                    return authAPIResponse;
+                    return systemErrorResponse.getGeneralResponse(errorCode);
                 }
             }
         } else {
             // 系统中找不到该设备，增加一条设备新记录
             errorCode = addNewDeviceRecord(registerDeviceRequest);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                systemErrorResponse.fillErrorResponse(authAPIResponse, errorCode);
-                return authAPIResponse;
+                return systemErrorResponse.getGeneralResponse(errorCode);
             }
         }
 
@@ -91,19 +94,14 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
 
         // 系统中找不到指定ID的设备，返回无效设备错误信息
         if (device == null) {
-            systemErrorResponse.fillErrorResponse(authAPIResponse, ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
-            return authAPIResponse;
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
         }
 
-        // 设置设备状态（设备注销）和更新时间
+        // 设置设备状态（设备注销）
         device.setState(DeviceStateEnum.DEV_UNREGISTER.getState());
-        device.setUpdated_at(UtilsHelper.getCurrentSystemTimestamp());
-        int num = devicesMapper.updateDeviceRecord(device);
 
-        // 成功更新一条记录，返回成功信息，否则返回内部错误
-        systemErrorResponse.fillErrorResponse(unregisterDeviceResponse,
-                (num == 1) ? ErrorCodeEnum.ERROR_HTTP_SUCCESS : ErrorCodeEnum.ERROR_INTERNAL_ERROR);
-        return unregisterDeviceResponse;
+        // 更新设备记录并返回 response
+        return systemErrorResponse.getGeneralResponse(devicesTableHelper.updateOneDeviceRecord(device));
     }
 
     private ErrorCodeEnum copyDeviceParamsFromRequest(RegisterDeviceRequest registerDeviceRequest, Devices device) {
@@ -114,6 +112,7 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
         device.setDevice_tee(registerDeviceRequest.getDevice_tee());
         device.setDevice_se(registerDeviceRequest.getDevice_se());
         device.setDevice_token(registerDeviceRequest.getDevice_token());
+
         return ErrorCodeEnum.ERROR_OK;
     }
 
@@ -135,21 +134,6 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
         // TODO: need catch the exception ?
         int num = devicesMapper.insertOneDevice(device);
 
-        return (num == 1) ? ErrorCodeEnum.ERROR_OK : ErrorCodeEnum.ERROR_CANNOT_ENROLL;
-    }
-
-    private ErrorCodeEnum updateDevice(RegisterDeviceRequest registerDeviceRequest, Devices device, DeviceStateEnum deviceState) {
-        // 使用Request数据填充Device
-        copyDeviceParamsFromRequest(registerDeviceRequest, device);
-
-        // 设置Device的状态和更新时间
-        device.setState(deviceState.getState());
-        device.setUpdated_at(UtilsHelper.getCurrentSystemTimestamp());
-
-        // 更新此设备记录的所有可能存在变化的字段
-        int num = devicesMapper.updateDeviceRecord(device);
-
-        // 如果更新没有执行成功，则统一设置为 ERROR_CANNOT_ENROLL 错误码，后续再根据实际应用需要做错误码细化
         return (num == 1) ? ErrorCodeEnum.ERROR_OK : ErrorCodeEnum.ERROR_CANNOT_ENROLL;
     }
 

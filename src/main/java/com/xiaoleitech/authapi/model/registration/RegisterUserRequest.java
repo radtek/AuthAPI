@@ -1,4 +1,4 @@
-package com.xiaoleitech.authapi.model.bean;
+package com.xiaoleitech.authapi.model.registration;
 
 import lombok.Data;
 
