@@ -49,7 +49,7 @@ public class XL_RegistrationAPI {
     //    @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
     @RequestMapping(value = "/api/register_device", method = RequestMethod.POST)
     public @ResponseBody
-    AuthAPIResponse register_device(@ModelAttribute @Valid RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
+    AuthAPIResponse registerDevice(@ModelAttribute @Valid RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
         System.out.println(registerDeviceRequest);
 
         return registerDeviceService.registerDevcie(registerDeviceRequest, bindingResult);
