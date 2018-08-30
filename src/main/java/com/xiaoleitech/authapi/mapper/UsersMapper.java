@@ -15,6 +15,10 @@ public interface UsersMapper {
     @Select("SELECT * FROM users WHERE user_uuid=#{user_uuid}")
     List<Users> selectUsersByUserUuid(@Param("user_uuid") String uuid);
 
+    // 根据用户ID查找用户记录
+    @Select("SELECT * FROM users WHERE user_id=#{user_id}")
+    List<Users> selectUsersByUserId(@Param("user_id") int userId);
+
     // 根据设备UUID查找用户记录
     @Select("SELECT * FROM users WHERE device_id=#{device_id}")
     List<Users> selectUsersByDeviceUuid(@Param("device_id") String deviceUuid);

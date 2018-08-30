@@ -6,10 +6,8 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class EnrollAppRequest {
-    @NotBlank(message = "应用id不能为空！")
-    private String app_id;
-    @NotBlank(message = "用户id不能为空！")
-    private String user_id;
+    private int app_id;
+    private int user_id;
     @NotBlank(message = "验证令牌不能为空！")
     private String verify_token;
     private String account_name;

@@ -61,6 +61,16 @@ public class UsersTableHelper {
         return (usersList.size() == 0) ? null : usersList.get(0);
     }
 
+    /** 获取指定user_id的用户记录
+     *
+     * @param userId: 用户id (integer)
+     * @return Users记录
+     */
+    public  Users getUserByUserId(int userId) {
+        List<Users> usersList = usersMapper.selectUsersByUserId(userId);
+        return (usersList.size() == 0) ? null : usersList.get(0);
+    }
+
     /**
      * 使用传入的user对象数据，更新该用户记录
      *

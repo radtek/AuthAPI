@@ -1,11 +1,12 @@
 package com.xiaoleitech.authapi.service.registration;
 
-import com.xiaoleitech.authapi.helper.UsersTableHelper;
-import com.xiaoleitech.authapi.helper.UtilsHelper;
+import com.xiaoleitech.authapi.helper.*;
+import com.xiaoleitech.authapi.mapper.RpAccountsMapper;
 import com.xiaoleitech.authapi.mapper.UsersMapper;
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.model.enumeration.UserStateEnum;
+import com.xiaoleitech.authapi.model.pojo.RpAccounts;
 import com.xiaoleitech.authapi.model.pojo.Users;
 import com.xiaoleitech.authapi.model.registration.*;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
@@ -26,6 +27,8 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     private final UpdateUserResponse updateUserResponse;
     private final RecoverUserResponse recoverUserResponse;
     private final GetAuthKeyResponse getAuthKeyResponse;
+    private final RpAccountsMapper rpAccountsMapper;
+    private final RpAccountsTableHelper rpAccountsTableHelper;
 
     @Autowired
     public RegisterUserServiceImpl(RegisterUserResponse registerUserResponse,
@@ -35,7 +38,8 @@ public class RegisterUserServiceImpl implements RegisterUserService {
                                    UsersTableHelper usersTableHelper,
                                    UpdateUserResponse updateUserResponse,
                                    RecoverUserResponse recoverUserResponse,
-                                   GetAuthKeyResponse getAuthKeyResponse) {
+                                   GetAuthKeyResponse getAuthKeyResponse,
+                                   RpAccountsMapper rpAccountsMapper, RpAccountsTableHelper rpAccountsTableHelper) {
         this.registerUserResponse = registerUserResponse;
         this.unregisterUserResponse = unregisterUserResponse;
         this.usersMapper = usersMapper;
@@ -44,6 +48,8 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         this.updateUserResponse = updateUserResponse;
         this.recoverUserResponse = recoverUserResponse;
         this.getAuthKeyResponse = getAuthKeyResponse;
+        this.rpAccountsMapper = rpAccountsMapper;
+        this.rpAccountsTableHelper = rpAccountsTableHelper;
     }
 
     @Transactional
@@ -80,6 +86,13 @@ public class RegisterUserServiceImpl implements RegisterUserService {
                 return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_REGISTERED);
             }
 
+            // 验证密码
+            if (!AuthenticationHelper.isValidPassword(
+                    registerUserRequest.getPassword(),
+                    user.getPassword(),
+                    user.getPassword_salt()))
+                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+
             // 更新用户状态及相应数据（身份、地址、号码等等，以API传入的数据为准）
             errorCode = updateUserRecord(registerUserRequest, user, UserStateEnum.USER_REG_BINDING_L1);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
@@ -114,6 +127,10 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
         }
 
+        // 验证令牌
+        if (!UsersHelper.isUserVerifyToken(user, verifyToken))
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+
         // 设置用户状态（未注册，逻辑删除）
         user.setUser_state(UserStateEnum.USER_UNREGISTERED.getState());
 
@@ -131,6 +148,10 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         if (user == null) {
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
         }
+
+        // 验证令牌
+        if (!UsersHelper.isUserVerifyToken(user, updateUserRequest.getVerify_token()))
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 更新用户记录，只更新请求中包含的字段
         // TODO: 是否有更好的方法简化下面代码。(查阅lombok的 @NonNull，set null时会抛出异常)
@@ -165,9 +186,9 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         }
 
         // 检查手机号码，验证密码
-        if (user.getPhone_no() != phoneNumber)
+        if (!user.getPhone_no().equals(phoneNumber))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_DEVICE);
-        if (user.getPassword() != password)
+        if (!AuthenticationHelper.isValidPassword(password, user.getPassword(), user.getPassword_salt()))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
 
         // 设置用户状态（已注册，已绑定设备、手机号，已激活）
@@ -190,14 +211,36 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
     @Transactional
     @Override
-    public AuthAPIResponse getAuthKey(String appId, String password, String phoneNumber) {
+    public AuthAPIResponse getAuthKey(int appId, String password, String phoneNumber) {
 
-        // TODO: 没有实现。需要查appId
-        systemErrorResponse.fillErrorResponse(getAuthKeyResponse, ErrorCodeEnum.ERROR_NOT_IMPLEMENTED);
+        // 按照phone number 从users表中读取用户
+        Users user = usersTableHelper.getUserByPhoneNo(phoneNumber);
+        if (user == null)
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+
+        // 从RPAccounts表中查询指定AppID的账户记录
+        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(appId, user.getUser_id());
+        if (rpAccount == null)
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+
+        //  验证密码
+        if (!AuthenticationHelper.isValidPassword(password, user.getPassword(), user.getPassword_salt()))
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+
+        // 填充响应数据
+        getAuthKeyResponse.setUser_id(user.getUser_id());
+        getAuthKeyResponse.setProtect_methods(user.getProtect_methods());
+        getAuthKeyResponse.setDevice_id(user.getDevice_id());
+        getAuthKeyResponse.setPassword_salt(user.getPassword_salt());
+        getAuthKeyResponse.setSdk_auth_key(rpAccount.getSdk_auth_key());
+
+        // Request 的服务成功执行，返回
+        systemErrorResponse.fillErrorResponse(getAuthKeyResponse, ErrorCodeEnum.ERROR_HTTP_SUCCESS);
+
         return getAuthKeyResponse;
     }
 
-    protected ErrorCodeEnum copyUserParamsFromRequest(RegisterUserRequest registerUserRequest, Users user) {
+    private ErrorCodeEnum copyUserParamsFromRequest(RegisterUserRequest registerUserRequest, Users user) {
         // 使用 Request 数据填充 user
         user.setPhone_no(registerUserRequest.getPhone_no());
         user.setPassword(registerUserRequest.getPassword());
@@ -217,15 +260,20 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         Users user = new Users();
         copyUserParamsFromRequest(registerUserRequest, user);
 
+        // 认证秘钥
+        user.setAuth_key(UUID.randomUUID().toString().replace("-", ""));
+
         // 设置用户的UUID、状态、密码盐、认证秘钥、创建时间和更新时间
         user.setUser_uuid(UUID.randomUUID().toString());
         user.setUser_state(UserStateEnum.USER_REG_BINDING_L1.getState());
         user.setPassword_salt(UUID.randomUUID().toString());
-        // 认证秘钥
-        user.setAuth_key(UUID.randomUUID().toString().replace("-", ""));
         java.sql.Timestamp currentTime = UtilsHelper.getCurrentSystemTimestamp();
         user.setCreated_at(currentTime);
         user.setUpdated_at(currentTime);
+
+        // 用户密码加密
+        user.setPassword(
+                AuthenticationHelper.getEncryptedPassword( user.getPassword(), user.getPassword_salt() ) );
 
         // insertOneUser 方法返回插入的记录数量，如果成功了，则返回1 （新建记录的数量）
         int num = usersMapper.insertOneUser(user);

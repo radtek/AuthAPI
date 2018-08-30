@@ -17,6 +17,7 @@ public class ActiveAccountServiceImpl implements ActiveAccountService {
 
     @Override
     public AuthAPIResponse activeAccount(String appId, String token, String appAccountId) {
+        // TODO: 完成代码
         return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NOT_IMPLEMENTED);
     }
 }

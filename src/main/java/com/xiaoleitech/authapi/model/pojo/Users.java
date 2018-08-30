@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class Users {
     private String device_id;   // 设备的UUID
     private String user_uuid;
+    private int user_id;
     private String real_name;
     private String phone_no;
     private int sex;

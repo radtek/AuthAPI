@@ -101,5 +101,5 @@ public interface RegisterUserService {
      * [sdk_auth_key: sdk_auth_key,]
      * }
      */
-    AuthAPIResponse getAuthKey(String appId, String password, String phoneNumber);
+    AuthAPIResponse getAuthKey(int appId, String password, String phoneNumber);
 }

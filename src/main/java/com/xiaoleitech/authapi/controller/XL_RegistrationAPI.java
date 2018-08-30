@@ -187,7 +187,7 @@ public class XL_RegistrationAPI {
      */
     @RequestMapping(value = "/api/get_sdk_auth_key", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse getAuthKey(@RequestParam("app_id") String appId, @RequestParam("password") String password, @RequestParam("phone_no") String phoneNumber) {
+    AuthAPIResponse getAuthKey(@RequestParam("app_id") int appId, @RequestParam("password") String password, @RequestParam("phone_no") String phoneNumber) {
         return registerUserService.getAuthKey(appId, password, phoneNumber);
     }
 }
