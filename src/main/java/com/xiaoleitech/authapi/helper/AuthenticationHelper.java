@@ -82,4 +82,15 @@ public class AuthenticationHelper {
         String cipher = getEncryptedPassword(passwordPlainText, salt);
         return passwordCipherText.equals(cipher);
     }
+
+    /** 检查指定令牌是否已校验或有效
+     *
+     * @param verifyToken 需验证的token
+     * @return
+     *      true: 令牌验证已通过或有效；false: 令牌无效或验证失败
+     */
+    static public boolean isTokenVerified(String verifyToken) {
+        // TODO: 检查令牌 verifyToken
+        return true;
+    }
 }

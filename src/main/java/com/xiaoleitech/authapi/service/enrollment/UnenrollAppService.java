@@ -18,5 +18,5 @@ public interface UnenrollAppService {
      * error_message: error_message
      * }
      */
-    AuthAPIResponse unenrollApp(String userId, String verifyToken, String appId);
+    AuthAPIResponse unenrollApp(int userId, String verifyToken, int appId);
 }

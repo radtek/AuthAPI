@@ -75,7 +75,7 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/unenroll", method = RequestMethod.POST)
     public @ResponseBody
-    AuthAPIResponse unenrollApp(@RequestParam("user_id") String userId, @RequestParam("verify_token") String verifyToken, @RequestParam("app_id") String appId) {
+    AuthAPIResponse unenrollApp(@RequestParam("user_id") int userId, @RequestParam("verify_token") String verifyToken, @RequestParam("app_id") int appId) {
         return unenrollAppService.unenrollApp(userId, verifyToken, appId);
     }
 
@@ -94,7 +94,9 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/account_active", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse activeAccount(@RequestParam("app_id") String appId, @RequestParam("token") String token, @RequestParam("app_account_id") String appAccountId) {
+    AuthAPIResponse activeAccount(@RequestParam("app_id") int appId,
+                                  @RequestParam("token") String token,
+                                  @RequestParam("app_account_id") int appAccountId) {
         return activeAccountService.activeAccount(appId, token, appAccountId);
     }
 
@@ -111,7 +113,7 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/check_account_name", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse checkAccountUnique(String appId, String appAccountName) {
+    AuthAPIResponse checkAccountUnique(int appId, String appAccountName) {
         return checkAccountUniqueService.checkAccountUnique(appId, appAccountName);
     }
 
@@ -131,9 +133,9 @@ public class XL_EnrollmentAPI {
     @RequestMapping(value = "/api/check_account_state", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse checkAccountState(
-            @RequestParam("user_id") String userId,
+            @RequestParam("user_id") int userId,
             @RequestParam("verify_token") String verifyToken,
-            @RequestParam("app_id") String appId) {
+            @RequestParam("app_id") int appId) {
         return checkAccountStateService.checkAccountState(userId, verifyToken, appId);
     }
 
@@ -152,9 +154,9 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/set_account_protect_methods", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse setAccountProtectMethods(@RequestParam("user_id") String userId,
+    AuthAPIResponse setAccountProtectMethods(@RequestParam("user_id") int userId,
                                              @RequestParam("verify_token") String verifyToken,
-                                             @RequestParam("app_id") String appId,
+                                             @RequestParam("app_id") int appId,
                                              @RequestParam("protect_methods") String protectMethods) {
         return setAccountProtectMethodsService.setAccountProtectMethods(userId, verifyToken, appId, protectMethods);
     }

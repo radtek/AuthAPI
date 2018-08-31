@@ -59,4 +59,9 @@ public class SystemErrorResponseImpl implements SystemErrorResponse {
 
         return authAPIResponse;
     }
+
+    @Override
+    public AuthAPIResponse getHttpSuccessResponse() {
+        return getGeneralResponse(ErrorCodeEnum.ERROR_HTTP_SUCCESS);
+    }
 }

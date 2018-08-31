@@ -18,5 +18,5 @@ public interface ActiveAccountService {
      * error_message: error_message,
      * }
      */
-    AuthAPIResponse activeAccount(String appId, String token, String appAccountId);
+    AuthAPIResponse activeAccount(int appId, String token, int appAccountId);
 }

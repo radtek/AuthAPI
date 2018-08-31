@@ -18,5 +18,5 @@ public interface SetAccountProtectMethodsService {
      * error_message: error_message
      * }
      */
-    AuthAPIResponse setAccountProtectMethods(String userId, String verifyToken, String appId, String protectMethods);
+    AuthAPIResponse setAccountProtectMethods(int userId, String verifyToken, int appId, String protectMethods);
 }

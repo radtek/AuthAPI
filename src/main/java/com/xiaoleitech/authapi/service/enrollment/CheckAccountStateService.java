@@ -18,5 +18,5 @@ public interface CheckAccountStateService {
      * [account_state: account_state] // 1: ok, 2: to be activated
      * }
      */
-    AuthAPIResponse checkAccountState(String userId, String verifyToken, String appId);
+    AuthAPIResponse checkAccountState(int userId, String verifyToken, int appId);
 }

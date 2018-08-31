@@ -12,7 +12,10 @@ import java.util.List;
 @Component
 public interface RpAccountsMapper {
     @Select("SELECT * FROM rpaccounts WHERE rp_id=#{rp_id} AND user_id=#{user_id}")
-    List<RpAccounts> SelectRpAccountsByRpIdAndUserId(@Param("rp_id") int rpId, @Param("user_id") int userId);
+    List<RpAccounts> selectRpAccountsByRpIdAndUserId(@Param("rp_id") int rpId, @Param("user_id") int userId);
+
+    @Select("SELECT * FROM rpaccounts WHERE rp_id=#{rp_id} AND rp_account_name=#{rp_account_name}")
+    List<RpAccounts> selectRpAccountsByRpIdAndUserName(@Param("rp_id") int rpId, @Param("rp_account_name") String userName);
 
     @Insert("INSERT INTO rpaccounts(" +
             "rpa_uuid, rp_id, " +

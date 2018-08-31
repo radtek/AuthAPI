@@ -16,5 +16,5 @@ public interface CheckAccountUniqueService {
      * error_message: error_message
      * }
      */
-    AuthAPIResponse checkAccountUnique(String appId, String appAccountName);
+    AuthAPIResponse checkAccountUnique(int appId, String appAccountName);
 }

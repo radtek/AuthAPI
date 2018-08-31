@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class EnrollAppResponse extends AuthAPIResponse {
     private String app_account_id;
     private int account_state;
-    private String authorization_policy;
+    private int authorization_policy;
     private int otp_alg;
     private int otp_inteval;
     private String otp_seed;
