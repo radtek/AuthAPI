@@ -41,27 +41,21 @@ public class SystemErrorResponseImpl implements SystemErrorResponse {
 
     @Override
     public void fillErrorResponse(AuthAPIResponse authAPIResponse, ErrorCodeEnum errorCodeEnum) {
-        if (errorCodeEnum == ErrorCodeEnum.ERROR_OK)
-            authAPIResponse.setError_code(ErrorCodeEnum.ERROR_HTTP_SUCCESS.getCode());
-        else
-            authAPIResponse.setError_code(errorCodeEnum.getCode());
+        authAPIResponse.setError_code(errorCodeEnum.getCode());
         authAPIResponse.setError_message(errorCodeEnum.getMsg());
     }
 
     @Override
     public AuthAPIResponse getGeneralResponse(ErrorCodeEnum errorCode) {
         AuthAPIResponse authAPIResponse = new AuthAPIResponse();
-        if (errorCode == ErrorCodeEnum.ERROR_OK)
-            authAPIResponse.setError_code(ErrorCodeEnum.ERROR_HTTP_SUCCESS.getCode());
-        else
-            authAPIResponse.setError_code(errorCode.getCode());
+        authAPIResponse.setError_code(errorCode.getCode());
         authAPIResponse.setError_message(errorCode.getMsg());
 
         return authAPIResponse;
     }
 
     @Override
-    public AuthAPIResponse getHttpSuccessResponse() {
-        return getGeneralResponse(ErrorCodeEnum.ERROR_HTTP_SUCCESS);
+    public AuthAPIResponse getSuccessResponse() {
+        return getGeneralResponse(ErrorCodeEnum.ERROR_OK);
     }
 }

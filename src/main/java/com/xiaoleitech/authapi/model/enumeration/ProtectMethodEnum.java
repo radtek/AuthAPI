@@ -24,4 +24,8 @@ public enum ProtectMethodEnum {
     public void setProtectMethod(int protectMethod) {
         this.protectMethod = protectMethod;
     }
+
+    public boolean isMatched(int protectMethod) {
+        return (this.protectMethod == protectMethod);
+    }
 }

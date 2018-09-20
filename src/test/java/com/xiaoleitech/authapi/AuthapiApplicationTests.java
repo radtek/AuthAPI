@@ -1,6 +1,7 @@
 package com.xiaoleitech.authapi;
 
-import org.junit.Before;
+import com.xiaoleitech.authapi.helper.authenticate.AuthenticationHelper;
+import com.xiaoleitech.authapi.helper.cache.RedisService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,60 @@ import redis.clients.jedis.JedisPool;
 @SpringBootTest
 public class AuthapiApplicationTests {
 
+    @Autowired
+    private RedisService redisService;
+
+//    @Test
+    public void testStringBytes(){
+        String hexData = "CFA783EA";
+//        Arrays.
+        byte[] bytes = hexData.getBytes();
+        System.out.println(bytes);
+    }
+
+    @Test
+    public void testRedisStep1() {
+//        RedisService redisService = new RedisService();
+//        redisService.select(9);
+//        redisService.flush();
+
+//        System.out.println("radis 空间 9 已清空 ... ...");
+
+        System.out.println("设置键值 ... ...");
+        System.out.println(redisService.setValue("wang", "60"));
+        System.out.println(redisService.setValue("zhang", "30"));
+        System.out.println(redisService.setValue("li", "10"));
+
+        System.out.println("取出键值 ... ...");
+        System.out.println("wang = " + redisService.getValue("wang"));
+        System.out.println("zhang = " + redisService.getValue("zhang"));
+        System.out.println("li = " + redisService.getValue("li"));
+
+        System.out.println("设置键值 again... ...");
+        System.out.println(redisService.setValue("wang", "55"));
+        System.out.println(redisService.setValue("zhang", "66"));
+        System.out.println(redisService.setValue("li", "77"));
+
+        System.out.println("取出键值 again ... ...");
+        System.out.println("wang = " + redisService.getValue("wang"));
+        System.out.println("zhang = " + redisService.getValue("zhang"));
+        System.out.println("li = " + redisService.getValue("li"));
+    }
+
+//    @Test
+    public void testRedisStep2() {
+//        RedisService redisService = new RedisService();
+//        redisService.select(9);
+
+        System.out.println("再次取出键值 ... ...");
+        System.out.println("wang = " + redisService.getValue("wang"));
+        System.out.println("zhang = " + redisService.getValue("zhang"));
+        System.out.println("li = " + redisService.getValue("li"));
+    }
+
     private Jedis jedis;
 
-    @Before
+//    @Before
     public void setJedis() {
         jedis = new Jedis("115.28.34.226", 6379);
         jedis.auth("Cloud@629");
@@ -25,7 +77,7 @@ public class AuthapiApplicationTests {
     @Autowired
     private JedisPool jedisPool;
 
-    @Test
+//    @Test
     public void testRedis() {
 //        setJedis();
         jedis = jedisPool.getResource();
@@ -42,7 +94,7 @@ public class AuthapiApplicationTests {
         System.out.println("删除后：" + jedis.get("name"));
     }
 
-    @Test
+//    @Test
     public void contextLoads() {
         System.out.println("contextLoads......");
     }

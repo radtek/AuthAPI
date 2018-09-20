@@ -5,7 +5,8 @@ public enum UserCertEnum {
     //    1:使用；0:不使用
     //    为1时，认证过程需要使用数字证书进行身份鉴别。
     NOT_VERIFY_USER_CERT(0),
-    VERIFY_USER_CERT(1),;
+    VERIFY_USER_CERT(1),
+    ;
 
     private int userCert;
 

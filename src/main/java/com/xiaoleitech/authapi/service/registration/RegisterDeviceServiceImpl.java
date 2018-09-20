@@ -1,6 +1,6 @@
 package com.xiaoleitech.authapi.service.registration;
 
-import com.xiaoleitech.authapi.helper.DevicesTableHelper;
+import com.xiaoleitech.authapi.helper.table.DevicesTableHelper;
 import com.xiaoleitech.authapi.helper.UtilsHelper;
 import com.xiaoleitech.authapi.mapper.DevicesMapper;
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
@@ -38,7 +37,7 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
 
     @Transactional
     @Override
-    public AuthAPIResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
+    public AuthAPIResponse registerDevice(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
         ErrorCodeEnum errorCode;
         AuthAPIResponse authAPIResponse = new AuthAPIResponse();
 
@@ -56,8 +55,8 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
             if ((device.getState()) == DeviceStateEnum.DEV_REGISTER_AND_BINDING.getState() ||
                     (device.getState()) == DeviceStateEnum.DEV_REGISTER_NO_BINDING.getState()) {
                 // 设备已注册，不管是否已绑定，均返回错误
-                systemErrorResponse.fillErrorResponse(registerDeviceResponse, ErrorCodeEnum.ERROR_DEVICE_REGISTERED);
                 registerDeviceResponse.setDevice_id(device.getDevice_uuid());
+                systemErrorResponse.fillErrorResponse(registerDeviceResponse, ErrorCodeEnum.ERROR_DEVICE_REGISTERED);
                 return registerDeviceResponse;
             } else {
                 // 更新设备记录（状态、型号、令牌、TEE、SE、更新时间...）
@@ -80,17 +79,15 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
         }
 
         // 返回成功
-        systemErrorResponse.fillErrorResponse(registerDeviceResponse, ErrorCodeEnum.ERROR_HTTP_SUCCESS);
-        // TODO: 返回的 device_id 是UUID吗？
+        systemErrorResponse.fillErrorResponse(registerDeviceResponse, ErrorCodeEnum.ERROR_OK);
         registerDeviceResponse.setDevice_id(devicesTableHelper.getDevicesUuidByImei(registerDeviceRequest.getImei()));
         return registerDeviceResponse;
     }
 
     @Transactional
     @Override
-    public AuthAPIResponse unregisterDevice(@RequestParam("device_id") String deviceID) {
-        AuthAPIResponse authAPIResponse = new AuthAPIResponse();
-        Devices device = devicesTableHelper.getDeviceByUuid(deviceID);
+    public AuthAPIResponse unregisterDevice(String deviceId) {
+        Devices device = devicesTableHelper.getDeviceByUuid(deviceId);
 
         // 系统中找不到指定ID的设备，返回无效设备错误信息
         if (device == null) {
@@ -98,7 +95,7 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
         }
 
         // 设置设备状态（设备注销）
-        device.setState(DeviceStateEnum.DEV_UNREGISTER.getState());
+        device.setState(DeviceStateEnum.DEV_LOGICAL_DELETE.getState());
 
         // 更新设备记录并返回 response
         return systemErrorResponse.getGeneralResponse(devicesTableHelper.updateOneDeviceRecord(device));

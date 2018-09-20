@@ -11,14 +11,36 @@ import java.util.List;
 
 @Component
 public interface RpAccountsMapper {
-    @Select("SELECT * FROM rpaccounts WHERE rp_id=#{rp_id} AND user_id=#{user_id}")
+
+    @Select("SELECT * FROM rpaccounts r WHERE r.user_id=#{user_id} AND r.state>0")
+    List<RpAccounts> selectRpAccountsByUserId(@Param("user_id") int userId);
+
+    @Select("SELECT * FROM rpaccounts r WHERE r.rp_id=#{rp_id} AND r.user_id=#{user_id} AND r.state>0")
     List<RpAccounts> selectRpAccountsByRpIdAndUserId(@Param("rp_id") int rpId, @Param("user_id") int userId);
 
-    @Select("SELECT * FROM rpaccounts WHERE rp_id=#{rp_id} AND rp_account_name=#{rp_account_name}")
-    List<RpAccounts> selectRpAccountsByRpIdAndUserName(@Param("rp_id") int rpId, @Param("rp_account_name") String userName);
+    @Select("SELECT * FROM rpaccounts r WHERE r.rp_id=#{rp_id} AND r.user_id=#{user_id} ")
+    List<RpAccounts> selectAllRpAccountsByRpIdAndUserId(@Param("rp_id") int rpId, @Param("user_id") int userId);
+
+    @Select("SELECT * FROM rpaccounts r WHERE r.rp_id=#{rp_id} AND r.rp_account_name=#{rp_account_name} AND r.state>0")
+    List<RpAccounts> selectRpAccountsByRpIdAndAccountName(@Param("rp_id") int rpId, @Param("rp_account_name") String accountName);
+
+    @Select("SELECT * FROM rpaccounts r WHERE r.rp_account_uuid=#{rp_account_uuid}  AND r.state>0")
+    List<RpAccounts> selectRpAccountsByRpAccountUuid(@Param("rp_account_uuid") String rpAccountUuid);
+
+    @Select("SELECT * " +
+            "FROM rpaccounts a " +
+            "LEFT JOIN rps r " +
+                "ON a.rp_id=r.rp_id " +
+            "LEFT JOIN  users u " +
+                "ON a.user_id=u.user_id " +
+            "WHERE " +
+                "r.rp_uuid=#{rp_uuid} " +
+                "AND u.user_uuid=#{user_uuid} " +
+                "AND a.state>0  ")
+    List<RpAccounts> selectRpAccountsByRpUuidAndUserUuid(@Param("rp_uuid") String rpUuid, @Param("user_uuid") String userUuid);
 
     @Insert("INSERT INTO rpaccounts(" +
-            "rpa_uuid, rp_id, " +
+            "rp_id, " +
             "user_id, protect_methods, rp_account_name, " +
             "rp_account_uuid, state, authred, " +
             "authr_at, authorization_token, " +
@@ -26,7 +48,7 @@ public interface RpAccountsMapper {
             "cert_state, created_at, updated_at, " +
             "sdk_auth_key, sdk_verify_token, auth_at) " +
             "VALUES (" +
-            "#{rpa_uuid}, #{rp_id}, " +
+            "#{rp_id}, " +
             "#{user_id}, #{protect_methods}, #{rp_account_name}, " +
             "#{rp_account_uuid}, #{state}, #{authred}, " +
             "#{authr_at, jdbcType=TIMESTAMP }, #{authorization_token}, " +
@@ -38,7 +60,7 @@ public interface RpAccountsMapper {
     @Update("UPDATE rpaccounts " +
             "SET " +
             "rp_id=#{rp_id}, user_id=#{user_id}, protect_methods=#{protect_methods}, " +
-            "rp_account_name=#{rp_account_name}, rp_account_uuid=#{rp_account_uuid}, " +
+            "rp_account_name=#{rp_account_name}, " +
             "state=#{state}, authred=#{authred}, " +
             "authr_at=#{authr_at, jdbcType=TIMESTAMP}, authorization_token=#{authorization_token}, " +
             "otp_seed=#{otp_seed}, cert_key=#{cert_key}, " +
@@ -46,6 +68,6 @@ public interface RpAccountsMapper {
             "created_at=#{created_at, jdbcType=TIMESTAMP}, updated_at=#{updated_at, jdbcType=TIMESTAMP}, " +
             "sdk_auth_key=#{sdk_auth_key}, sdk_verify_token=#{sdk_verify_token}, " +
             "auth_at=#{auth_at, jdbcType=TIMESTAMP} " +
-            "WHERE rpa_uuid=#{rpa_uuid}")
+            "WHERE rp_account_uuid=#{rp_account_uuid}")
     int updateRpAccountByRpaUuid(RpAccounts rpAccount);
 }

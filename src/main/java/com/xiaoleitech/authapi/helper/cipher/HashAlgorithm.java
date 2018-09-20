@@ -1,6 +1,8 @@
 package com.xiaoleitech.authapi.helper.cipher;
 
 
+import com.xiaoleitech.authapi.helper.UtilsHelper;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.UnsupportedEncodingException;
@@ -18,9 +20,28 @@ public class HashAlgorithm {
    static public String getHash(String message, HashAlgorithmEnum algorithm) {
        if (algorithm == HashAlgorithmEnum.HASH_ALG_SHA256)
            return getSHA256(message);
+       else if (algorithm == HashAlgorithmEnum.HASH_ALG_MD5)
+           return getMD5(message);
 
        return "";
    }
+
+    static public String getMD5(String message) {
+        MessageDigest messageDigest;
+        String hashResult = "";
+
+        try {
+            messageDigest = MessageDigest.getInstance("MD5");
+            byte[] hashBytes = messageDigest.digest(message.getBytes("UTF-8"));
+            hashResult = Hex.encodeHexString(hashBytes);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return hashResult;
+    }
 
     /** 对输入字符串，返回字符串形式的散列结果 (SHA-256)
      *
@@ -33,15 +54,14 @@ public class HashAlgorithm {
 
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = messageDigest.digest(message.getBytes("UTF-8"));
+            byte[] hashBytes = messageDigest.digest(UtilsHelper.hexStringToBytes(message));
+//            byte[] hashBytes = messageDigest.digest(Hex.decodeHex(message));
             hashResult = Hex.encodeHexString(hashBytes);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
 
-        return hashResult;
+       return hashResult;
     }
 
 }

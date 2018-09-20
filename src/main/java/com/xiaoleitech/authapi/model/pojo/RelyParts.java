@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class RelyParts {
-    private String rp_uuid;
     private int rp_id;
     private int manager_id;
+    private String rp_uuid;
     private String rp_name;
     private String rp_logo_file_url;
     private String rp_login_redirection_url;

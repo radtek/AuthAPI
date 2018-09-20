@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class Devices {
+    private int device_id;
     private String device_uuid;
     private String imei;
     private int state;

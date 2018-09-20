@@ -1,6 +1,7 @@
 package com.xiaoleitech.authapi.helper.cipher;
 
 public enum HashAlgorithmEnum {
+    HASH_ALG_MD5(1),
     HASH_ALG_SHA256(2),
     ;
     private int algorithm;

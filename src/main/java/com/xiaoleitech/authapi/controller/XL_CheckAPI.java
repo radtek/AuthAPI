@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class XL_CheckAPI {
 
     private final PingService pingService;
-    private final
-    GetIDPInfoService getIDPInfoService;
+    private final GetIDPInfoService getIDPInfoService;
 
     @Autowired
     public XL_CheckAPI(PingService pingService, GetIDPInfoService getIDPInfoService) {

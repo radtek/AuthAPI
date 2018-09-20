@@ -30,5 +30,5 @@ public interface SystemErrorResponse {
      *
      * @return HTTP成功的代码和信息，打包在 AuthAPIResponse 对象中返回
      */
-    AuthAPIResponse getHttpSuccessResponse();
+    AuthAPIResponse getSuccessResponse();
 }

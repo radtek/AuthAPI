@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class GetAuthKeyResponse extends AuthAPIResponse {
-    private int user_id;
+    private String user_id;
     private String protect_methods;
     private String device_id;
     private String password_salt;
-    private String sdk_auth_key;
+    private String sdk_auth_key; // base64编码
 }

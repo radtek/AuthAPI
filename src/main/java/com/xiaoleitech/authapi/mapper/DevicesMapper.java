@@ -11,11 +11,14 @@ import java.util.List;
 
 @Component
 public interface DevicesMapper {
-    @Select("SELECT * FROM devices WHERE imei=#{imei}")
+    @Select("SELECT * FROM devices d WHERE d.imei=#{imei} AND d.state>0")
     List<Devices> selectDevicesByIMEI(@Param("imei") String imei);
 
-    @Select("SELECT * FROM devices WHERE device_uuid=#{device_uuid}")
-    List<Devices> selectDevicesByUuid(@Param("device_uuid") String uuid);
+    @Select("SELECT * FROM devices d WHERE d.device_uuid=#{device_uuid} AND d.state>0")
+    List<Devices> selectDevicesByUuid(@Param("device_uuid") String deviceUuid);
+
+    @Select("SELECT * FROM devices d WHERE d.device_id=#{device_id} AND d.state>0")
+    List<Devices> selectDevicesById(@Param("device_id") int deviceId);
 
     @Insert("INSERT INTO devices(" +
             "device_uuid, imei, state, protect_method_capability, " +
@@ -28,17 +31,17 @@ public interface DevicesMapper {
             "#{created_at, jdbcType=TIMESTAMP }, #{updated_at, jdbcType=TIMESTAMP })")
     int insertOneDevice(Devices device);
 
-    @Update("UPDATE devices " +
+    @Update("UPDATE devices d " +
             "SET state=#{state}, updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
-            "WHERE imei=#{imei}")
+            "WHERE imei=#{imei}  AND d.state>-1 ")
     int updateDeviceRegisterStatusByImei(Devices device);
 
-    @Update("UPDATE devices " +
+    @Update("UPDATE devices d " +
             "SET state=#{state}, updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
-            "WHERE device_uuid=#{device_uuid}")
+            "WHERE device_uuid=#{device_uuid}  AND d.state>-1 " )
     int updateDeviceRegisterStatusByUuid(Devices device);
 
-    @Update("UPDATE devices " +
+    @Update("UPDATE devices d " +
             "SET " +
             "state=#{state}, " +
             "protect_method_capability=#{protect_method_capability}, " +
@@ -48,7 +51,7 @@ public interface DevicesMapper {
             "device_type=#{device_type}, " +
             "device_token=#{device_token}, " +
             "updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
-            "WHERE device_uuid=#{device_uuid}")
+            "WHERE device_uuid=#{device_uuid} AND d.state>-1 ")
     int updateDeviceRecord(Devices device);
 
 }

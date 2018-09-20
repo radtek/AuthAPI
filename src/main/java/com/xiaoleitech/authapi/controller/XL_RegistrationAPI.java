@@ -43,7 +43,7 @@ public class XL_RegistrationAPI {
      * {
      * error_code: errorCode,
      * error_message: errorMessage,
-     * [device_id: device_id]  // if errorCode == 0
+     * [device_id: device_id]  // if errorCode == 0, UUID类型
      * }
      */
     //    @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
@@ -52,14 +52,14 @@ public class XL_RegistrationAPI {
     AuthAPIResponse registerDevice(@ModelAttribute @Valid RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult) {
         System.out.println(registerDeviceRequest);
 
-        return registerDeviceService.registerDevcie(registerDeviceRequest, bindingResult);
+        return registerDeviceService.registerDevice(registerDeviceRequest, bindingResult);
     }
 
     /**
      * 设备反注册 (APP)
      * get https://server/api/deregister_device?device_id=<device_id>
      *
-     * @param uuid 系统定义的device_id（UUID类型），存于devices主表中
+     * @param deviceId 系统定义的device_id（UUID类型），存于devices主表中
      * @return {
      * error_code: errorCode,
      * error_message: errorMessage
@@ -67,8 +67,8 @@ public class XL_RegistrationAPI {
      */
     @RequestMapping(value = "/api/deregister_device", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse unregisterDevice(@RequestParam("device_id") String uuid) {
-        return registerDeviceService.unregisterDevice(uuid);
+    AuthAPIResponse unregisterDevice(@RequestParam("device_id") String deviceId) {
+        return registerDeviceService.unregisterDevice(deviceId);
     }
 
 
@@ -79,7 +79,7 @@ public class XL_RegistrationAPI {
      * @param registerUserRequest form data:
      *                            phone_no=<phone_no>
      *                            password=<password>
-     *                            device_id=<device_id>
+     *                            device_id=<device_id> (UUID)
      *                            [user_realname=<user_realname>]
      *                            [id_no=<id_no>]
      *                            [real_address=<real_address>]
@@ -91,7 +91,7 @@ public class XL_RegistrationAPI {
      * error_message: error_message,
      * password_salt: password_salt,
      * auth_key: auth_key,
-     * user_id: user_id,
+     * user_id: user_id, (UUID)
      * user_state: user_state
      * }
      * @implNote verify user's phone_no before register_user
@@ -156,7 +156,7 @@ public class XL_RegistrationAPI {
      * @return {
      * error_code: errorcode,
      * error_message: error_message,
-     * [user_id: user_id,]
+     * [user_id: user_id,] (UUID字符串)
      * [password_salt: password_salt,]
      * [auth_key: auth_key,]
      * [protect_methods: protect_methods]
@@ -172,22 +172,22 @@ public class XL_RegistrationAPI {
      * 获得用户信息（客户SDK需求，实际是获取用户认证信息）
      * get https://server/api/get_sdk_auth_key?phone_no=<phone_no>&password=<password>&app_id=<app_id>
      *
-     * @param appId:       APP ID
+     * @param appUuid:       APP UUID
      * @param password:    用户密码
      * @param phoneNumber: 用户绑定的手机号码
      * @return {
      * error_code: errorcode,
      * error_message: error_message,
-     * [user_id: user_id,]
+     * [user_id: user_id,]  UUID
      * [protect_methods: protect_methods,]
-     * [device_id: device_id,]
+     * [device_id: device_id,] UUID
      * [password_salt: password_salt,]
      * [sdk_auth_key: sdk_auth_key,]
      * }
      */
     @RequestMapping(value = "/api/get_sdk_auth_key", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse getAuthKey(@RequestParam("app_id") int appId, @RequestParam("password") String password, @RequestParam("phone_no") String phoneNumber) {
-        return registerUserService.getAuthKey(appId, password, phoneNumber);
+    AuthAPIResponse getAuthKey(@RequestParam("app_id") String appUuid, @RequestParam("password") String password, @RequestParam("phone_no") String phoneNumber) {
+        return registerUserService.getAuthKey(appUuid, password, phoneNumber);
     }
 }

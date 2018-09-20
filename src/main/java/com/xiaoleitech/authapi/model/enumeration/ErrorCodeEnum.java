@@ -59,7 +59,9 @@ public enum ErrorCodeEnum {
     ERROR_CERTIFICATE_NEED_REVOKE(1052, "需要先撤销证书"),
     ERROR_TIME_OUT(1053, "超时"),
     ERROR_NEED_INFO(1054, "需要补充信息"),
-    ERROR_WRONG_INFO(1055, "补充信息错误"),;
+    ERROR_WRONG_INFO(1055, "补充信息错误"),
+    ERROR_ADMIT_CLEAR_AUTH_FAIL_COUNT(2001, "允许清除验证失败次数"),
+    ;
 
     private Integer code;
     private String msg;
@@ -73,6 +75,8 @@ public enum ErrorCodeEnum {
     public Integer getCode() {
         return code;
     }
+
+    public String getCodeString() { return Integer.toString(this.code); }
 
     public void setCode(Integer code) {
         this.code = code;

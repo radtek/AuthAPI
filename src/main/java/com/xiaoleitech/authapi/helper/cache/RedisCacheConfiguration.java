@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.helper.cache;
 
+import com.xiaoleitech.authapi.helper.UtilsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,13 +32,12 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
     private int port;
 
     @Value("${spring.redis.timeout}")
-    private int timeout;
+    private String timeout;
 
 //    @Value("${spring.redis.pool.max-idle}")
 //    private int maxIdle;
-
-//    @Value("${spring.redis.pool.max-wait}")
-//    private long maxWaitMillis;
+    @Value("${spring.redis.jedis.pool.max-wait}")
+    private String maxWaitMillis;
 
     @Value("${spring.redis.password}")
     private String password;
@@ -49,9 +49,12 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
         logger.info("redis password：" + password);
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 //        jedisPoolConfig.setMaxIdle(maxIdle);
-//        jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+//        long maxWaitMS = UtilsHelper.extractInt(maxWaitMillis);
+//        jedisPoolConfig.setMaxWaitMillis(maxWaitMS);
+//        int timeoutSeconds = UtilsHelper.extractInt(timeout) / 1000;
 
-        JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
+        int timeoutSeconds = 0;
+        JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeoutSeconds, password);
 
         return jedisPool;
     }

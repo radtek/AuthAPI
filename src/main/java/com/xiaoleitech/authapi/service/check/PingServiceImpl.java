@@ -22,7 +22,7 @@ public class PingServiceImpl implements PingService {
     public AuthAPIResponse ping() {
         // PING Always response the success message to the caller.
         // And in this version, just response the error code & msg.
-        return systemErrorResponse.getHttpSuccessResponse();
+        return systemErrorResponse.getSuccessResponse();
     }
 
     @Override

@@ -33,8 +33,8 @@ public class XL_EnrollmentAPI {
      * post https://server/api/enroll
      *
      * @param enrollAppRequest form data:
-     *                         app_id=<app_id>
-     *                         user_id=<user_id>
+     *                         app_id=<app_id>  // UUID
+     *                         user_id=<user_id> // UUID
      *                         verify_token=<verify_token>
      *                         [account_name=<account_name>]
      *                         [protect_methods=<auth_methods>]
@@ -46,7 +46,7 @@ public class XL_EnrollmentAPI {
      * @return {
      * error_code: errercode,
      * error_message: error_message,
-     * [app_account_id: app_account_id,]
+     * [app_account_id: app_account_id,]   // UUID
      * [account_state: account_state,] // 1: OK, 2: need to be activated
      * [authorization_policy: authorization_policy,]
      * [otp_alg: otp_alg,] // 1: google; 2: totp; 3: sm3
@@ -65,18 +65,18 @@ public class XL_EnrollmentAPI {
      * 用户解绑应用 (APP)
      * get https://server/api/unenroll?user_id=<user_id>&verify_token=<verify_token>&app_id=<app_id>
      *
-     * @param userId:      user_id 用户ID号
+     * @param userUuid:      user_id 系统定义的用户UUID号
      * @param verifyToken: verify_token 验证令牌
-     * @param appId:       app_id 应用ID号
+     * @param appUuid:       app_id 系统定义的应用UUID号
      * @return {
      * error_code: errercode,
      * error_message: error_message
      * }
      */
-    @RequestMapping(value = "/api/unenroll", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/unenroll", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse unenrollApp(@RequestParam("user_id") int userId, @RequestParam("verify_token") String verifyToken, @RequestParam("app_id") int appId) {
-        return unenrollAppService.unenrollApp(userId, verifyToken, appId);
+    AuthAPIResponse unenrollApp(@RequestParam("user_id") String userUuid, @RequestParam("verify_token") String verifyToken, @RequestParam("app_id") String appUuid) {
+        return unenrollAppService.unenrollApp(userUuid, verifyToken, appUuid);
     }
 
     /**
@@ -84,9 +84,9 @@ public class XL_EnrollmentAPI {
      * get https://server/api/account_active?app_id=<app_id>&token=<token>&app_account_id=<app_account_id>
      * token: md5(app_id + app_name + skey + epoch / 60) // 1minute
      *
-     * @param appId:        APP 的应用ID号
-     * @param token:        令牌
-     * @param appAccountId: APP用户账户的ID号
+     * @param appUuid:        APP 的应用UUID号
+     * @param token:          令牌
+     * @param appAccountUuid: APP用户账户的UUID号
      * @return {
      * error_code: errorcode,
      * error_message: error_message,
@@ -94,17 +94,17 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/account_active", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse activeAccount(@RequestParam("app_id") int appId,
+    AuthAPIResponse activeAccount(@RequestParam("app_id") String appUuid,
                                   @RequestParam("token") String token,
-                                  @RequestParam("app_account_id") int appAccountId) {
-        return activeAccountService.activeAccount(appId, token, appAccountId);
+                                  @RequestParam("app_account_id") String appAccountUuid) {
+        return activeAccountService.activeAccount(appUuid, token, appAccountUuid);
     }
 
     /**
      * 检查用户名是否唯一 (APP)
      * get https://server/api/check_account_name?app_id=<app_id>&app_account_name=<app_account_name>
      *
-     * @param appId:          应用ID号 app_id
+     * @param appUuid:          应用UUID号 rp_uuid
      * @param appAccountName: 应用账户名 app_account_name
      * @return {
      * error_code: errorcode,
@@ -113,17 +113,18 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/check_account_name", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse checkAccountUnique(int appId, String appAccountName) {
-        return checkAccountUniqueService.checkAccountUnique(appId, appAccountName);
+    AuthAPIResponse checkAccountUnique(@RequestParam("app_id")String appUuid,
+                                       @RequestParam("app_account_name")String appAccountName) {
+        return checkAccountUniqueService.checkAccountUnique(appUuid, appAccountName);
     }
 
     /**
      * 检查用户是否激活 (APP)
      * get http://server/api/check_account_state?user_id=<user_id>&verify_token=<verify_token>&app_id=<app_id>
      *
-     * @param userId:      用户ID号 user_id
+     * @param userUuid:      用户UUID号 user_id
      * @param verifyToken: 验证令牌 verify_token
-     * @param appId:       APP应用ID号 app_id
+     * @param appUuid:       APP应用UUID号 app_id
      * @return {
      * error_code: errorcode,
      * error_message: error_message
@@ -133,19 +134,19 @@ public class XL_EnrollmentAPI {
     @RequestMapping(value = "/api/check_account_state", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse checkAccountState(
-            @RequestParam("user_id") int userId,
+            @RequestParam("user_id") String userUuid,
             @RequestParam("verify_token") String verifyToken,
-            @RequestParam("app_id") int appId) {
-        return checkAccountStateService.checkAccountState(userId, verifyToken, appId);
+            @RequestParam("app_id") String appUuid) {
+        return checkAccountStateService.checkAccountState(userUuid, verifyToken, appUuid);
     }
 
     /**
      * 用户修改账号登录项设置 (APP)
      * get http://server/api/set_account_protect_methods?user_id=<user_id>&verify_token=<verify_token>&app_id=<app_id>&protect_methods=<protect_methods>
      *
-     * @param userId:         用户ID号 user_id
+     * @param userUuid:         用户UUID号 user_id
      * @param verifyToken:    验证令牌 verify_token
-     * @param appId:          APP 应用ID app_id
+     * @param appUuid:          APP 应用UUID app_id
      * @param protectMethods: 保护方法 protect_methods
      * @return {
      * error_code: errorcode,
@@ -154,11 +155,11 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/set_account_protect_methods", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse setAccountProtectMethods(@RequestParam("user_id") int userId,
+    AuthAPIResponse setAccountProtectMethods(@RequestParam("user_id") String userUuid,
                                              @RequestParam("verify_token") String verifyToken,
-                                             @RequestParam("app_id") int appId,
+                                             @RequestParam("app_id") String appUuid,
                                              @RequestParam("protect_methods") String protectMethods) {
-        return setAccountProtectMethodsService.setAccountProtectMethods(userId, verifyToken, appId, protectMethods);
+        return setAccountProtectMethodsService.setAccountProtectMethods(userUuid, verifyToken, appUuid, protectMethods);
     }
 
 

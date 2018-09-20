@@ -6,38 +6,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface RegisterDeviceService {
-    /** 注册设备
-     * post https://server/api/register_device
-     * @param registerDeviceRequest Post data of register_device API.
-     * 		form data:
-     * 			imei=<imei>
-     * 			protect_method_capability=<protect_method_capability>
-     * 			device_type=<device_type>
-     * 			device_model=<device_model>
-     * 			device_tee=<device_tee>
-     * 			device_se=<device_se>
-     * 			device_token=<device_token>
-     * @param bindingResult         Data binding result, including the validation error info if any.
-     * @return Response of the register_device API.
-     * 		return:
-     *                        {
-     * 				error_code: errorCode,
-     * 				error_message: errorMessage,
-     * 				[device_id: device_id]  // if errorCode == 0
-     *            }
-     */
-    AuthAPIResponse registerDevcie(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult);
 
-    /**
-     * 设备反注册 (APP)
-     * get https://server/api/deregister_device?device_id=<device_id>
-     *
-     * @param deviceID 系统定义的UUID，存于devices主表中
-     * @return {
-     * error_code: errorCode,
-     * error_message: errorMessage
-     * }
-     */
-    AuthAPIResponse unregisterDevice(@RequestParam("device_id") String deviceID);
+    AuthAPIResponse registerDevice(RegisterDeviceRequest registerDeviceRequest, BindingResult bindingResult);
+
+    AuthAPIResponse unregisterDevice(String deviceId);
 
 }

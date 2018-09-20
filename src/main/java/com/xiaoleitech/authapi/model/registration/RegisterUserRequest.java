@@ -10,7 +10,6 @@ public class RegisterUserRequest {
     private String phone_no;
     @NotBlank(message = "密码不能为空！")
     private String password;
-    @NotBlank(message = "设备ID号不能为空！")
     private String device_id;
     //    @NotBlank(message = "用户真实姓名不能为空！")
     private String user_realname;

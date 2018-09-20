@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class RecoverUserResponse extends AuthAPIResponse {
-    private String user_id;
+    private String user_id; // UUID
     private String password_salt;
     private String auth_key;
     private String protect_methods;
