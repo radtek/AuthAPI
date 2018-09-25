@@ -1,6 +1,8 @@
 package com.xiaoleitech.authapi.helper.msgqueue;
 
+import com.xiaoleitech.authapi.global.dictionary.SystemGlobalParams;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,15 +23,16 @@ import org.springframework.messaging.MessageHandler;
 @Configuration
 @IntegrationComponentScan
 public class MqttSenderConfig {
+    private final SystemGlobalParams systemGlobalParams;
 
-    @Value("${spring.mqtt.username}")
-    private String username;
-
-    @Value("${spring.mqtt.password}")
-    private String password;
-
-    @Value("${spring.mqtt.url}")
-    private String hostUrl;
+//    @Value("${spring.mqtt.username}")
+//    private String username;
+//
+//    @Value("${spring.mqtt.password}")
+//    private String password;
+//
+//    @Value("${spring.mqtt.url}")
+//    private String hostUrl;
 
     @Value("${spring.mqtt.client.id}")
     private String clientId;
@@ -37,8 +40,17 @@ public class MqttSenderConfig {
     @Value("${spring.mqtt.default.topic}")
     private String defaultTopic;
 
+    @Autowired
+    public MqttSenderConfig(SystemGlobalParams systemGlobalParams) {
+        this.systemGlobalParams = systemGlobalParams;
+    }
+
     @Bean
     public MqttConnectOptions getMqttConnectOptions(){
+        String username = systemGlobalParams.getMqttUserName();
+        String password = systemGlobalParams.getMqttPassword();
+        String hostUrl = systemGlobalParams.getMqttServerUrl();
+
         MqttConnectOptions mqttConnectOptions=new MqttConnectOptions();
         mqttConnectOptions.setUserName(username);
         mqttConnectOptions.setPassword(password.toCharArray());

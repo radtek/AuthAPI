@@ -16,20 +16,20 @@ public class SystemDictHelper {
         this.systemDictMapper = systemDictMapper;
     }
 
-    public String getStringValue(String key) {
+    public String getStringValue(String key, String defaultValue) {
         List<SystemDictionary> systemDictionaryList = systemDictMapper.selectByDictKey(key);
         SystemDictionary systemDictionary = UtilsHelper.getFirstValid(systemDictionaryList);
         if (systemDictionary == null)
-            return "";
+            return defaultValue;
         else
             return systemDictionary.getDict_value();
     }
 
-    public int getIntegerValue(String key) {
+    public int getIntegerValue(String key, int defaultValue) {
         List<SystemDictionary> systemDictionaryList = systemDictMapper.selectByDictKey(key);
         SystemDictionary systemDictionary = UtilsHelper.getFirstValid(systemDictionaryList);
         if (systemDictionary == null)
-            return 0;
+            return defaultValue;
         else
             return Integer.parseInt(systemDictionary.getDict_value());
     }

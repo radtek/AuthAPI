@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Cipher;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class UTILS_cipherAPI {
@@ -79,4 +81,17 @@ public class UTILS_cipherAPI {
         systemErrorResponse.fillErrorResponse(utilsResponse, ErrorCodeEnum.ERROR_OK);
         return utilsResponse;
     }
+
+    @RequestMapping(value = "/utils/common/generate_uuid", method = RequestMethod.GET)
+    public @ResponseBody
+    List<String> generateUuids(@RequestParam("count") int count) {
+        List<String> uuidList = new ArrayList();
+
+        for (int i=0; i<count; i++) {
+            String uuid = UtilsHelper.generateUuid();
+            uuidList.add(uuid);
+        }
+        return uuidList;
+    }
+
 }

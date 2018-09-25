@@ -218,7 +218,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             return errorCode;
 
         // 填充 UUID、注册状态、创建和更新时间
-        rpAccount.setRp_account_uuid(UUID.randomUUID().toString());
+        rpAccount.setRp_account_uuid(UtilsHelper.generateUuid());
         // 根据应用的 authorization_policy 来设置应用注册状态为：注册即激活或注册未激活
         setAccountState(rpAccount, relyPart);
         java.sql.Timestamp currentTime = UtilsHelper.getCurrentSystemTimestamp();

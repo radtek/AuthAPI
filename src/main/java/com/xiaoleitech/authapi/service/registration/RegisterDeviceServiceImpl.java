@@ -121,7 +121,7 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
         copyDeviceParamsFromRequest(registerDeviceRequest, device);
 
         // 设置Device的UUID、状态、创建时间和更新时间
-        device.setDevice_uuid(UUID.randomUUID().toString());
+        device.setDevice_uuid(UtilsHelper.generateUuid());
         device.setState(DeviceStateEnum.DEV_REGISTER_AND_BINDING.getState());
         java.sql.Timestamp currentTime = UtilsHelper.getCurrentSystemTimestamp();
         device.setCreated_at(currentTime);

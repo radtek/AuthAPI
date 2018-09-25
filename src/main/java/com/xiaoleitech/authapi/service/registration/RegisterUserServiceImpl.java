@@ -348,9 +348,9 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         user.setAuth_key(authenticationHelper.generateAuthKey());
 
         // 设置用户的UUID、状态、密码盐、认证秘钥、创建时间和更新时间
-        user.setUser_uuid(UUID.randomUUID().toString());
+        user.setUser_uuid(UtilsHelper.generateUuid());
         user.setUser_state(UserStateEnum.USER_REG_BINDING_L1.getState());
-        user.setPassword_salt(UUID.randomUUID().toString());
+        user.setPassword_salt(UtilsHelper.generateUuid());
         java.sql.Timestamp currentTime = UtilsHelper.getCurrentSystemTimestamp();
         user.setCreated_at(currentTime);
         user.setUpdated_at(currentTime);

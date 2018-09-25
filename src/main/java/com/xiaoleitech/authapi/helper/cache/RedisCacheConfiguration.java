@@ -1,8 +1,9 @@
 package com.xiaoleitech.authapi.helper.cache;
 
-import com.xiaoleitech.authapi.helper.UtilsHelper;
+import com.xiaoleitech.authapi.global.dictionary.SystemGlobalParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -24,12 +25,13 @@ import redis.clients.jedis.JedisPoolConfig;
 @EnableCaching
 public class RedisCacheConfiguration extends CachingConfigurerSupport {
     private Logger logger = LoggerFactory.getLogger(RedisCacheConfiguration.class);
+    private final SystemGlobalParams systemGlobalParams;
 
-    @Value("${spring.redis.host}")
-    private String host;
-
-    @Value("${spring.redis.port}")
-    private int port;
+//    @Value("${spring.redis.host}")
+//    private String host;
+//
+//    @Value("${spring.redis.port}")
+//    private int port;
 
     @Value("${spring.redis.timeout}")
     private String timeout;
@@ -39,14 +41,16 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
     @Value("${spring.redis.jedis.pool.max-wait}")
     private String maxWaitMillis;
 
-    @Value("${spring.redis.password}")
-    private String password;
+//    @Value("${spring.redis.password}")
+//    private String password;
+
+    @Autowired
+    public RedisCacheConfiguration(SystemGlobalParams systemGlobalParams) {
+        this.systemGlobalParams = systemGlobalParams;
+    }
 
     @Bean
     public JedisPool redisPoolFactory() {
-        logger.info("JedisPool注入成功！！");
-        logger.info("redis地址：" + host + ":" + port);
-        logger.info("redis password：" + password);
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 //        jedisPoolConfig.setMaxIdle(maxIdle);
 //        long maxWaitMS = UtilsHelper.extractInt(maxWaitMillis);
@@ -54,7 +58,15 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
 //        int timeoutSeconds = UtilsHelper.extractInt(timeout) / 1000;
 
         int timeoutSeconds = 0;
-        JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeoutSeconds, password);
+        String redisHost = systemGlobalParams.getRedisHost();
+        int redisPort  =systemGlobalParams.getRedisPort();
+        String redisPassword = systemGlobalParams.getRedisPassword();
+
+        logger.info("JedisPool注入成功！！");
+        logger.info("redis地址：" + redisHost + ":" + redisPort);
+        logger.info("redis password：" + redisPassword);
+
+        JedisPool jedisPool = new JedisPool(jedisPoolConfig, redisHost, redisPort, timeoutSeconds, redisPassword);
 
         return jedisPool;
     }

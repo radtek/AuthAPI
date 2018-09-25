@@ -275,7 +275,7 @@ public class AuthenticationHelper {
      */
     public String generateTimingToken() {
         // TODO: 需补充：产生令牌后，向缓存中保存一段有效时间
-        String token = UUID.randomUUID().toString();
+        String token = UtilsHelper.generateUuid();
         redisService.setValueForSeconds(token, "valid", getVerifyTokenValidPeriod());
         return token;
     }
