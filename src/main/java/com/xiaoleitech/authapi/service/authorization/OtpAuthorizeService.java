@@ -6,5 +6,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface OtpAuthorizeService {
 
-    AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String otp);
+    AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String otp, String nonce);
 }

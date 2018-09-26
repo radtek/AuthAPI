@@ -215,13 +215,14 @@ public class XL_AuthorizationAPI {
     }
 
      /** OTP码授权（RP）
-     * get https://server/api/otp_auth?app_id=<app_id>&token=<token>&account_id=<account_id>&otp=<otp>
+     * get https://server/api/otp_auth?app_id=<app_id>&token=<token>&account_id=<account_id>&otp=<otp>&nonce=<nonce>
      *     // otp码对应的nonce由4.5.7设置，并在1分钟内有效。
      *
      * @param appUuid 应用UUID
      * @param token 令牌
      * @param accountUuid 应用账户UUID
      * @param otp  动态口令
+     * @param nonce  一次性数字
      * @return
      * 			{
      * 				error_code: errorcode,
@@ -232,9 +233,11 @@ public class XL_AuthorizationAPI {
      public @ResponseBody
      AuthAPIResponse otpAuthorize(@RequestParam("app_id") String appUuid,
                                   @RequestParam("token") String token,
-                                  @RequestParam("account_id") String accountUuid,
-                                  @RequestParam("otp") String otp) {
-         return otpAuthorizeService.otpAuthorize(appUuid, token, accountUuid, otp);
+                                  @RequestParam(value = "account_id", required = false) String accountUuid,
+                                  @RequestParam("otp") String otp,
+                                  @RequestParam("nonce") String nonce) {
+         // TODO: 需改造，account_name 和 account_id 任选其一
+         return otpAuthorizeService.otpAuthorize(appUuid, token, accountUuid, otp, nonce);
      }
 
 

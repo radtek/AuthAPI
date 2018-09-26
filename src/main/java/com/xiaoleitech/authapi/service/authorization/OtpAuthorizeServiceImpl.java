@@ -6,6 +6,7 @@ import com.xiaoleitech.authapi.helper.UtilsHelper;
 import com.xiaoleitech.authapi.helper.authenticate.AuthenticationHelper;
 import com.xiaoleitech.authapi.helper.table.RelyPartsTableHelper;
 import com.xiaoleitech.authapi.helper.table.RpAccountsTableHelper;
+import com.xiaoleitech.authapi.helper.websocket.MyWebSocket;
 import com.xiaoleitech.authapi.model.authorization.OtpAuthResponse;
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.OtpParams;
@@ -40,7 +41,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
     }
 
     @Override
-    public AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String otp) {
+    public AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String otp, String nonce) {
         // 检查参数
         if (appUuid.isEmpty() || token.isEmpty() || otp.isEmpty())
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
@@ -58,6 +59,15 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         // 检查令牌
         if (!relyPartHelper.verifyToken(relyPart, token))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+
+        // 流程修改，免去 get_otp_code 接口调用，在本接口中一步完成
+        // 生成OTP，并存放到缓存中
+        OtpParams otpParamsOrigin = new OtpParams();
+        otpParamsOrigin.setOwner(rpAccount.getRp_account_uuid());
+        BeanUtils.copyProperties(relyPart, otpParamsOrigin);
+        otpParamsOrigin.setNonce(nonce);
+        otpParamsOrigin.setOtp_seed(rpAccount.getOtp_seed());
+        String accountOtp = otpHelper.generateOtp(otpParamsOrigin);
 
         // 校验OTP
         OtpParams otpParams = new OtpParams();
@@ -82,6 +92,9 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         String url = relyPart.getRp_login_redirection_url();
         url += "?account_id=" + accountUuid + "&authorization_token=" + authToken;
         otpAuthResponse.setRedirect_url(url);
+
+        // 取出对应的
+        MyWebSocket.websocketNotifyRedirect(appUuid, accountUuid, authToken, nonce, url);
 
         return otpAuthResponse;
     }

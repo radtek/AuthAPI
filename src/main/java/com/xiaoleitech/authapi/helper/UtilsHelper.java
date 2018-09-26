@@ -1,5 +1,8 @@
 package com.xiaoleitech.authapi.helper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -167,5 +170,15 @@ public class UtilsHelper {
 
     public static String generateUuid() {
         return UUID.randomUUID().toString();
+    }
+
+    public static String getValueFromJsonString(String jsonString, String key) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            return jsonObject.getString(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }
