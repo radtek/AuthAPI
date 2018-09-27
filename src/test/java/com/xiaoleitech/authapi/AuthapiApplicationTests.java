@@ -12,10 +12,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-@EnableAutoConfiguration
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@MapperScan(basePackages = {"com.xiaoleitech.authapi.mapper", "com.xiaoleitech.authapi.Test.mapper", "com.xiaoleitech.authapi.global.dictionary"})
+//@SpringBootTest
+@SpringBootTest(classes = {AuthapiApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuthapiApplicationTests {
 
     @Autowired
