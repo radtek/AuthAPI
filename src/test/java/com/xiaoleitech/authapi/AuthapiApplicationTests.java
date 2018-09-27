@@ -4,14 +4,18 @@ import com.xiaoleitech.authapi.helper.authenticate.AuthenticationHelper;
 import com.xiaoleitech.authapi.helper.cache.RedisService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+@EnableAutoConfiguration
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@MapperScan(basePackages = {"com.xiaoleitech.authapi.mapper", "com.xiaoleitech.authapi.Test.mapper", "com.xiaoleitech.authapi.global.dictionary"})
 public class AuthapiApplicationTests {
 
     @Autowired
@@ -25,7 +29,7 @@ public class AuthapiApplicationTests {
         System.out.println(bytes);
     }
 
-    @Test
+//    @Test
     public void testRedisStep1() {
 //        RedisService redisService = new RedisService();
 //        redisService.select(9);
@@ -94,7 +98,7 @@ public class AuthapiApplicationTests {
         System.out.println("删除后：" + jedis.get("name"));
     }
 
-//    @Test
+    @Test
     public void contextLoads() {
         System.out.println("contextLoads......");
     }

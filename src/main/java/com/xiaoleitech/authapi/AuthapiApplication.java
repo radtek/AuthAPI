@@ -3,10 +3,12 @@ package com.xiaoleitech.authapi;
 import com.xiaoleitech.authapi.global.dictionary.SystemGlobalParams;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+@EnableAutoConfiguration
 @SpringBootApplication
 //@ComponentScan(basePackages = {"com.xiaoleitech.authapi.mapper", "com.xiaoleitech.authapi.service", "com.xiaoleitech.authapi.controller"})
 @MapperScan(basePackages = {"com.xiaoleitech.authapi.mapper", "com.xiaoleitech.authapi.Test.mapper", "com.xiaoleitech.authapi.global.dictionary"})

@@ -61,6 +61,8 @@ public enum ErrorCodeEnum {
     ERROR_NEED_INFO(1054, "需要补充信息"),
     ERROR_WRONG_INFO(1055, "补充信息错误"),
     ERROR_ADMIT_CLEAR_AUTH_FAIL_COUNT(2001, "允许清除验证失败次数"),
+    ERROR_NEED_APP_CALLBACK_URL(2002, "需要应用回调的URL链接"),
+    ERROR_FAIL_CALLBACK(2003, "回调失败"),
     ;
 
     private Integer code;

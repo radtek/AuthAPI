@@ -1,10 +1,6 @@
 package com.xiaoleitech.authapi.helper.websocket;
 
 import com.xiaoleitech.authapi.helper.UtilsHelper;
-//import org.json.JSONException;
-//import org.json.JSONObject;
-//import net.sf.json.JSONException;
-//import net.sf.json.JSONObject;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Component;
 import javax.websocket.*;
@@ -26,11 +22,6 @@ public class MyWebSocket {
     // 与Session关联的标识
     private String identifier;
 
-    class MySocketResponse {
-        public String mode;
-        public String msg;
-    }
-
     /**
      * 连接建立成功调用的方法*/
     @OnOpen
@@ -39,23 +30,16 @@ public class MyWebSocket {
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
-//        try {
-//            MySocketResponse mySocketResponse = new MySocketResponse();
-//            mySocketResponse.mode = "ping";
-//            mySocketResponse.msg = "ping";
-//            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(mySocketResponse);
-//            String message = jsonObject.toString();
-//            sendMessage(message);
-            String message = "{\"type\":\"ping\"}";
+
+        // 在建立连接时回复一个 ping message
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", "ping");
         try {
-            sendMessage(message);
+            sendMessage(jsonObject.toString());
+            System.out.println("向客户端发送：" + jsonObject.toString());
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("向客户端发送：" + message);
         }
-//        } catch (IOException e) {
-//            System.out.println("IO异常");
-//        }
     }
 
     /**
@@ -77,18 +61,11 @@ public class MyWebSocket {
         System.out.println("来自客户端的消息:" + message);
 
         String command = getCommand(message);
+        // 处理注册命令，保存消息中的标识符
         if (command.equals("subscribe")) {
             identifier = generateIdentifier(message);
+            session.getId();
         }
-
-//        //群发消息
-//        for (MyWebSocket item : webSocketSet) {
-//            try {
-//                item.sendMessage(message);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     /**
@@ -105,33 +82,39 @@ public class MyWebSocket {
                                                 String authorizeToken,
                                                 String nonce,
                                                 String redirectUrl) {
+         // 查找对应的socket连接
          MyWebSocket socket = getConnectSocket(appUuid, nonce);
          if (socket == null)
              return;
 
          // 构建通知消息对象
+         JSONObject messageJson = new JSONObject();
+         messageJson.put("account_id", accountUuid);
+         messageJson.put("authorization_token", authorizeToken);
+         messageJson.put("nonce", nonce);
+         messageJson.put("redirect_url", redirectUrl);
+         String message = messageJson.toString();
 
-         JSONObject allJson = new JSONObject();
-         allJson.put("account_id", accountUuid);
-         allJson.put("authorization_token", authorizeToken);
-         allJson.put("nonce", nonce);
-         allJson.put("redirect_url", redirectUrl);
-         String message = allJson.toString();
-
-         JSONObject msgJsonL1 = new JSONObject();
-         msgJsonL1.put("message", message);
-
-         JSONObject msgJsonL2 = new JSONObject();
-         msgJsonL2.put("message", msgJsonL1.toString());
+         // 消息又包了两层
+         JSONObject packJsonL1 = new JSONObject();
+         packJsonL1.put("message", message);
+         JSONObject packJsonL2 = new JSONObject();
+         packJsonL2.put("message", packJsonL1.toString());
 
          // 发送消息
          try {
-             socket.sendMessage(msgJsonL2.toString());
+             socket.sendMessage(packJsonL2.toString());
          } catch (IOException e) {
              e.printStackTrace();
          }
      }
 
+    /**
+     * 根据appUuid和nonce查找对应的socket连接
+     * @param appUuid 应用UUID
+     * @param nonce 一次性数字码
+     * @return 查到的socket连接
+     */
      public static MyWebSocket getConnectSocket(String appUuid, String nonce) {
          for (MyWebSocket socket : webSocketSet) {
              String inputIdentifier = formatIdentifier(appUuid, nonce);
@@ -143,7 +126,6 @@ public class MyWebSocket {
          return null;
      }
 
-
      public void sendMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
         //this.session.getAsyncRemote().sendText(message);
@@ -153,7 +135,7 @@ public class MyWebSocket {
      /**
       * 群发自定义消息
       * */
-    public static void sendInfo(String message) throws IOException {
+    public static void broadcast(String message) throws IOException {
         for (MyWebSocket item : webSocketSet) {
             try {
                 item.sendMessage(message);
@@ -172,21 +154,10 @@ public class MyWebSocket {
         if ( (message == null) || (message.isEmpty()) )
             return "";
 
-//        try {
             String identString = UtilsHelper.getValueFromJsonString(message, "identifier");
             String appUuid = UtilsHelper.getValueFromJsonString(identString, "app_id");
             String nonce = UtilsHelper.getValueFromJsonString(identString, "nonce");
-//
-//                    org.json.JSONObject jsonMessage = new org.json.JSONObject(message);
-//            String identString = jsonMessage.getString("identifier");
-//            org.json.JSONObject jsonIdentifier = new org.json.JSONObject(identString);
-//            String appUuid = jsonIdentifier.getString("app_id");
-//            String nonce = jsonIdentifier.getString("nonce");
             return formatIdentifier(appUuid, nonce);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            return "";
-//        }
     }
 
     private static String formatIdentifier(String appUuid, String nonce) {
@@ -222,3 +193,4 @@ public class MyWebSocket {
         return identifier;
     }
 }
+
