@@ -30,9 +30,9 @@ public interface RpAccountsMapper {
     @Select("SELECT * " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.rp_id " +
+                "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.user_id " +
+                "ON a.user_id=u.id " +
             "WHERE " +
                 "r.rp_uuid=#{rp_uuid} " +
                 "AND u.user_uuid=#{user_uuid} " +

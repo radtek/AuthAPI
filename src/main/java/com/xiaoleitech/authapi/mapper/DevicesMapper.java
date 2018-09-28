@@ -17,7 +17,7 @@ public interface DevicesMapper {
     @Select("SELECT * FROM devices d WHERE d.device_uuid=#{device_uuid} AND d.state>0")
     List<Devices> selectDevicesByUuid(@Param("device_uuid") String deviceUuid);
 
-    @Select("SELECT * FROM devices d WHERE d.device_id=#{device_id} AND d.state>0")
+    @Select("SELECT * FROM devices d WHERE d.id=#{device_id} AND d.state>0")
     List<Devices> selectDevicesById(@Param("device_id") int deviceId);
 
     @Insert("INSERT INTO devices(" +

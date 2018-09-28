@@ -54,7 +54,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         // 读取应用账户记录
         RpAccounts rpAccount = null;
         if (!accountName.isEmpty()) {
-            rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getRp_id(), accountName);
+            rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getId(), accountName);
         } else if (!accountUuid.isEmpty()) {
             rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
         }

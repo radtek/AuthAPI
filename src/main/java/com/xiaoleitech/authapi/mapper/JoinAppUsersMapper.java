@@ -13,22 +13,22 @@ public interface JoinAppUsersMapper {
                 "a.rp_id rp_id, " +
                 "r.rp_uuid	rp_uuid, " +
                 "r.rp_name rp_name, " +
-                "u.user_id user_id, " +
+                "u.id user_id, " +
                 "u.user_uuid user_uuid, " +
                 "u.real_name user_name, " +
-                "d.device_id device_id, " +
+                "d.id device_id, " +
                 "d.device_uuid device_uuid, " +
-                "a.rpaccount_id account_id, " +
+                "a.id account_id, " +
                 "a.rp_account_uuid account_uuid, " +
                 "a.rp_account_name account_name, " +
                 "a.state account_state " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.rp_id " +
+                "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.user_id " +
+                "ON a.user_id=u.id " +
             "LEFT JOIN devices d " +
-                "ON d.device_id=u.device_id " +
+                "ON d.id=u.device_id " +
             "WHERE " +
                 "r.rp_uuid LIKE '%${rp_uuid}%' " +
                 "AND u.user_uuid LIKE '%${user_uuid}%' " +
@@ -50,22 +50,22 @@ public interface JoinAppUsersMapper {
                 "a.rp_id rp_id, " +
                 "r.rp_uuid	rp_uuid, " +
                 "r.rp_name rp_name, " +
-                "u.user_id user_id, " +
+                "u.id user_id, " +
                 "u.user_uuid user_uuid, " +
                 "u.real_name user_name, " +
-                "d.device_id device_id, " +
+                "d.id device_id, " +
                 "d.device_uuid device_uuid, " +
-                "a.rpaccount_id account_id, " +
+                "a.id account_id, " +
                 "a.rp_account_uuid account_uuid, " +
                 "a.rp_account_name account_name, " +
                 "a.state account_state " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.rp_id " +
+                "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.user_id " +
+                "ON a.user_id=u.id " +
             "LEFT JOIN devices d " +
-                "ON d.device_id=u.device_id " +
+                "ON d.id=u.device_id " +
             "WHERE " +
                 "r.rp_uuid LIKE '%${rp_uuid}%' " +
                 "AND u.user_uuid != #{user_uuid}" +

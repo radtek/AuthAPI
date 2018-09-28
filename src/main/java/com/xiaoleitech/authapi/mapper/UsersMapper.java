@@ -16,7 +16,7 @@ public interface UsersMapper {
     List<Users> selectUsersByUserUuid(@Param("user_uuid") String userUuid);
 
     // 根据用户ID查找用户记录
-    @Select("SELECT * FROM users u WHERE u.user_id=#{user_id} AND u.user_state>0 ")
+    @Select("SELECT * FROM users u WHERE u.id=#{user_id} AND u.user_state>0 ")
     List<Users> selectUsersByUserId(@Param("user_id") int userId);
 
     // 根据电话号码查找用户记录

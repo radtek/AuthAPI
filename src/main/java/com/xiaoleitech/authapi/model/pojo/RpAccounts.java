@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class RpAccounts {
-    private int rpaccount_id;
+    private int id;
     private int rp_id;
     private int user_id;
     private String protect_methods;

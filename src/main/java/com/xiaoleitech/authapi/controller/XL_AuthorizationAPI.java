@@ -240,11 +240,11 @@ public class XL_AuthorizationAPI {
      public @ResponseBody
      AuthAPIResponse otpAuthorize(@RequestParam("app_id") String appUuid,
                                   @RequestParam("token") String token,
-                                  @RequestParam(value = "account_id", required = false) String accountUuid,
-                                  @RequestParam(value = "account_name", required = false) String accountName,
+                                  @RequestParam(value = "account_id", required = false, defaultValue = "") String accountUuid,
+                                  @RequestParam(value = "account_name", required = false, defaultValue = "") String accountName,
                                   @RequestParam("otp") String otp,
                                   @RequestParam("nonce") String nonce) {
-         // TODO: 需改造，account_name 和 account_id 任选其一
+         // account_name 和 account_id 任选其一
          return otpAuthorizeService.otpAuthorize(appUuid, token, accountUuid, accountName, otp, nonce);
      }
 

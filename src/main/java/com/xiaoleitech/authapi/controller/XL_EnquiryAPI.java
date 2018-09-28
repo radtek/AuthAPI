@@ -186,7 +186,8 @@ public class XL_EnquiryAPI {
      */
     @RequestMapping(value = "/api/user_exist", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse getUserExist(@RequestParam("phone_no") String phoneNo, @RequestParam(value = "app_id", required = false) String appUuid) {
+    AuthAPIResponse getUserExist(@RequestParam("phone_no") String phoneNo,
+                                 @RequestParam(value = "app_id", required = false, defaultValue = "") String appUuid) {
         return getUserExistService.getUserExist(phoneNo, appUuid);
     }
 
@@ -253,8 +254,8 @@ public class XL_EnquiryAPI {
     public @ResponseBody
     AuthAPIResponse getAccountInfo(@RequestParam("app_id") String appUuid,
                                    @RequestParam("token") String token,
-                                   @RequestParam("account_id") String accountUuid,
-                                   @RequestParam("account_name") String accountName) {
+                                   @RequestParam(value = "account_id", required = false, defaultValue = "") String accountUuid,
+                                   @RequestParam(value = "account_name", required = false, defaultValue = "") String accountName) {
         return getAccountInfoService.getAccountInfo(appUuid, token, accountUuid, accountName);
     }
 

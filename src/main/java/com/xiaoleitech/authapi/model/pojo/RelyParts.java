@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class RelyParts {
-    private int rp_id;
+    private int id;
     private int manager_id;
     private String rp_uuid;
     private String rp_name;

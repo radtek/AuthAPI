@@ -174,7 +174,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         }
 
         // 逻辑删除账户记录
-        List<RpAccounts> rpAccountsList = rpAccountsMapper.selectRpAccountsByUserId(user.getUser_id());
+        List<RpAccounts> rpAccountsList = rpAccountsMapper.selectRpAccountsByUserId(user.getId());
         for (int i=0; i<rpAccountsList.size(); i++) {
             RpAccounts rpAccount = rpAccountsList.get(i);
             rpAccount.setState(AccountStateEnum.ACCOUNT_LOGICAL_DELETE.getState());
@@ -312,11 +312,11 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     }
 
     private ErrorCodeEnum copyUserParamsFromRequest(RegisterUserRequest registerUserRequest, Users user) {
-        // Users表中device_id存放的是Devices的主键 device_id
+        // Users表中device_id存放的是Devices的主键 id
         Devices device = devicesTableHelper.getDeviceByUuid(registerUserRequest.getDevice_id());
         if (device == null)
             return ErrorCodeEnum.ERROR_INVALID_DEVICE;
-        user.setDevice_id(device.getDevice_id());
+        user.setDevice_id(device.getId());
 
         // 使用 Request 数据填充 user
         user.setPhone_no(registerUserRequest.getPhone_no());
@@ -334,11 +334,11 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // 准备插入记录的数据，从Request中复制用户信息
         Users user = new Users();
         BeanUtils.copyProperties(registerUserRequest, user);
-        // Users表中device_id存放的是Devices的主键 device_id
+        // Users表中device_id存放的是Devices的主键 id
         Devices device = devicesTableHelper.getDeviceByUuid(registerUserRequest.getDevice_id());
         if (device == null)
             return ErrorCodeEnum.ERROR_INVALID_DEVICE;
-        user.setDevice_id(device.getDevice_id());
+        user.setDevice_id(device.getId());
         user.setReal_name(registerUserRequest.getUser_realname());
         user.setAuth_key(registerUserRequest.getUser_certificate_public_key());
 
@@ -367,11 +367,11 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     private ErrorCodeEnum updateRegisterUserRecord(RegisterUserRequest registerUserRequest, Users user, UserStateEnum userState) {
         // user里存放了数据库中的用户旧资料，将 Post 请求中的新资料覆盖到记录中
         BeanUtils.copyProperties(registerUserRequest, user);
-        // Users表中device_id存放的是Devices的主键 device_id
+        // Users表中device_id存放的是Devices的主键 id
         Devices device = devicesTableHelper.getDeviceByUuid(registerUserRequest.getDevice_id());
         if (device == null)
             return ErrorCodeEnum.ERROR_INVALID_DEVICE;
-        user.setDevice_id(device.getDevice_id());
+        user.setDevice_id(device.getId());
         user.setReal_name(registerUserRequest.getUser_realname());
         user.setAuth_key(registerUserRequest.getUser_certificate_public_key());
 //        copyUserParamsFromRequest(registerUserRequest, user);

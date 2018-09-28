@@ -34,9 +34,9 @@ public interface JoinRelyPartAccountMapper {
                 "r.cert_type cert_type " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.rp_id " +
+                "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.user_id " +
+                "ON a.user_id=u.id " +
             "WHERE " +
                 "u.user_uuid=#{user_uuid} " +
                 "AND a.state>0 " +
@@ -65,11 +65,11 @@ public interface JoinRelyPartAccountMapper {
                 "a.cert_state cert_state " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.rp_id " +
+                "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.user_id " +
+                "ON a.user_id=u.id " +
             "LEFT JOIN  devices d " +
-                "ON d.device_id=u.device_id " +
+                "ON d.id=u.device_id " +
             "WHERE " +
                 "u.user_uuid=#{user_uuid} " +
                 "AND d.device_uuid=#{device_uuid} " +

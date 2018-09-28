@@ -63,7 +63,7 @@ public class UserRevokeAuthorizeServiceImpl implements UserRevokeAuthorizeServic
         }
 
         // 获取应用账户记录
-        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getRp_id(), user.getUser_id());
+        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getId(), user.getId());
         if (rpAccount == null) {
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED);
         }

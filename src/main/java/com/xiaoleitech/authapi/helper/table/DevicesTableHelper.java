@@ -42,7 +42,7 @@ public class DevicesTableHelper {
         if (devicesList.size() == 0) return -1;
 
         Devices device = devicesList.get(0);
-        return device.getDevice_id();
+        return device.getId();
     }
 
     /** 查询指定ID号的设备记录

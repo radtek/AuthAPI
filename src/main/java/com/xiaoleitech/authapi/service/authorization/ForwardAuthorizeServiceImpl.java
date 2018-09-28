@@ -61,7 +61,7 @@ public class ForwardAuthorizeServiceImpl implements ForwardAuthorizeService{
 
         // 读取应用账户记录，并检查账户是否为激活状态
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(
-                relyPart.getRp_id(), accountName);
+                relyPart.getId(), accountName);
         if (rpAccount == null)
             return Integer.toString(ErrorCodeEnum.ERROR_INVALID_ACCOUNT.getCode());
         else if (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState())

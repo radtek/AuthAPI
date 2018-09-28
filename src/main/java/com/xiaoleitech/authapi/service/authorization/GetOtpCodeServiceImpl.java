@@ -51,7 +51,7 @@ public class GetOtpCodeServiceImpl implements GetOtpCodeService {
             return ErrorCodeEnum.ERROR_INVALID_APP.getCodeString();
 
         // 读取应用账户记录
-        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getRp_id(), accountName);
+        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getId(), accountName);
         if (rpAccount == null)
             return ErrorCodeEnum.ERROR_INVALID_ACCOUNT.getCodeString();
 

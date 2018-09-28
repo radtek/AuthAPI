@@ -54,7 +54,7 @@ public class UnenrollAppServiceImpl implements UnenrollAppService {
 
         // 从 rpaccounts 表中查找用户注册的记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(
-                relyPart.getRp_id(), user.getUser_id());
+                relyPart.getId(), user.getId());
         if (rpAccount == null )
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED );
 

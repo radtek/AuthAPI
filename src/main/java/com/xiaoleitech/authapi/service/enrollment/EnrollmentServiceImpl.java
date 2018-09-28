@@ -111,7 +111,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         // 查找 rpaccounts 中的记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(
-                relyPart.getRp_id(), user.getUser_id());
+                relyPart.getId(), user.getId());
 
         // 如果要求昵称唯一，检查对应的应用账户表，昵称是否唯一。
         if (relyPart.getUniq_account_name() == UniqueAccountNameEnum.USING_UNIQUE_NICK_NAME.getUniqueAccountName()) {
@@ -128,7 +128,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         // 活跃状态的账户记录找不到，则查找是否有逻辑删除的记录
         rpAccount = rpAccountsTableHelper.getExistRpAccountByRpIdAndUserId(
-                relyPart.getRp_id(), user.getUser_id());
+                relyPart.getId(), user.getId());
 
         if (rpAccount == null) {
             // 新建一条记录
@@ -157,7 +157,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
 
         // 重新获取这条记录，执行到此可以获取记录，获取不到说明有未知错误
-        rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getRp_id(), user.getUser_id());
+        rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getId(), user.getId());
         if (rpAccount == null)
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
@@ -180,8 +180,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                                             RpAccounts rpAccount,
                                             Users user,
                                             RelyParts relyPart) {
-        rpAccount.setRp_id(relyPart.getRp_id());
-        rpAccount.setUser_id(user.getUser_id());
+        rpAccount.setRp_id(relyPart.getId());
+        rpAccount.setUser_id(user.getId());
         rpAccount.setProtect_methods(enrollAppRequest.getProtect_methods());
 
         // 账户昵称，检查relypart的昵称属性配置

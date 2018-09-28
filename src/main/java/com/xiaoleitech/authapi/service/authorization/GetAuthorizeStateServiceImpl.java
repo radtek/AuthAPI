@@ -54,7 +54,7 @@ public class GetAuthorizeStateServiceImpl implements GetAuthorizeStateService {
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         // 读取应用账户记录
-        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getRp_id(), user.getUser_id());
+        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getId(), user.getId());
         if (rpAccount == null)
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 

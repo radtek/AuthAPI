@@ -50,7 +50,7 @@ public class GetAccountInfoServiceImpl implements GetAccountInfoService {
         RpAccounts rpAccount = null;
         if (!accountName.isEmpty()) {
             // 通过账户名
-            rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getRp_id(), accountName);
+            rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getId(), accountName);
         } else  if (!accountUuid.isEmpty()) {
             // 通过账户UUID
             rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
