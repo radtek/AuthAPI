@@ -1,12 +1,12 @@
 package com.xiaoleitech.authapi.service.authorization;
 
+import com.xiaoleitech.authapi.helper.RelyPartHelper;
 import com.xiaoleitech.authapi.helper.cache.RedisService;
 import com.xiaoleitech.authapi.helper.msgqueue.PushMessageHelper;
 import com.xiaoleitech.authapi.helper.table.DevicesTableHelper;
 import com.xiaoleitech.authapi.helper.table.RelyPartsTableHelper;
 import com.xiaoleitech.authapi.helper.table.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.helper.table.UsersTableHelper;
-import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.PushPhoneMessage;
 import com.xiaoleitech.authapi.model.enumeration.AccountStateEnum;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
@@ -31,11 +31,12 @@ public class ForwardAuthorizeServiceImpl implements ForwardAuthorizeService{
     private final UsersTableHelper usersTableHelper;
     private final PushMessageHelper pushMessageHelper;
     private final RedisService redisService;
+    private final RelyPartHelper relyPartHelper;
 
     private final SystemErrorResponse systemErrorResponse;
 
     @Autowired
-    public ForwardAuthorizeServiceImpl(SystemErrorResponse systemErrorResponse, RelyPartsTableHelper relyPartsTableHelper, RpAccountsTableHelper rpAccountsTableHelper, DevicesTableHelper devicesTableHelper, UsersTableHelper usersTableHelper, PushMessageHelper pushMessageHelper, RedisService redisService) {
+    public ForwardAuthorizeServiceImpl(SystemErrorResponse systemErrorResponse, RelyPartsTableHelper relyPartsTableHelper, RpAccountsTableHelper rpAccountsTableHelper, DevicesTableHelper devicesTableHelper, UsersTableHelper usersTableHelper, PushMessageHelper pushMessageHelper, RedisService redisService, RelyPartHelper relyPartHelper) {
         this.systemErrorResponse = systemErrorResponse;
         this.relyPartsTableHelper = relyPartsTableHelper;
         this.rpAccountsTableHelper = rpAccountsTableHelper;
@@ -43,10 +44,11 @@ public class ForwardAuthorizeServiceImpl implements ForwardAuthorizeService{
         this.usersTableHelper = usersTableHelper;
         this.pushMessageHelper = pushMessageHelper;
         this.redisService = redisService;
+        this.relyPartHelper = relyPartHelper;
     }
 
     @Override
-    public String forwardAuthorize(String appUuid, String accountName, String nonce) {
+    public String forwardAuthorize(String appUuid, String token, String accountName, String nonce) {
 
         // 检查参数
         if (appUuid.isEmpty() || accountName.isEmpty() || nonce.isEmpty())
@@ -64,6 +66,10 @@ public class ForwardAuthorizeServiceImpl implements ForwardAuthorizeService{
             return Integer.toString(ErrorCodeEnum.ERROR_INVALID_ACCOUNT.getCode());
         else if (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState())
             return Integer.toString(ErrorCodeEnum.ERROR_USER_NOT_ACTIVATED.getCode());
+
+        // 校验 token
+        if (!relyPartHelper.verifyToken(relyPart, token))
+            return Integer.toString(ErrorCodeEnum.ERROR_INVALID_TOKEN.getCode());
 
         // 读取用户记录
         Users user = usersTableHelper.getUserByUserId(rpAccount.getUser_id());

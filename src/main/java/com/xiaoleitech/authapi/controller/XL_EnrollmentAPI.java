@@ -81,7 +81,7 @@ public class XL_EnrollmentAPI {
 
     /**
      * 激活用户 (RP)
-     * get https://server/api/account_active?app_id=<app_id>&token=<token>&app_account_id=<app_account_id>
+     * get https://server/api/active_account?app_id=<app_id>&token=<token>&app_account_id=<app_account_id>
      * token: md5(app_id + app_name + skey + epoch / 60) // 1minute
      *
      * @param appUuid:        APP 的应用UUID号
@@ -92,7 +92,7 @@ public class XL_EnrollmentAPI {
      * error_message: error_message,
      * }
      */
-    @RequestMapping(value = "/api/account_active", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/active_account", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse activeAccount(@RequestParam("app_id") String appUuid,
                                   @RequestParam("token") String token,

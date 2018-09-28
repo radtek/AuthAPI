@@ -16,4 +16,6 @@ public interface PlatformService {
      * }
      */
     AuthAPIResponse getPlatformSetting();
+
+    AuthAPIResponse getCloudInfo();
 }

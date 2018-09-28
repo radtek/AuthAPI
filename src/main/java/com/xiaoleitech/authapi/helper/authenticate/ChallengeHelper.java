@@ -45,7 +45,7 @@ public class ChallengeHelper {
      * @return 短信验证码，如果产生失败，则返回空字符串
      */
     public String generateSmsCode(String phoneNo) {
-        int digits = 4; // getDefaultChallengeDigitsCount
+        int digits = 6; // getDefaultChallengeDigitsCount
         // 产生4位随机数
         String challenge = generateDigitsChallenge(digits);
 

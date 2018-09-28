@@ -6,5 +6,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ForwardAuthorizeService {
 
-    String forwardAuthorize(String appUuid, String accountName, String nonce);
+    String forwardAuthorize(String appUuid, String token, String accountName, String nonce);
 }

@@ -35,7 +35,26 @@ public class XL_PlatformAPI {
     //    @RequestMapping(value = "{name}", method = RequestMethod.GET)
     @RequestMapping(value = "/api/get_platform_setting", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse get_platform_setting() {
+    AuthAPIResponse getPlatformSetting() {
         return platformService.getPlatformSetting();
+    }
+
+    /**
+     * 获得云端信息
+     * get https://server/api/get_cloud_info
+     *
+     * @return 举例如下
+     * {
+     * error_code: 0,
+     * error_message: "OK",
+     * version: "1.0",
+     * supported_sdk_version: "1.0",
+     * cloud_name: "小雷身份认证平台"
+     * }
+     */
+    @RequestMapping(value = "/api/get_cloud_info", method = RequestMethod.GET)
+    public @ResponseBody
+    AuthAPIResponse getCloudInfo() {
+        return platformService.getCloudInfo();
     }
 }

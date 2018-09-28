@@ -130,7 +130,8 @@ public class XL_AuthorizationAPI {
     }
 
     /** 验证用户登录状态 (RP)
-     * get https://server/api/verify_auth_state?app_id=<app_id>&token=<token>&app_account_id=<app_account_id>&authorization_token=<authorization_token>
+     * get https://server/api/verify_auth_state?app_id=<app_id>&token=<token>&
+     *          app_account_id=<app_account_id>&authorization_token=<authorization_token>
      *
      * @param appUuid   应用UUID
      * @param token   验证令牌
@@ -178,9 +179,10 @@ public class XL_AuthorizationAPI {
     }
 
     /** 请求推送认证（RPWebJS）
-     * get https://server/api/web_auth_req?app_id=app_id&account_name=account_name&nonce=nonce
+     * get https://server/api/web_auth_req?app_id=app_id&token=<token>&account_name=account_name&nonce=nonce
      *
      * @param appUuid  应用UUID
+     * @param token  应用认证后获取的令牌
      * @param accountName 客户名
      * @param nonce 一次性数字码
      * @return
@@ -190,8 +192,11 @@ public class XL_AuthorizationAPI {
      */
     @RequestMapping(value = "/api/web_auth_req", method = RequestMethod.GET)
     public @ResponseBody
-    String webAuthRequest(@RequestParam("app_id") String appUuid, @RequestParam("account_name")String accountName, @RequestParam("nonce")String nonce) {
-        return forwardAuthorizeService.forwardAuthorize(appUuid, accountName, nonce);
+    String webAuthRequest(@RequestParam("app_id") String appUuid,
+                          @RequestParam("token") String token,
+                          @RequestParam("account_name")String accountName,
+                          @RequestParam("nonce")String nonce) {
+        return forwardAuthorizeService.forwardAuthorize(appUuid, token, accountName, nonce);
     }
 
     /** 获取OTP码（RPWeb）
@@ -215,14 +220,16 @@ public class XL_AuthorizationAPI {
     }
 
      /** OTP码授权（RP）
-     * get https://server/api/otp_auth?app_id=<app_id>&token=<token>&account_id=<account_id>&otp=<otp>&nonce=<nonce>
+     * get https://server/api/otp_auth?app_id=<app_id>&token=<token>&account_id=<account_id>&account_name=<account_name>&otp=<otp>&nonce=<nonce>
      *     // otp码对应的nonce由4.5.7设置，并在1分钟内有效。
+     *     account_id 和 account_name 二选一，优先 account_name
      *
      * @param appUuid 应用UUID
      * @param token 令牌
      * @param accountUuid 应用账户UUID
+     * @param accountName 应用账户名
      * @param otp  动态口令
-     * @param nonce  一次性数字
+     * @param nonce  一次性挑战码，用于向应用方发送回调时使用
      * @return
      * 			{
      * 				error_code: errorcode,
@@ -234,10 +241,11 @@ public class XL_AuthorizationAPI {
      AuthAPIResponse otpAuthorize(@RequestParam("app_id") String appUuid,
                                   @RequestParam("token") String token,
                                   @RequestParam(value = "account_id", required = false) String accountUuid,
+                                  @RequestParam(value = "account_name", required = false) String accountName,
                                   @RequestParam("otp") String otp,
                                   @RequestParam("nonce") String nonce) {
          // TODO: 需改造，account_name 和 account_id 任选其一
-         return otpAuthorizeService.otpAuthorize(appUuid, token, accountUuid, otp, nonce);
+         return otpAuthorizeService.otpAuthorize(appUuid, token, accountUuid, accountName, otp, nonce);
      }
 
 

@@ -3,6 +3,7 @@ package com.xiaoleitech.authapi.service.platform;
 import com.xiaoleitech.authapi.helper.msgqueue.MqttSenderConfig;
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
+import com.xiaoleitech.authapi.model.platform.CloudInfoResponse;
 import com.xiaoleitech.authapi.model.platform.PlatformSettingResponse;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,13 @@ import org.springframework.stereotype.Component;
 public class PlatformServiceImpl implements PlatformService {
     private final SystemErrorResponse systemErrorResponse;
     private final MqttSenderConfig mqttSenderConfig;
+    private final CloudInfoResponse cloudInfoResponse;
 
     @Autowired
-    public PlatformServiceImpl(SystemErrorResponse systemErrorResponse, MqttSenderConfig mqttSenderConfig) {
+    public PlatformServiceImpl(SystemErrorResponse systemErrorResponse, MqttSenderConfig mqttSenderConfig, CloudInfoResponse cloudInfoResponse) {
         this.systemErrorResponse = systemErrorResponse;
         this.mqttSenderConfig = mqttSenderConfig;
+        this.cloudInfoResponse = cloudInfoResponse;
     }
 
     @Override
@@ -35,5 +38,15 @@ public class PlatformServiceImpl implements PlatformService {
 
         systemErrorResponse.fillErrorResponse(platformSettingResponse, ErrorCodeEnum.ERROR_OK);
         return platformSettingResponse;
+    }
+
+    @Override
+    public AuthAPIResponse getCloudInfo() {
+        // TODO: 配置文件或数据库配置
+        cloudInfoResponse.setVersion("1.0");
+        cloudInfoResponse.setCloud_name("小雷身份认证平台");
+        cloudInfoResponse.setSupported_sdk_version("1.0");
+        systemErrorResponse.fillErrorResponse(cloudInfoResponse, ErrorCodeEnum.ERROR_OK);
+        return cloudInfoResponse;
     }
 }

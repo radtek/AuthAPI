@@ -5,5 +5,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface GetAccountInfoService {
-    AuthAPIResponse getAccountInfo(String appUuid, String token, String accountUuid);
+    AuthAPIResponse getAccountInfo(String appUuid, String token, String accountUuid, String accountName);
 }

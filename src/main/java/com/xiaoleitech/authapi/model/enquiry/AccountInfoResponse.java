@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class AccountInfoResponse extends AuthAPIResponse {
+    private String account_id;
     private String account_name;
     private int authorized;
     private java.sql.Timestamp authorized_at;

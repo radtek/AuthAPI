@@ -233,15 +233,17 @@ public class XL_EnquiryAPI {
 
     /**
      * 获得账号信息（RP）
-     * get https://server/api/get_account_info?app_id=<app_id>&token=<token>&account_id=<account_id>
-     *
+     * get https://server/api/get_account_info?app_id=<app_id>&token=<token>&account_id=<account_id>&account_name=<account_name>
+     *      account_id 和 account_name 必选其一
      * @param appUuid 应用UUID
      * @param token 验证令牌
      * @param accountUuid 账户UUID
+     * @param accountName 账户名
      * @return
      * 			{
      * 				error_code: errorcode,
      * 				error_message: error_message,
+     * 				[account_id: account_id,]
      * 				[account_name: account_name,]
      * 				[authorized: authorized,] // 1: true, 0: false
      * 				[authorized_at: authorized_at]
@@ -249,8 +251,11 @@ public class XL_EnquiryAPI {
      */
     @RequestMapping(value = "/api/get_account_info", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse getAccountInfo(@RequestParam("app_id") String appUuid, @RequestParam("token") String token, @RequestParam("account_id") String accountUuid ) {
-        return getAccountInfoService.getAccountInfo(appUuid, token, accountUuid);
+    AuthAPIResponse getAccountInfo(@RequestParam("app_id") String appUuid,
+                                   @RequestParam("token") String token,
+                                   @RequestParam("account_id") String accountUuid,
+                                   @RequestParam("account_name") String accountName) {
+        return getAccountInfoService.getAccountInfo(appUuid, token, accountUuid, accountName);
     }
 
     /**

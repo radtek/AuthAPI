@@ -41,9 +41,9 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
     }
 
     @Override
-    public AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String otp, String nonce) {
+    public AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String accountName, String otp, String nonce) {
         // 检查参数
-        if (appUuid.isEmpty() || token.isEmpty() || otp.isEmpty())
+        if (appUuid.isEmpty() || token.isEmpty() || otp.isEmpty() || (accountUuid.isEmpty() && accountName.isEmpty()))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 读取应用记录
@@ -52,7 +52,12 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_APP);
 
         // 读取应用账户记录
-        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
+        RpAccounts rpAccount = null;
+        if (!accountName.isEmpty()) {
+            rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getRp_id(), accountName);
+        } else if (!accountUuid.isEmpty()) {
+            rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
+        }
         if (rpAccount == null)
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
@@ -89,12 +94,17 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
             return systemErrorResponse.getGeneralResponse(errorCode);
 
         systemErrorResponse.fillErrorResponse(otpAuthResponse, ErrorCodeEnum.ERROR_OK);
-        String url = relyPart.getRp_login_redirection_url();
-        url += "?account_id=" + accountUuid + "&authorization_token=" + authToken;
-        otpAuthResponse.setRedirect_url(url);
 
-        // 取出对应的
-        MyWebSocket.websocketNotifyRedirect(appUuid, accountUuid, authToken, nonce, url);
+        // 取出登录成功的回调URL
+        String url = relyPart.getRp_login_redirection_url();
+        if ( (url != null) && !url.isEmpty()) {
+            // 拼接回调接口参数
+            url += "?account_id=" + accountUuid + "&authorization_token=" + authToken;
+            otpAuthResponse.setRedirect_url(url);
+            // url和nonce均有效时，通过websocket调用回调URL
+            if (!nonce.isEmpty())
+                MyWebSocket.websocketNotifyRedirect(appUuid, accountUuid, authToken, nonce, url);
+        }
 
         return otpAuthResponse;
     }
