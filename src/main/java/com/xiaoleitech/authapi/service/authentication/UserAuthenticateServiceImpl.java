@@ -6,6 +6,7 @@ import com.xiaoleitech.authapi.helper.authenticate.ChallengeHelper;
 import com.xiaoleitech.authapi.helper.cipher.MyHmacAlgorithm;
 import com.xiaoleitech.authapi.helper.table.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.helper.table.UsersTableHelper;
+import com.xiaoleitech.authapi.mapper.AccountAuthHistoryMapper;
 import com.xiaoleitech.authapi.model.authentication.UserAuthFailResponse;
 import com.xiaoleitech.authapi.model.authentication.UserAuthRequest;
 import com.xiaoleitech.authapi.model.authentication.UserAuthSuccessResponse;
@@ -13,14 +14,19 @@ import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.model.enumeration.ProtectMethodEnum;
 import com.xiaoleitech.authapi.model.enumeration.UserAuthStateEnum;
+import com.xiaoleitech.authapi.model.pojo.AccountAuthHistories;
+import com.xiaoleitech.authapi.model.pojo.RelyParts;
 import com.xiaoleitech.authapi.model.pojo.RpAccounts;
 import com.xiaoleitech.authapi.model.pojo.Users;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
-import com.xiaoleitech.authapi.service.registration.RegisterUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class UserAuthenticateServiceImpl implements UserAuthenticateService{
@@ -34,6 +40,8 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
     private final RpAccountsTableHelper rpAccountsTableHelper;
     private final UserAuthSuccessResponse userAuthSuccessResponse;
     private final UserAuthFailResponse userAuthFailResponse;
+    private final AccountAuthHistories accountAuthHistory;
+    private final AccountAuthHistoryMapper accountAuthHistoryMapper;
 
     public UserAuthenticateServiceImpl(UsersTableHelper usersTableHelper,
                                        SystemErrorResponse systemErrorResponse,
@@ -42,7 +50,7 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
                                        AuthenticationHelper authenticationHelper,
                                        RpAccountsTableHelper rpAccountsTableHelper,
                                        UserAuthSuccessResponse userAuthSuccessResponse,
-                                       UserAuthFailResponse userAuthFailResponse) {
+                                       UserAuthFailResponse userAuthFailResponse, AccountAuthHistories accountAuthHistory, AccountAuthHistoryMapper accountAuthHistoryMapper) {
         this.usersTableHelper = usersTableHelper;
         this.systemErrorResponse = systemErrorResponse;
         this.challengeHelper = challengeHelper;
@@ -51,6 +59,8 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
         this.rpAccountsTableHelper = rpAccountsTableHelper;
         this.userAuthSuccessResponse = userAuthSuccessResponse;
         this.userAuthFailResponse = userAuthFailResponse;
+        this.accountAuthHistory = accountAuthHistory;
+        this.accountAuthHistoryMapper = accountAuthHistoryMapper;
     }
 
     public boolean isPassword(int protectMethod) {
@@ -114,7 +124,8 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
             if (errorCode != ErrorCodeEnum.ERROR_OK)
                 return systemErrorResponse.getGeneralResponse(errorCode);
 
-            // TODO: 更新 auth_histories 表
+            // 更新 auth_histories 表
+            addAuthHistoryRecord(userAuthRequest, ErrorCodeEnum.ERROR_OK.getCode());
 
             // 成功时返回验证令牌和令牌失效时间
             userAuthSuccessResponse.setVerify_token(user.getVerify_token());
@@ -147,7 +158,8 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
             if (errorCode != ErrorCodeEnum.ERROR_OK)
                 return systemErrorResponse.getGeneralResponse(errorCode);
 
-            // TODO: 更新 auth_histories 表
+            // 更新 auth_histories 表
+            addAuthHistoryRecord(userAuthRequest, ErrorCodeEnum.ERROR_AUTH_FAILED.getCode());
 
             // 失败时返回剩余尝试次数
             userAuthFailResponse.setRemain_retry_count(remainRetryCount);
@@ -155,6 +167,50 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
             return userAuthFailResponse;
         }
 
+    }
+
+    private ErrorCodeEnum addAuthHistoryRecord(UserAuthRequest userAuthRequest, int authResult) {
+        int rpId = 0;
+        int userId = 0;
+
+        if (userAuthRequest.getApp_id() != null) {
+            // 如果请求中有rp_id，则查记录表，获取rpId和userId
+            RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpUuidAndUserUuid(
+                    userAuthRequest.getApp_id(), userAuthRequest.getUser_id());
+            if (rpAccount == null)
+                return ErrorCodeEnum.ERROR_INVALID_ACCOUNT;
+            rpId = rpAccount.getRp_id();
+            userId = rpAccount.getUser_id();
+        } else {
+            // 否则只读取用户记录，获取userId
+            Users user = usersTableHelper.getUserByUserUuid(userAuthRequest.getUser_id());
+            if (user == null)
+                return ErrorCodeEnum.ERROR_USER_NOT_FOUND;
+            userId = user.getId();
+        }
+
+        // 设置记录的各字段
+        accountAuthHistory.setUser_id(userId);
+        accountAuthHistory.setRp_id(rpId);
+        accountAuthHistory.setProtect_method(userAuthRequest.getProtect_method());
+        // 获取参数中的 remote_ip
+        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String remoteIp = req.getRemoteAddr();
+        accountAuthHistory.setAuth_ip(remoteIp);
+        accountAuthHistory.setAuth_latitude(userAuthRequest.getLatitude());
+        accountAuthHistory.setAuth_longitude(userAuthRequest.getLongitude());
+        // 取当前时间
+        java.sql.Timestamp authTime = UtilsHelper.getCurrentSystemTimestamp();
+        accountAuthHistory.setAuth_at(authTime);
+        accountAuthHistory.setCreated_at(authTime);
+        accountAuthHistory.setUpdated_at(authTime);
+
+        // 插入一条新记录
+        int count = accountAuthHistoryMapper.insertOneHistory(accountAuthHistory);
+        if (count != 1)
+            return ErrorCodeEnum.ERROR_INTERNAL_ERROR;
+
+        return ErrorCodeEnum.ERROR_OK;
     }
 
 //    private ErrorCodeEnum checkUserPasswordState(Users user) {
