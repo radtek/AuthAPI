@@ -63,6 +63,7 @@ public enum ErrorCodeEnum {
     ERROR_ADMIT_CLEAR_AUTH_FAIL_COUNT(2001, "允许清除验证失败次数"),
     ERROR_NEED_APP_CALLBACK_URL(2002, "需要应用回调的URL链接"),
     ERROR_FAIL_CALLBACK(2003, "回调失败"),
+    ERROR_EXIST_APP_NAME(2004, "应用名称已存在"),
     ;
 
     private Integer code;

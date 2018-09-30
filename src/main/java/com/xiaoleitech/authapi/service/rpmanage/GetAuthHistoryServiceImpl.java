@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.service.rpmanage;
 
+import com.xiaoleitech.authapi.helper.RelyPartHelper;
 import com.xiaoleitech.authapi.helper.table.RelyPartsTableHelper;
 import com.xiaoleitech.authapi.helper.table.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.mapper.AccountAuthHistoryMapper;
@@ -12,7 +13,6 @@ import com.xiaoleitech.authapi.model.rpmanage.GetAuthHistoriesResponse;
 import com.xiaoleitech.authapi.model.rpmanage.AuthHistoryRecord;
 import com.xiaoleitech.authapi.model.rpmanage.GetAuthHistoryCountResponse;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,15 +29,17 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
     private final GetAuthHistoriesResponse getAuthHistoriesResponse;
     private final RelyPartsTableHelper relyPartsTableHelper;
     private final AccountAuthHistoryMapper accountAuthHistoryMapper;
+    private final RelyPartHelper relyPartHelper;
 
     @Autowired
-    public GetAuthHistoryServiceImpl(RpAccountsTableHelper rpAccountsTableHelper, SystemErrorResponse systemErrorResponse, GetAuthHistoryCountResponse getAuthHistoryCountResponse, GetAuthHistoriesResponse getAuthHistoriesResponse, RelyPartsTableHelper relyPartsTableHelper, AccountAuthHistoryMapper accountAuthHistoryMapper) {
+    public GetAuthHistoryServiceImpl(RpAccountsTableHelper rpAccountsTableHelper, SystemErrorResponse systemErrorResponse, GetAuthHistoryCountResponse getAuthHistoryCountResponse, GetAuthHistoriesResponse getAuthHistoriesResponse, RelyPartsTableHelper relyPartsTableHelper, AccountAuthHistoryMapper accountAuthHistoryMapper, RelyPartHelper relyPartHelper) {
         this.rpAccountsTableHelper = rpAccountsTableHelper;
         this.systemErrorResponse = systemErrorResponse;
         this.getAuthHistoryCountResponse = getAuthHistoryCountResponse;
         this.getAuthHistoriesResponse = getAuthHistoriesResponse;
         this.relyPartsTableHelper = relyPartsTableHelper;
         this.accountAuthHistoryMapper = accountAuthHistoryMapper;
+        this.relyPartHelper = relyPartHelper;
     }
 
     private ErrorCodeEnum searchRpAccount(String appUuid, String token, String accountName, String accountUuid) {
@@ -60,6 +62,10 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
         }
         if (rpAccount == null)
             return ErrorCodeEnum.ERROR_INVALID_ACCOUNT;
+
+        // 检查token
+        if (!relyPartHelper.verifyToken(relyPart, token))
+            return ErrorCodeEnum.ERROR_INVALID_TOKEN;
 
         validRpAccount = rpAccount;
         return ErrorCodeEnum.ERROR_OK;

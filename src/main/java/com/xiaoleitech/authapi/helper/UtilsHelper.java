@@ -64,9 +64,17 @@ public class UtilsHelper {
      * @return java.sql.Timestamp currentTime
      */
     static public java.sql.Timestamp getCurrentSystemTimestamp() {
-        java.util.Date utilDate = new java.util.Date();
+        java.util.Date currentDate = getCurrentDate();
 
-        return new java.sql.Timestamp(utilDate.getTime());
+        return new java.sql.Timestamp(currentDate.getTime());
+    }
+
+    /**
+     * 获取当前时间 java.util.Date 类型
+     * @return java.util.Date currentDate
+     */
+    static public java.util.Date getCurrentDate() {
+        return new java.util.Date();
     }
 
     /** 提取字符串中的数字，并转换成整数。支持负数。

@@ -24,4 +24,17 @@ public class RelyPartsTableHelper {
         List<RelyParts> relyPartsList = relyPartsMapper.selectRelyPartsByRpUuid(rpUuid);
         return UtilsHelper.getFirstValid(relyPartsList);
     }
+
+    public int insertOneRelyPart(RelyParts relyPart) {
+        return relyPartsMapper.insertOneRelyPart(relyPart);
+    }
+
+    public int updateOneRelyPartRecordByUuid(RelyParts relyPart) {
+        return relyPartsMapper.updateOneRecordByUuid(relyPart);
+    }
+
+    public boolean isExistRpName(String appName) {
+        List<RelyParts> relyPartsList = relyPartsMapper.selectRelyPartsByRpName(appName);
+        return  (relyPartsList.size() > 0);
+    }
 }

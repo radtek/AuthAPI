@@ -7,6 +7,8 @@ import com.xiaoleitech.authapi.model.pojo.RelyParts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
+
 @Component
 public class RelyPartHelper {
     private final SystemGlobalParams systemGlobalParams;
@@ -53,6 +55,11 @@ public class RelyPartHelper {
 
     }
 
+    /**
+     * 对指定的APP生成新的 token
+     * @param relyPart 依赖方（应用方）
+     * @return token 字符串
+     */
     public String generateToken(RelyParts relyPart) {
         if (relyPart == null)
             return "";
@@ -67,5 +74,19 @@ public class RelyPartHelper {
         String hashCurrent = HashAlgorithm.getMD5(msg + Integer.toString(currentCount));
 
         return hashCurrent;
+    }
+
+    /**
+     * 获取新应用的失效时间
+     * @return 失效时间戳
+     */
+    public java.sql.Timestamp getNewAppExpireTime() {
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.YEAR, 1);
+        return new java.sql.Timestamp(now.getTimeInMillis());
+    }
+
+    public String generateNewAppKey() {
+        return UtilsHelper.generateUuid();
     }
 }
