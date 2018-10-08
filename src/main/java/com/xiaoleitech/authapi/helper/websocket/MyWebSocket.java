@@ -80,10 +80,9 @@ public class MyWebSocket {
      public static void websocketNotifyRedirect(String appUuid,
                                                 String accountUuid,
                                                 String authorizeToken,
-                                                String nonce,
                                                 String redirectUrl) {
          // 查找对应的socket连接
-         MyWebSocket socket = getConnectSocket(appUuid, nonce);
+         MyWebSocket socket = getConnectSocket(appUuid);
          if (socket == null)
              return;
 
@@ -91,7 +90,7 @@ public class MyWebSocket {
          JSONObject messageJson = new JSONObject();
          messageJson.put("account_id", accountUuid);
          messageJson.put("authorization_token", authorizeToken);
-         messageJson.put("nonce", nonce);
+//         messageJson.put("nonce", nonce);
          messageJson.put("redirect_url", redirectUrl);
          String message = messageJson.toString();
 
@@ -112,12 +111,11 @@ public class MyWebSocket {
     /**
      * 根据appUuid和nonce查找对应的socket连接
      * @param appUuid 应用UUID
-     * @param nonce 一次性数字码
      * @return 查到的socket连接
      */
-     public static MyWebSocket getConnectSocket(String appUuid, String nonce) {
+     public static MyWebSocket getConnectSocket(String appUuid) {
          for (MyWebSocket socket : webSocketSet) {
-             String inputIdentifier = formatIdentifier(appUuid, nonce);
+             String inputIdentifier = formatIdentifier(appUuid);
              String socketIdentifier = socket.getIdentifier();
 
              if (socketIdentifier.equals(inputIdentifier))
@@ -157,11 +155,11 @@ public class MyWebSocket {
             String identString = UtilsHelper.getValueFromJsonString(message, "identifier");
             String appUuid = UtilsHelper.getValueFromJsonString(identString, "app_id");
             String nonce = UtilsHelper.getValueFromJsonString(identString, "nonce");
-            return formatIdentifier(appUuid, nonce);
+            return formatIdentifier(appUuid);
     }
 
-    private static String formatIdentifier(String appUuid, String nonce) {
-        return appUuid + "_" + nonce;
+    private static String formatIdentifier(String appUuid) {
+        return appUuid;
     }
 
     /**

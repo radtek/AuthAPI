@@ -229,7 +229,6 @@ public class XL_AuthorizationAPI {
      * @param accountUuid 应用账户UUID
      * @param accountName 应用账户名
      * @param otp  动态口令
-     * @param nonce  一次性挑战码，用于向应用方发送回调时使用
      * @return
      * 			{
      * 				error_code: errorcode,
@@ -242,10 +241,9 @@ public class XL_AuthorizationAPI {
                                   @RequestParam("token") String token,
                                   @RequestParam(value = "account_id", required = false, defaultValue = "") String accountUuid,
                                   @RequestParam(value = "account_name", required = false, defaultValue = "") String accountName,
-                                  @RequestParam("otp") String otp,
-                                  @RequestParam("nonce") String nonce) {
+                                  @RequestParam("otp") String otp) {
          // account_name 和 account_id 任选其一
-         return otpAuthorizeService.otpAuthorize(appUuid, token, accountUuid, accountName, otp, nonce);
+         return otpAuthorizeService.otpAuthorize(appUuid, token, accountUuid, accountName, otp);
      }
 
 

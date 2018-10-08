@@ -14,5 +14,4 @@ public class OtpParams {
     private int otp_digits;
     private int otp_c;
     private String otp_q;
-    private String nonce;
 }

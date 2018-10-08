@@ -1,9 +1,11 @@
 package com.xiaoleitech.authapi.service.authorization;
 
+import com.xiaoleitech.authapi.helper.cache.RedisService;
 import com.xiaoleitech.authapi.helper.otp.OtpHelper;
 import com.xiaoleitech.authapi.helper.RelyPartHelper;
 import com.xiaoleitech.authapi.helper.UtilsHelper;
 import com.xiaoleitech.authapi.helper.authenticate.AuthenticationHelper;
+import com.xiaoleitech.authapi.helper.table.OtpAuthHistoryTableHelper;
 import com.xiaoleitech.authapi.helper.table.RelyPartsTableHelper;
 import com.xiaoleitech.authapi.helper.table.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.helper.websocket.MyWebSocket;
@@ -12,6 +14,7 @@ import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.model.bean.OtpParams;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.model.enumeration.UserAuthStateEnum;
+import com.xiaoleitech.authapi.model.pojo.OtpAuthHistories;
 import com.xiaoleitech.authapi.model.pojo.RelyParts;
 import com.xiaoleitech.authapi.model.pojo.RpAccounts;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
@@ -28,9 +31,11 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
     private final OtpHelper otpHelper;
     private final AuthenticationHelper authenticationHelper;
     private final OtpAuthResponse otpAuthResponse;
+    private final RedisService redisService;
+    private final OtpAuthHistoryTableHelper otpAuthHistoryTableHelper;
 
     @Autowired
-    public OtpAuthorizeServiceImpl(RpAccountsTableHelper rpAccountsTableHelper, SystemErrorResponse systemErrorResponse, RelyPartsTableHelper relyPartsTableHelper, RelyPartHelper relyPartHelper, OtpHelper otpHelper, AuthenticationHelper authenticationHelper, OtpAuthResponse otpAuthResponse) {
+    public OtpAuthorizeServiceImpl(RpAccountsTableHelper rpAccountsTableHelper, SystemErrorResponse systemErrorResponse, RelyPartsTableHelper relyPartsTableHelper, RelyPartHelper relyPartHelper, OtpHelper otpHelper, AuthenticationHelper authenticationHelper, OtpAuthResponse otpAuthResponse, RedisService redisService, OtpAuthHistoryTableHelper otpAuthHistoryTableHelper) {
         this.rpAccountsTableHelper = rpAccountsTableHelper;
         this.systemErrorResponse = systemErrorResponse;
         this.relyPartsTableHelper = relyPartsTableHelper;
@@ -38,10 +43,20 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         this.otpHelper = otpHelper;
         this.authenticationHelper = authenticationHelper;
         this.otpAuthResponse = otpAuthResponse;
+        this.redisService = redisService;
+        this.otpAuthHistoryTableHelper = otpAuthHistoryTableHelper;
     }
 
     @Override
-    public AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String accountName, String otp, String nonce) {
+    public AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String accountName, String otp) {
+        // 检查频繁调用的限制
+        String value = redisService.getValue("OtpAuthCalling");
+        if ( (value != null) && (value.equals("1")))
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_OTP);
+
+        // 设置频繁调用限制
+        redisService.setValueForSeconds("OtpAuthCalling", "1", 2);
+
         // 检查参数
         if (appUuid.isEmpty() || token.isEmpty() || otp.isEmpty() || (accountUuid.isEmpty() && accountName.isEmpty()))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
@@ -61,6 +76,10 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         if (rpAccount == null)
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
+        // 检查历史OTP
+        if (otpAuthHistoryTableHelper.checkUsedInRecent(rpAccount.getId(), otp, 5))
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_OTP);
+
         // 检查令牌
         if (!relyPartHelper.verifyToken(relyPart, token))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
@@ -70,7 +89,6 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         OtpParams otpParamsOrigin = new OtpParams();
         otpParamsOrigin.setOwner(rpAccount.getRp_account_uuid());
         BeanUtils.copyProperties(relyPart, otpParamsOrigin);
-        otpParamsOrigin.setNonce(nonce);
         otpParamsOrigin.setOtp_seed(rpAccount.getOtp_seed());
         String accountOtp = otpHelper.generateOtp(otpParamsOrigin);
 
@@ -101,10 +119,21 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
             // 拼接回调接口参数
             url += "?account_id=" + accountUuid + "&authorization_token=" + authToken;
             otpAuthResponse.setRedirect_url(url);
-            // url和nonce均有效时，通过websocket调用回调URL
-            if (!nonce.isEmpty())
-                MyWebSocket.websocketNotifyRedirect(appUuid, accountUuid, authToken, nonce, url);
+            // url有效时，通过websocket调用回调URL
+            MyWebSocket.websocketNotifyRedirect(appUuid, accountUuid, authToken, url);
         }
+
+        // 保存校验成功的OTP到历史记录中，和账户UUID关联
+        OtpAuthHistories otpAuthHistory = new OtpAuthHistories();
+        otpAuthHistory.setRp_id(rpAccount.getRp_id());
+        otpAuthHistory.setUser_id(rpAccount.getUser_id());
+        otpAuthHistory.setRp_account_id(rpAccount.getId());
+        otpAuthHistory.setRp_account_name(rpAccount.getRp_account_name());
+        otpAuthHistory.setOtp(otp);
+        otpAuthHistory.setAuth_at(UtilsHelper.getCurrentSystemTimestamp());
+        int count = otpAuthHistoryTableHelper.insertOneRecord(otpAuthHistory);
+        if (count != 1)
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
         return otpAuthResponse;
     }

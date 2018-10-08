@@ -69,7 +69,6 @@ public class GetOtpCodeServiceImpl implements GetOtpCodeService {
         OtpParams otpParams = new OtpParams();
         otpParams.setOwner(rpAccount.getRp_account_uuid());
         BeanUtils.copyProperties(relyPart, otpParams);
-        otpParams.setNonce(nonce);
         otpParams.setOtp_seed(rpAccount.getOtp_seed());
         String accountOtp = otpHelper.generateOtp(otpParams);
 
