@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.service.authorization;
 
+import com.xiaoleitech.authapi.helper.callback.RelyPartCallBackHelper;
 import com.xiaoleitech.authapi.helper.table.RelyPartsTableHelper;
 import com.xiaoleitech.authapi.helper.table.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.helper.table.UsersTableHelper;
@@ -7,6 +8,8 @@ import com.xiaoleitech.authapi.helper.UtilsHelper;
 import com.xiaoleitech.authapi.helper.authenticate.AuthenticationHelper;
 import com.xiaoleitech.authapi.helper.cipher.Base64Coding;
 import com.xiaoleitech.authapi.helper.cipher.SymmetricAlgorithm;
+import com.xiaoleitech.authapi.helper.websocket.MyWebSocket;
+import com.xiaoleitech.authapi.mapper.AccountAuthHistoryMapper;
 import com.xiaoleitech.authapi.model.authorization.UserAuthorizeFailedResponse;
 import com.xiaoleitech.authapi.model.authorization.UserAuthorizeRequest;
 import com.xiaoleitech.authapi.model.authorization.UserAuthorizeSuccessResponse;
@@ -15,10 +18,10 @@ import com.xiaoleitech.authapi.model.enumeration.AccountStateEnum;
 import com.xiaoleitech.authapi.model.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.model.enumeration.UserAuthStateEnum;
 import com.xiaoleitech.authapi.model.enumeration.UserCertEnum;
+import com.xiaoleitech.authapi.model.pojo.AccountAuthHistories;
 import com.xiaoleitech.authapi.model.pojo.RelyParts;
 import com.xiaoleitech.authapi.model.pojo.RpAccounts;
 import com.xiaoleitech.authapi.model.pojo.Users;
-import com.xiaoleitech.authapi.service.authentication.UserAuthenticateServiceImpl;
 import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +30,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 
 import javax.crypto.Cipher;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 @Component
 public class UserAuthorizeServiceImpl implements UserAuthorizeService {
@@ -42,6 +43,9 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
     private final RpAccountsTableHelper rpAccountsTableHelper;
     private final SymmetricAlgorithm symmetricAlgorithm;
     private final UserAuthorizeFailedResponse userAuthorizeFailedResponse;
+    private final RelyPartCallBackHelper relyPartCallBackHelper;
+    private final AccountAuthHistories accountAuthHistory;
+    private final AccountAuthHistoryMapper accountAuthHistoryMapper;
 
     @Autowired
     public UserAuthorizeServiceImpl(SystemErrorResponse systemErrorResponse,
@@ -51,7 +55,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
                                     RelyPartsTableHelper relyPartsTableHelper,
                                     RpAccountsTableHelper rpAccountsTableHelper,
                                     SymmetricAlgorithm symmetricAlgorithm,
-                                    UserAuthorizeFailedResponse userAuthorizeFailedResponse) {
+                                    UserAuthorizeFailedResponse userAuthorizeFailedResponse, RelyPartCallBackHelper relyPartCallBackHelper, AccountAuthHistories accountAuthHistory, AccountAuthHistoryMapper accountAuthHistoryMapper) {
         this.systemErrorResponse = systemErrorResponse;
         this.userAuthorizeSuccessResponse = userAuthorizeSuccessResponse;
         this.usersTableHelper = usersTableHelper;
@@ -60,6 +64,9 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         this.rpAccountsTableHelper = rpAccountsTableHelper;
         this.symmetricAlgorithm = symmetricAlgorithm;
         this.userAuthorizeFailedResponse = userAuthorizeFailedResponse;
+        this.relyPartCallBackHelper = relyPartCallBackHelper;
+        this.accountAuthHistory = accountAuthHistory;
+        this.accountAuthHistoryMapper = accountAuthHistoryMapper;
     }
 
     @Override
@@ -146,15 +153,64 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
             return userAuthorizeFailedResponse;
         }
 
-        // TODO: 添加认证的历史记录
+        // 添加认证的历史记录
+        errorCode = addAuthorizeHistoryRecord(userAuthorizeRequest, 1);
+        if (errorCode != ErrorCodeEnum.ERROR_OK)
+            return systemErrorResponse.getGeneralResponse(errorCode);
 
-        // TODO: 添加回调 rp_account_authorized_callback_url
+        // 回调 rp_account_authorized_callback_url
+//        relyPartCallBackHelper.rpAuthorizeCallback(relyPart, rpAccount.getRp_account_uuid(),
+//                userAuthorizeRequest.getNonce(), authToken);
 
-        // TODO: 添加回调 rp_login_redirection_url
+        // 通过 WebSocket 向应用方发送 rp_login_redirection_url
+        String url = relyPart.getRp_login_redirection_url();
+        MyWebSocket.websocketNotifyRedirect(relyPart.getRp_uuid(), rpAccount.getRp_account_uuid(),
+                authToken, userAuthorizeRequest.getNonce(), url);
 
         systemErrorResponse.fillErrorResponse( userAuthorizeSuccessResponse, ErrorCodeEnum.ERROR_OK );
         userAuthorizeSuccessResponse.setAccount_id(rpAccount.getRp_account_uuid());
         userAuthorizeSuccessResponse.setAuthorization_token(authToken);
         return userAuthorizeSuccessResponse;
     }
+
+    private ErrorCodeEnum addAuthorizeHistoryRecord(UserAuthorizeRequest userAuthorizeRequest, int authResult) {
+        // authResult目前不用，留待扩展
+
+        int rpId = 0;
+
+        if (userAuthorizeRequest.getApp_id() != null) {
+            // 如果请求中有rp_id，则查记录表，获取rpId
+            RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpUuidAndUserUuid(
+                    userAuthorizeRequest.getApp_id(), userAuthorizeRequest.getUser_id());
+            if (rpAccount == null)
+                return ErrorCodeEnum.ERROR_INVALID_ACCOUNT;
+            rpId = rpAccount.getRp_id();
+        }
+
+        // 否则只读取用户记录，获取userId
+        Users user = usersTableHelper.getUserByUserUuid(userAuthorizeRequest.getUser_id());
+        if (user == null)
+            return ErrorCodeEnum.ERROR_USER_NOT_FOUND;
+
+        // 设置记录的各字段
+        accountAuthHistory.setUser_id(user.getId());
+        accountAuthHistory.setRp_id(rpId);
+        accountAuthHistory.setProtect_method(user.getProtect_method());
+        accountAuthHistory.setAuth_ip(UtilsHelper.getRemoteIp());
+        accountAuthHistory.setAuth_latitude(user.getAuth_latitude());
+        accountAuthHistory.setAuth_longitude(user.getAuth_longitude());
+        // 取当前时间
+        java.sql.Timestamp authTime = UtilsHelper.getCurrentSystemTimestamp();
+        accountAuthHistory.setAuth_at(authTime);
+        accountAuthHistory.setCreated_at(authTime);
+        accountAuthHistory.setUpdated_at(authTime);
+
+        // 插入一条新记录
+        int count = accountAuthHistoryMapper.insertOneHistory(accountAuthHistory);
+        if (count != 1)
+            return ErrorCodeEnum.ERROR_INTERNAL_ERROR;
+
+        return ErrorCodeEnum.ERROR_OK;
+    }
+
 }

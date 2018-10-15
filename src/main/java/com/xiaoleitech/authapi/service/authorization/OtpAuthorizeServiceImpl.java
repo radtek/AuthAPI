@@ -49,10 +49,11 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
 
     @Override
     public AuthAPIResponse otpAuthorize(String appUuid, String token, String accountUuid, String accountName, String otp) {
+        System.out.println("--->otpAuthorize" + otp);
         // 检查频繁调用的限制
         String value = redisService.getValue("OtpAuthCalling");
         if ( (value != null) && (value.equals("1")))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_OTP);
+            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_REQUEST_TOO_OFTEN);
 
         // 设置频繁调用限制
         redisService.setValueForSeconds("OtpAuthCalling", "1", 2);
@@ -77,7 +78,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
         // 检查历史OTP
-        if (otpAuthHistoryTableHelper.checkUsedInRecent(rpAccount.getId(), otp, 5))
+        if (otpAuthHistoryTableHelper.checkUsedInRecent(rpAccount.getId(), otp, 0))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_OTP);
 
         // 检查令牌
@@ -120,7 +121,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
             url += "?account_id=" + accountUuid + "&authorization_token=" + authToken;
             otpAuthResponse.setRedirect_url(url);
             // url有效时，通过websocket调用回调URL
-            MyWebSocket.websocketNotifyRedirect(appUuid, accountUuid, authToken, url);
+            MyWebSocket.websocketNotifyRedirect(appUuid, accountUuid, authToken, "", url);
         }
 
         // 保存校验成功的OTP到历史记录中，和账户UUID关联

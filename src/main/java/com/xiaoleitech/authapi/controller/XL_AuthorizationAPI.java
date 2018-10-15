@@ -131,7 +131,7 @@ public class XL_AuthorizationAPI {
 
     /** 验证用户登录状态 (RP)
      * get https://server/api/verify_auth_state?app_id=<app_id>&token=<token>&
-     *          app_account_id=<app_account_id>&authorization_token=<authorization_token>
+     *          account_id=<account_id>&authorization_token=<authorization_token>
      *
      * @param appUuid   应用UUID
      * @param token   验证令牌
@@ -149,7 +149,7 @@ public class XL_AuthorizationAPI {
     public @ResponseBody
     AuthAPIResponse verifyAuthorizeState(@RequestParam("app_id") String appUuid,
                                          @RequestParam("token") String token,
-                                         @RequestParam("app_account_id") String appAccountUuid,
+                                         @RequestParam("account_id") String appAccountUuid,
                                          @RequestParam("authorization_token") String authorizeToken) {
         return verifyAuthStateService.verifyAuthState(appUuid, token, appAccountUuid, authorizeToken);
     }

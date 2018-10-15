@@ -111,7 +111,10 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             if ((user.getUser_state() != UserStateEnum.USER_NOT_REGISTERED.getState()) &&
                     (user.getUser_state() != UserStateEnum.USER_UNREGISTERED.getState())) {
                 // 用户状态不是未注册和未注销，则返回用户不能重复注册的错误信息
-                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_REGISTERED);
+                RegisterUserExistResponse registerUserExistResponse = new RegisterUserExistResponse();
+                registerUserExistResponse.setUser_id(user.getUser_uuid());
+                systemErrorResponse.fillErrorResponse(registerUserExistResponse, ErrorCodeEnum.ERROR_USER_REGISTERED);
+                return registerUserExistResponse;
             }
 
             // 验证密码
@@ -208,9 +211,9 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         if (!authenticationHelper.isTokenVerified(updateUserRequest.getVerify_token()))
             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
-        // 验证密码
-        if (!authenticationHelper.isValidPassword(updateUserRequest.getPassword(), user.getPassword(), user.getPassword_salt()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+        // 不需要验证密码
+//        if (!authenticationHelper.isValidPassword(updateUserRequest.getPassword(), user.getPassword(), user.getPassword_salt()))
+//            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
 
         // 更新用户记录，只更新请求中包含的字段
         // TODO: 是否有更好的方法简化下面代码。(查阅lombok的 @NonNull，set null时会抛出异常)
@@ -220,6 +223,10 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             user.setReal_name(updateUserRequest.getUser_realname());
         if (updateUserRequest.getId_no() != null)
             user.setId_no(updateUserRequest.getId_no());
+        if (updateUserRequest.getPassword() != null) {
+            String encryptedPassword = authenticationHelper.getEncryptedPassword(updateUserRequest.getPassword(), user.getPassword_salt());
+            user.setPassword(encryptedPassword);
+        }
         // POST请求中到期时间为<yyyy/mm/dd>格式字符串，需要转换成时间格式
         if (updateUserRequest.getId_expire_at() != null) {
             Timestamp timestamp = UtilsHelper.parseExpireTimeFromString(updateUserRequest.getId_expire_at(), '/');
@@ -355,8 +362,9 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         user.setCreated_at(currentTime);
         user.setUpdated_at(currentTime);
 
-        // 传入的用户密码已散列
-        user.setPassword(registerUserRequest.getPassword());
+        // 对密码散列后再保存
+        String encryptedPassword = authenticationHelper.getEncryptedPassword(registerUserRequest.getPassword(), user.getPassword_salt());
+        user.setPassword(encryptedPassword);
 
         // insertOneUser 方法返回插入的记录数量，如果成功了，则返回1 （新建记录的数量）
         int num = usersMapper.insertOneUser(user);

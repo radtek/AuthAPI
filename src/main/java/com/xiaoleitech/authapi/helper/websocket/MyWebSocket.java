@@ -80,9 +80,10 @@ public class MyWebSocket {
      public static void websocketNotifyRedirect(String appUuid,
                                                 String accountUuid,
                                                 String authorizeToken,
+                                                String nonce,
                                                 String redirectUrl) {
          // 查找对应的socket连接
-         MyWebSocket socket = getConnectSocket(appUuid);
+         MyWebSocket socket = getConnectSocket(appUuid, nonce);
          if (socket == null)
              return;
 
@@ -113,9 +114,9 @@ public class MyWebSocket {
      * @param appUuid 应用UUID
      * @return 查到的socket连接
      */
-     public static MyWebSocket getConnectSocket(String appUuid) {
+     public static MyWebSocket getConnectSocket(String appUuid, String nonce) {
          for (MyWebSocket socket : webSocketSet) {
-             String inputIdentifier = formatIdentifier(appUuid);
+             String inputIdentifier = formatIdentifier(appUuid, nonce);
              String socketIdentifier = socket.getIdentifier();
 
              if (socketIdentifier.equals(inputIdentifier))
@@ -125,6 +126,7 @@ public class MyWebSocket {
      }
 
      public void sendMessage(String message) throws IOException {
+         System.out.println("WebSocket SendMessage: " + message);
         this.session.getBasicRemote().sendText(message);
         //this.session.getAsyncRemote().sendText(message);
      }
@@ -155,11 +157,11 @@ public class MyWebSocket {
             String identString = UtilsHelper.getValueFromJsonString(message, "identifier");
             String appUuid = UtilsHelper.getValueFromJsonString(identString, "app_id");
             String nonce = UtilsHelper.getValueFromJsonString(identString, "nonce");
-            return formatIdentifier(appUuid);
+            return formatIdentifier(appUuid, nonce);
     }
 
-    private static String formatIdentifier(String appUuid) {
-        return appUuid;
+    private static String formatIdentifier(String appUuid, String nonce) {
+        return appUuid + nonce;
     }
 
     /**

@@ -101,7 +101,12 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
         }
 
         // 计算iHMAC
-        String iHmac = MyHmacAlgorithm.calculate(challenge, user.getPassword(), user.getPassword_salt(), authKey);
+        String iHmac;
+        if (protectMethod == ProtectMethodEnum.VERIFY_PASSWORD.getProtectMethod()) {
+            iHmac = MyHmacAlgorithm.calculate(challenge, user.getPassword(), user.getPassword_salt(), authKey);
+        } else {
+            iHmac = MyHmacAlgorithm.calculate(challenge, "", "", authKey);
+        }
 
         // 用系统计算的iHmac验证用户请求参数中的response，需相等
         if (userAuthRequest.getResponse().equals(iHmac)) {
@@ -194,9 +199,7 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
         accountAuthHistory.setRp_id(rpId);
         accountAuthHistory.setProtect_method(userAuthRequest.getProtect_method());
         // 获取参数中的 remote_ip
-        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String remoteIp = req.getRemoteAddr();
-        accountAuthHistory.setAuth_ip(remoteIp);
+        accountAuthHistory.setAuth_ip(UtilsHelper.getRemoteIp());
         accountAuthHistory.setAuth_latitude(userAuthRequest.getLatitude());
         accountAuthHistory.setAuth_longitude(userAuthRequest.getLongitude());
         // 取当前时间

@@ -64,6 +64,7 @@ public enum ErrorCodeEnum {
     ERROR_NEED_APP_CALLBACK_URL(2002, "需要应用回调的URL链接"),
     ERROR_FAIL_CALLBACK(2003, "回调失败"),
     ERROR_EXIST_APP_NAME(2004, "应用名称已存在"),
+    ERROR_INTERFACE_NOT_FOUND(2005, "请求接口不存在"),
     ;
 
     private Integer code;

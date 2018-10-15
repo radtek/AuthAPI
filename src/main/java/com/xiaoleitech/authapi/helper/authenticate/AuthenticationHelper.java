@@ -89,12 +89,15 @@ public class AuthenticationHelper {
             return passwordPlainText;
         } else if (passwordMode == PasswordModeEnum.PASSWORD_MODE_SHA256.getId()) {
             // 对密码做HASH
-            return HashAlgorithm.getSHA256(passwordPlainText);
+            String hexPassword = UtilsHelper.bytesToHexString(passwordPlainText.getBytes());
+            return HashAlgorithm.getSHA256(hexPassword);
         } else if (passwordMode == PasswordModeEnum.PASSWORD_MODE_SALT_SHA256.getId()) {
             // 先做一次HASH，在HASH结果尾部添加盐，再做一次HASH
-            String hash = HashAlgorithm.getSHA256(passwordPlainText);
+            String hexPassword = UtilsHelper.bytesToHexString(passwordPlainText.getBytes());
+            String hash = HashAlgorithm.getSHA256(hexPassword);
             hash += salt;
-            return HashAlgorithm.getSHA256(hash);
+            String hexHash = UtilsHelper.bytesToHexString(hash.getBytes());
+            return HashAlgorithm.getSHA256(hexHash);
         } else {
             // 不能识别的模式，返回明文
             return passwordPlainText;

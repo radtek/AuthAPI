@@ -2,7 +2,10 @@ package com.xiaoleitech.authapi.helper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -188,5 +191,16 @@ public class UtilsHelper {
             e.printStackTrace();
             return "";
         }
+    }
+
+    /**
+     * 获取请求参数中的客户端IP地址
+     *
+     * @return 远程客户端IP地址
+     */
+    public static String getRemoteIp() {
+        // 获取请求参数中的 remote_ip
+        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        return req.getRemoteAddr();
     }
 }

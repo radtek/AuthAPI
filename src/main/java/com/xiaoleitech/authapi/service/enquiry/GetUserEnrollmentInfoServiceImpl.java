@@ -11,6 +11,7 @@ import com.xiaoleitech.authapi.service.exception.SystemErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -43,10 +44,13 @@ public class GetUserEnrollmentInfoServiceImpl implements GetUserEnrollmentInfoSe
 
         // 获取登记APP的记录（可能是多条）
         List<EnrollUserInfo> enrollUserInfoList = joinRelyPartAccountMapper.selectEnrollUserInfo(userUuid);
-        if ((enrollUserInfoList == null) || (enrollUserInfoList.size() == 0))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+        if ((enrollUserInfoList != null) && (enrollUserInfoList.size() > 0)) {
+            userEnrollmentInfoResponse.setApp(enrollUserInfoList);
+        } else {
+            enrollUserInfoList = new ArrayList<>();
+            userEnrollmentInfoResponse.setApp(enrollUserInfoList);
+        }
 
-        userEnrollmentInfoResponse.setApp(enrollUserInfoList);
         systemErrorResponse.fillErrorResponse(userEnrollmentInfoResponse, ErrorCodeEnum.ERROR_OK);
         return userEnrollmentInfoResponse;
     }

@@ -1,6 +1,7 @@
 package com.xiaoleitech.authapi.controller.utilities;
 
 import com.xiaoleitech.authapi.helper.UtilsHelper;
+import com.xiaoleitech.authapi.helper.authenticate.AuthenticationHelper;
 import com.xiaoleitech.authapi.helper.cipher.Base64Coding;
 import com.xiaoleitech.authapi.helper.cipher.SymmetricAlgorithm;
 import com.xiaoleitech.authapi.model.bean.AuthAPIResponse;
@@ -18,12 +19,14 @@ public class UTILS_cipherAPI {
     private final UtilsResponse utilsResponse;
     private final SystemErrorResponse systemErrorResponse;
     private final SymmetricAlgorithm symmetricAlgorithm;
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public UTILS_cipherAPI(UtilsResponse utilsResponse, SystemErrorResponse systemErrorResponse, SymmetricAlgorithm symmetricAlgorithm) {
+    public UTILS_cipherAPI(UtilsResponse utilsResponse, SystemErrorResponse systemErrorResponse, SymmetricAlgorithm symmetricAlgorithm, AuthenticationHelper authenticationHelper) {
         this.utilsResponse = utilsResponse;
         this.systemErrorResponse = systemErrorResponse;
         this.symmetricAlgorithm = symmetricAlgorithm;
+        this.authenticationHelper = authenticationHelper;
     }
 
     @RequestMapping(value = "/utils/cipher/base64", method = RequestMethod.GET)
@@ -92,6 +95,16 @@ public class UTILS_cipherAPI {
             uuidList.add(uuid);
         }
         return uuidList;
+    }
+
+    @RequestMapping(value = "/utils/common/get_encrypted_password", method = RequestMethod.GET)
+    public @ResponseBody
+    AuthAPIResponse getEncryptedPassword(@RequestParam("password") String password,
+                                         @RequestParam("salt") String salt) {
+        String result = authenticationHelper.getEncryptedPassword(password, salt);
+        utilsResponse.setResponse(result);
+        systemErrorResponse.fillErrorResponse(utilsResponse, ErrorCodeEnum.ERROR_OK);
+        return utilsResponse;
     }
 
 }

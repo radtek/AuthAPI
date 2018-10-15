@@ -9,7 +9,7 @@ public class EnrollUserInfo {
     private String app_id;
     private String app_name;
     private String app_logo;
-    private int obtain_realname_info_scope;
+    private String obtain_realname_info_scope;
     private String app_protect_methods;
     private int need_uniq_username; // 3:不需要用户名；2:需要用户名但不必唯一；1:需要唯一用户名
     private int new_account_policy;

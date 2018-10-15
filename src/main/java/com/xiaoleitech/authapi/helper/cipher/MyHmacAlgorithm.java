@@ -14,7 +14,7 @@ public class MyHmacAlgorithm {
         // 挑战码用传入的字符串，不转格式
         stringBuilder.append(challenge);
         stringBuilder.append(password);
-        stringBuilder.append(passwordSalt);
+//        stringBuilder.append(passwordSalt);
         stringBuilder.append(authKey);
 
         // salt中的连接符 - 保留不去掉

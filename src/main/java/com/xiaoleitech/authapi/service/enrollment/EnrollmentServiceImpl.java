@@ -127,8 +127,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
 
         // 活跃状态的账户记录找不到，则查找是否有逻辑删除的记录
-        rpAccount = rpAccountsTableHelper.getExistRpAccountByRpIdAndUserId(
-                relyPart.getId(), user.getId());
+//        rpAccount = rpAccountsTableHelper.getExistRpAccountByRpIdAndUserId(
+//                relyPart.getId(), user.getId());
 
         if (rpAccount == null) {
             // 新建一条记录
@@ -169,8 +169,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollAppResponse.setAuthorization_policy(relyPart.getAuthorization_policy());
         enrollAppResponse.setOtp_alg(relyPart.getOtp_alg());
         enrollAppResponse.setOtp_inteval(relyPart.getInteval());
-        // TODO: otp_key是otp_seed ?
-        enrollAppResponse.setOtp_seed(relyPart.getOtp_key());
+        enrollAppResponse.setOtp_seed( rpAccount.getOtp_seed());
         enrollAppResponse.setOtp_digits(relyPart.getOtp_digits());
 
         return enrollAppResponse;
@@ -224,6 +223,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         java.sql.Timestamp currentTime = UtilsHelper.getCurrentSystemTimestamp();
         rpAccount.setCreated_at(currentTime);
         rpAccount.setUpdated_at(currentTime);
+        rpAccount.setOtp_seed(UtilsHelper.generateUuid());
 
         // 在表中创建一条新记录
         int num = rpAccountsMapper.insertOneRpAccount(rpAccount);

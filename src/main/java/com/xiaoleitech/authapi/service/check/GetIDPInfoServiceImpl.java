@@ -22,9 +22,9 @@ public class GetIDPInfoServiceImpl implements GetIDPInfoService {
     public AuthAPIResponse getIDPInfo() {
         // TODO get_idp_info: 1. retrieve the real version.
         // TODO get_idp_info: 2. Treat with the exception.
-        idpInfoResponse.setVersion("1.0.0.1");
-        idpInfoResponse.setSupported_ios_app_version("10.1");
-        idpInfoResponse.setSupported_android_app_version("6.0");
+        idpInfoResponse.setVersion("1.0.0.0");
+        idpInfoResponse.setSupported_ios_app_version("1.0.0.0");
+        idpInfoResponse.setSupported_android_app_version("1.0.0.0");
 
         systemErrorResponse.fillErrorResponse(idpInfoResponse, ErrorCodeEnum.ERROR_OK);
 
