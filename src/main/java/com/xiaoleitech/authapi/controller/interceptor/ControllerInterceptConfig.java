@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 
 @Configuration
 public class ControllerInterceptConfig extends WebMvcConfigurationSupport {
-
     private final AuthControllerInterceptor authControllerInterceptor;
 
     @Autowired
