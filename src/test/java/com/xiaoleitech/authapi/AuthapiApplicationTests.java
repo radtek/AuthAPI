@@ -1,12 +1,9 @@
 package com.xiaoleitech.authapi;
 
-import com.xiaoleitech.authapi.helper.authenticate.AuthenticationHelper;
-import com.xiaoleitech.authapi.helper.cache.RedisService;
+import com.xiaoleitech.authapi.global.cache.redis.RedisService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import redis.clients.jedis.Jedis;
@@ -85,7 +82,7 @@ public class AuthapiApplicationTests {
 //        setJedis();
         jedis = jedisPool.getResource();
         // 添加数据
-        jedis.set("name", "redis-test-instance");
+        jedis.set("name", "redis-ztest-instance");
         System.out.println("初始值：" + jedis.get("name"));
 
         // 尾部增加字符串

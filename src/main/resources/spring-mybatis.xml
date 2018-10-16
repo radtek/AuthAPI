@@ -12,7 +12,7 @@
     </settings>
     <!--别名，就是将后面那一堆，用User代替-->
     <typeAliases>
-        <typeAlias alias="Pojo" type="com.xiaoleitech.authapi.model.pojo"/>
+        <typeAlias alias="Pojo" type="com.xiaoleitech.authapi.zold.model.pojo"/>
     </typeAliases>
     <!--环境配置-->
     <environments default="development">

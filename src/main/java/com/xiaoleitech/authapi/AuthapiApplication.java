@@ -1,18 +1,15 @@
 package com.xiaoleitech.authapi;
 
-import com.xiaoleitech.authapi.global.dictionary.SystemGlobalParams;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @EnableAutoConfiguration
 @SpringBootApplication
-//@ComponentScan(basePackages = {"com.xiaoleitech.authapi.mapper", "com.xiaoleitech.authapi.service", "com.xiaoleitech.authapi.controller"})
-@MapperScan(basePackages = {"com.xiaoleitech.authapi.mapper", "com.xiaoleitech.authapi.Test.mapper", "com.xiaoleitech.authapi.global.dictionary"})
-//@MapperScan(basePackages = {"com.xiaoleitech.authapi.mapper"})
+//@ComponentScan(basePackages = {"com.xiaoleitech.authapi.dao.mybatis.mapper", "com.xiaoleitech.authapi.zold.service", "com.xiaoleitech.authapi.zold.controller"})
+@MapperScan(basePackages = {"com.xiaoleitech.authapi.dao.mybatis.mapper", "com.xiaoleitech.authapi.zold.Test.mapper", "com.xiaoleitech.authapi.zold.dictionary"})
+//@MapperScan(basePackages = {"com.xiaoleitech.authapi.dao.mybatis.mapper"})
 public class AuthapiApplication {
 //    @Bean
 //    public HttpMessageConverters fastJsonHttpMessageConverters() {
