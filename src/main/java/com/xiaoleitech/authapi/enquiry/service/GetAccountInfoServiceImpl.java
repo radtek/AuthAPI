@@ -39,12 +39,12 @@ public class GetAccountInfoServiceImpl implements GetAccountInfoService {
     public AuthAPIResponse getAccountInfo(String appUuid, String token, String accountUuid, String accountName) {
         //检查参数
         if (appUuid.isEmpty() || token.isEmpty() || (accountUuid.isEmpty() && (accountName.isEmpty())))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 检查应用是否有效
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         // 获取账户
         RpAccounts rpAccount = null;
@@ -56,17 +56,17 @@ public class GetAccountInfoServiceImpl implements GetAccountInfoService {
             rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
         }
         if (rpAccount == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
         // 校验 token
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         accountInfoResponse.setAccount_id(rpAccount.getRp_account_uuid());
         accountInfoResponse.setAccount_name(rpAccount.getRp_account_name());
         accountInfoResponse.setAuthorized(rpAccount.getAuthred());
         accountInfoResponse.setAuthorized_at(rpAccount.getAuthr_at());
-        systemErrorResponse.fillErrorResponse(accountInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(accountInfoResponse, ErrorCodeEnum.ERROR_OK);
         return accountInfoResponse;
     }
 }

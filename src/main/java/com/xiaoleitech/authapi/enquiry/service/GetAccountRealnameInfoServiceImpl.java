@@ -54,26 +54,26 @@ public class GetAccountRealnameInfoServiceImpl implements GetAccountRealnameInfo
     public AuthAPIResponse getRealnameInfo(String appUuid, String token, String accountUuid) {
         // 检查参数
         if (appUuid.isEmpty() || token.isEmpty() || accountUuid.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 检查应用是否有效
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         // 检查账户是否有效
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
         if (rpAccount == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
         // 校验 token
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 读取用户记录
         Users user = usersTableHelper.getUserByUserId(rpAccount.getUser_id());
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
         String properties = relyPart.getReal_name_scope();
         if (isAdmitRealName(properties)) {
@@ -93,7 +93,7 @@ public class GetAccountRealnameInfoServiceImpl implements GetAccountRealnameInfo
             accountRealNameInfoResponse.setId_no("");
             accountRealNameInfoResponse.setId_expire_at(new java.sql.Timestamp(0));
         }
-        systemErrorResponse.fillErrorResponse(accountRealNameInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(accountRealNameInfoResponse, ErrorCodeEnum.ERROR_OK);
 
         return accountRealNameInfoResponse;
     }

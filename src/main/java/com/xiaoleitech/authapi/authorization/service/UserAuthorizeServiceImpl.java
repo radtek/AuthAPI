@@ -1,6 +1,6 @@
 package com.xiaoleitech.authapi.authorization.service;
 
-import com.xiaoleitech.authapi.global.callback.RelyPartCallBackHelper;
+import com.xiaoleitech.authapi.global.restcall.RelyPartCallBackHelper;
 import com.xiaoleitech.authapi.dao.helper.RelyPartsTableHelper;
 import com.xiaoleitech.authapi.dao.helper.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.dao.helper.UsersTableHelper;
@@ -75,36 +75,36 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         // 获取用户记录
         Users user = usersTableHelper.getUserByUserUuid(userAuthorizeRequest.getUser_id());
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
         // 检查验证令牌
         if (user.getAuthenticated() != UserAuthStateEnum.AUTH_STATE_AUTHED.getAuthState()) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_AUTHENTICATED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_AUTHENTICATED);
         }
         if ( !authenticationHelper.isTokenVerified(userAuthorizeRequest.getVerify_token()) ) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
         }
 
         // 获取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(userAuthorizeRequest.getApp_id());
         if (relyPart == null) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
         }
 
         // 获取应用账户记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getId(), user.getId());
         if (rpAccount == null) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED);
         }
 
         // 应用账户必须激活
         if (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState()) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_ACTIVATED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ACTIVATED);
         }
 
         // 目前只处理不使用证书的流程
-        if (relyPart.getUse_cert() != UserCertEnum.NOT_VERIFY_USER_CERT.getUseCert()) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_CERTIFICATE_NOT_FOUND);
+        if (relyPart.getUse_cert() != UserCertEnum.NOT_USE_CERT.getUseCert()) {
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_CERTIFICATE_NOT_FOUND);
         } else {
             // 对 nonce 做 AES256 加密
             byte[] cryptResult = symmetricAlgorithm.doAes(userAuthorizeRequest.getNonce().getBytes(),
@@ -116,7 +116,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
             verifyResponse = verifyResponse.replace("\n", "");
             if ( !cryptBase64.equals(verifyResponse) ) {
                 // 验证失败，则返回错误，并返回应用账户的UUID
-                systemErrorResponse.fillErrorResponse( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
+                systemErrorResponse.fill( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
                 userAuthorizeFailedResponse.setAccount_id(rpAccount.getRp_account_uuid());
                 return userAuthorizeFailedResponse;
             }
@@ -134,7 +134,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
 //            byte[] responseBytes = Base64Coding.decode(strDecoded);
 //            // 验证失败，则返回错误，并返回应用账户的UUID
 //            if ( !result.equals(UtilsHelper.bytesToHexString(responseBytes)) ){
-//                systemErrorResponse.fillErrorResponse( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
+//                systemErrorResponse.fill( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
 //                userAuthorizeFailedResponse.setAccount_id(rpAccount.getRp_account_uuid());
 //                return userAuthorizeFailedResponse;
 //            }
@@ -148,7 +148,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         rpAccount.setAuthorization_token(authToken);
         ErrorCodeEnum errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
         if (errorCode != ErrorCodeEnum.ERROR_OK) {
-            systemErrorResponse.fillErrorResponse( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
+            systemErrorResponse.fill( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
             userAuthorizeFailedResponse.setAccount_id(rpAccount.getRp_account_uuid());
             return userAuthorizeFailedResponse;
         }
@@ -156,7 +156,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         // 添加认证的历史记录
         errorCode = addAuthorizeHistoryRecord(userAuthorizeRequest, 1);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // 回调 rp_account_authorized_callback_url
 //        relyPartCallBackHelper.rpAuthorizeCallback(relyPart, rpAccount.getRp_account_uuid(),
@@ -167,7 +167,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         MyWebSocket.websocketNotifyRedirect(relyPart.getRp_uuid(), rpAccount.getRp_account_uuid(),
                 authToken, userAuthorizeRequest.getNonce(), url);
 
-        systemErrorResponse.fillErrorResponse( userAuthorizeSuccessResponse, ErrorCodeEnum.ERROR_OK );
+        systemErrorResponse.fill( userAuthorizeSuccessResponse, ErrorCodeEnum.ERROR_OK );
         userAuthorizeSuccessResponse.setAccount_id(rpAccount.getRp_account_uuid());
         userAuthorizeSuccessResponse.setAuthorization_token(authToken);
         return userAuthorizeSuccessResponse;

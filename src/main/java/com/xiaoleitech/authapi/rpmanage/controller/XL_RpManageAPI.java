@@ -166,7 +166,7 @@ public class XL_RpManageAPI {
 //    public @ResponseBody
 //    AuthAPIResponse testModelAttribute(@RequestBody ModelMap modelMap) {
 //        System.out.println(modelMap);
-//        return systemErrorResponse.getSuccessResponse();
+//        return systemErrorResponse.success();
 //    }
 }
 

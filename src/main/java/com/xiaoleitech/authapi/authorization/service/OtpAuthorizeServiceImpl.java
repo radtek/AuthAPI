@@ -53,19 +53,19 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         // 检查频繁调用的限制
         String value = redisService.getValue("OtpAuthCalling");
         if ( (value != null) && (value.equals("1")))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_REQUEST_TOO_OFTEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_REQUEST_TOO_OFTEN);
 
         // 设置频繁调用限制
         redisService.setValueForSeconds("OtpAuthCalling", "1", 2);
 
         // 检查参数
         if (appUuid.isEmpty() || token.isEmpty() || otp.isEmpty() || (accountUuid.isEmpty() && accountName.isEmpty()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 读取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_APP);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_APP);
 
         // 读取应用账户记录
         RpAccounts rpAccount = null;
@@ -75,15 +75,15 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
             rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
         }
         if (rpAccount == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
         // 检查历史OTP
         if (otpAuthHistoryTableHelper.checkUsedInRecent(rpAccount.getId(), otp, 0))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_OTP);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_OTP);
 
         // 检查令牌
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 流程修改，免去 get_otp_code 接口调用，在本接口中一步完成
         // 生成OTP，并存放到缓存中
@@ -99,7 +99,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         BeanUtils.copyProperties(relyPart, otpParams);
         otpParams.setOtp_seed(rpAccount.getOtp_seed());
         if (!otpHelper.checkOtp(otpParams, otp)) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_OTP);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_OTP);
         }
 
         // OTP校验通过，保存账户认证状态
@@ -110,9 +110,9 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         rpAccount.setAuthorization_token(authToken);
         ErrorCodeEnum errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
-        systemErrorResponse.fillErrorResponse(otpAuthResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(otpAuthResponse, ErrorCodeEnum.ERROR_OK);
 
         // 取出登录成功的回调URL
         String url = relyPart.getRp_login_redirection_url();
@@ -134,7 +134,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         otpAuthHistory.setAuth_at(UtilsHelper.getCurrentSystemTimestamp());
         int count = otpAuthHistoryTableHelper.insertOneRecord(otpAuthHistory);
         if (count != 1)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
         return otpAuthResponse;
     }

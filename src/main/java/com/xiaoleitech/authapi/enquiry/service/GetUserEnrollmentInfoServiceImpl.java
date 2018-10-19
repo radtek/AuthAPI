@@ -36,11 +36,11 @@ public class GetUserEnrollmentInfoServiceImpl implements GetUserEnrollmentInfoSe
     public AuthAPIResponse getUserEnrollInfo(String userUuid, String verifyToken) {
         // 检查请求参数
         if (userUuid.isEmpty() || verifyToken.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 检查令牌是否有效
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_AUTHENTICATED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_AUTHENTICATED);
 
         // 获取登记APP的记录（可能是多条）
         List<EnrollUserInfo> enrollUserInfoList = joinRelyPartAccountMapper.selectEnrollUserInfo(userUuid);
@@ -51,7 +51,7 @@ public class GetUserEnrollmentInfoServiceImpl implements GetUserEnrollmentInfoSe
             userEnrollmentInfoResponse.setApp(enrollUserInfoList);
         }
 
-        systemErrorResponse.fillErrorResponse(userEnrollmentInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(userEnrollmentInfoResponse, ErrorCodeEnum.ERROR_OK);
         return userEnrollmentInfoResponse;
     }
 }

@@ -39,27 +39,27 @@ public class VerifyAuthStateServiceImpl implements VerifyAuthStateService {
     public AuthAPIResponse verifyAuthState(String appUuid, String token, String appAccountUuid, String authorizeToken) {
         // 检查参数
         if (appUuid.isEmpty() || token.isEmpty() || appAccountUuid.isEmpty() || authorizeToken.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 读取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         // 读取应用账户记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(appAccountUuid);
         if (rpAccount == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
         // 校验 token
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 校验认证状态和 authorization_token
         if (!rpAccountHelper.checkAuthState(rpAccount, authorizeToken))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_ACCOUNT_NOT_AUTHED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_ACCOUNT_NOT_AUTHED);
 
-        systemErrorResponse.fillErrorResponse(verifyAuthStateResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(verifyAuthStateResponse, ErrorCodeEnum.ERROR_OK);
         verifyAuthStateResponse.setAuth_life_time(relyPart.getAuth_life_time());
         verifyAuthStateResponse.setExpire_at(relyPart.getExpire_at());
         return verifyAuthStateResponse;

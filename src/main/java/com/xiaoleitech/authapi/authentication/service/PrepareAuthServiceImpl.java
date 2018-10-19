@@ -28,16 +28,16 @@ public class PrepareAuthServiceImpl implements PrepareAuthService {
     public AuthAPIResponse prepareAuthenticate(String userUuid) {
         // 检查系统中是否存在指定ID的用户
          if ( !usersTableHelper.isValidUserUuid(userUuid) )
-             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_USER);
+             return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_USER);
 
          // 产生一个随机挑战码，并将挑战码保存到缓存中，有效时间60秒(challengeHelper内部定时间)
         String challenge = challengeHelper.generateUserChallenge(userUuid);
 
         // 可能存在挑战码缓存的问题
         if (challenge.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
-        systemErrorResponse.fillErrorResponse(prepareAuthResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(prepareAuthResponse, ErrorCodeEnum.ERROR_OK);
         prepareAuthResponse.setChallenge(challenge);
         return prepareAuthResponse;
     }

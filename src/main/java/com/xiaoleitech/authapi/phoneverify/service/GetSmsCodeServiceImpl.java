@@ -29,13 +29,13 @@ public class GetSmsCodeServiceImpl implements GetSmsCodeService {
         // 产生SMS短信，并在缓存中保存一段时间
         String smsCode = challengeHelper.generateSmsCode(phoneNo, "");
         if (smsCode.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
         // 向指定手机号发送验证码短信
         ErrorCodeEnum errorCode = smsHelper.sendSmsVerifyCode(phoneNo, smsCode);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
-        return systemErrorResponse.getSuccessResponse();
+        return systemErrorResponse.success();
     }
 }

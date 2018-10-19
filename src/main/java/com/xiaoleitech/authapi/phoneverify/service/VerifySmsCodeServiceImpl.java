@@ -23,8 +23,8 @@ public class VerifySmsCodeServiceImpl implements VerifySmsCodeService {
 
         String cachedSmsCode = challengeHelper.getSmsCode(phoneNo);
         if (!cachedSmsCode.equals(smsCode))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_VERIFY_CODE);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_VERIFY_CODE);
         else
-            return systemErrorResponse.getSuccessResponse();
+            return systemErrorResponse.success();
     }
 }

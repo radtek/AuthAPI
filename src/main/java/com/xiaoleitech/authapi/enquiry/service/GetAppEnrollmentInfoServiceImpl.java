@@ -27,7 +27,7 @@ public class GetAppEnrollmentInfoServiceImpl implements GetAppEnrollmentInfoServ
         // 获取 RelyPart 记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_APP);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_APP);
 
         appEnrollmentInfoResponse.setApp_name(relyPart.getRp_name());
         appEnrollmentInfoResponse.setApp_logo(relyPart.getRp_logo_file_url());
@@ -40,7 +40,7 @@ public class GetAppEnrollmentInfoServiceImpl implements GetAppEnrollmentInfoServ
         appEnrollmentInfoResponse.setCert_type(relyPart.getCert_type());
         appEnrollmentInfoResponse.setCert_template("{ }");
 
-        systemErrorResponse.fillErrorResponse(appEnrollmentInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(appEnrollmentInfoResponse, ErrorCodeEnum.ERROR_OK);
         return appEnrollmentInfoResponse;
     }
 }

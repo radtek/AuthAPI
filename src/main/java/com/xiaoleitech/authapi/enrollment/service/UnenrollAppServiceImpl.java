@@ -41,36 +41,36 @@ public class UnenrollAppServiceImpl implements UnenrollAppService {
         // 用户必须存在
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
         // 验证令牌
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 通过 appUuid 查找 rps(依赖方) 表中的记录，找不到记录则不能进行解绑操作
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_APP);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_APP);
 
         // 从 rpaccounts 表中查找用户注册的记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(
                 relyPart.getId(), user.getId());
         if (rpAccount == null )
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED );
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED );
 
         // 如果已经处于解绑状态，则返回错误提示
         if ((rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState()) &&
                 (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_INACTIVE.getState())) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED );
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED );
         }
 
         // 逻辑删除此条账户记录
         rpAccount.setState(AccountStateEnum.ACCOUNT_LOGICAL_DELETE.getState());
         ErrorCodeEnum errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
         if (errorCode != ErrorCodeEnum.ERROR_OK) {
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
         }
 
-        return systemErrorResponse.getSuccessResponse();
+        return systemErrorResponse.success();
     }
 }

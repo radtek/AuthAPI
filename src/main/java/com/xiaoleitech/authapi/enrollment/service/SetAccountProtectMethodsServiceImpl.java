@@ -34,23 +34,23 @@ public class SetAccountProtectMethodsServiceImpl implements SetAccountProtectMet
         // 联合查询应用账户表的注册记录
         AppUsers appUser = joinRelyPartAccountHelper.getAppUserAccount(appUuid, userUuid, "");
         if (appUser == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
         // 从 rpaccounts 表中查找用户注册的记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(appUser.getRp_id(), appUser.getUser_id());
         if (rpAccount == null )
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND );
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND );
 
         // 检查令牌 verifyToken
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 设置保护方式
         rpAccount.setProtect_methods(protectMethods);
         ErrorCodeEnum errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
         if (errorCode == ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getSuccessResponse();
+            return systemErrorResponse.success();
         else
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
     }
 }

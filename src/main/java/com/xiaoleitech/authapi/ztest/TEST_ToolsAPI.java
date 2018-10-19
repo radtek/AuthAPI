@@ -3,6 +3,8 @@ package com.xiaoleitech.authapi.ztest;
 import com.alibaba.fastjson.JSONObject;
 import com.xiaoleitech.authapi.auxiliary.authentication.AuthenticationHelper;
 import com.xiaoleitech.authapi.auxiliary.entity.RelyPartHelper;
+import com.xiaoleitech.authapi.global.cipher.hash.HashAlgorithm;
+import com.xiaoleitech.authapi.global.cipher.hash.HashAlgorithmEnum;
 import com.xiaoleitech.authapi.global.msgqueue.activemq.MyActiveMqProducer;
 import com.xiaoleitech.authapi.global.cipher.otp.OtpHelper;
 import com.xiaoleitech.authapi.global.utils.UtilsHelper;
@@ -24,9 +26,8 @@ import com.xiaoleitech.authapi.dao.pojo.Devices;
 import com.xiaoleitech.authapi.dao.pojo.RelyParts;
 import com.xiaoleitech.authapi.dao.pojo.RpAccounts;
 import com.xiaoleitech.authapi.global.error.SystemErrorResponse;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -79,12 +80,6 @@ public class TEST_ToolsAPI {
         this.authenticationHelper = authenticationHelper;
     }
 
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public class TestResponse extends AuthAPIResponse {
-        String result;
-    }
-
     @RequestMapping(value ="/test/send_sms_code", method = RequestMethod.GET)
     public @ResponseBody
     Object sendSmsCode(@RequestParam("phone_no")String phoneNo,
@@ -132,9 +127,14 @@ public class TEST_ToolsAPI {
                              @RequestParam("auth_key") String authKey) {
         TestResponse testResponse = new TestResponse();
 
-        String hmac = MyHmacAlgorithm.calculate(challenge, password, passwordSalt, authKey);
+        // 先对密码做散列，连接密码后再做一次散列
+        String hashText = HashAlgorithm.getHash(Hex.toHexString(password.getBytes()), HashAlgorithmEnum.HASH_ALG_SHA256);
+        String hashedPassword = HashAlgorithm.getHash(Hex.toHexString((hashText + passwordSalt).getBytes()), HashAlgorithmEnum.HASH_ALG_SHA256);
+
+        // 计算散列
+        String hmac = MyHmacAlgorithm.calculate(challenge, hashedPassword, passwordSalt, authKey);
         testResponse.setResult(hmac);
-        systemErrorResponse.fillErrorResponse(testResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(testResponse, ErrorCodeEnum.ERROR_OK);
 
         return testResponse;
     }
@@ -150,7 +150,7 @@ public class TEST_ToolsAPI {
         byte [] bytesResult = symmetricAlgorithm.doAes(nonce.getBytes(), authKey.getBytes(), 256, Cipher.ENCRYPT_MODE);
         String encodeResult = Base64Coding.encode(bytesResult);
         testResponse.setResult(encodeResult);
-        systemErrorResponse.fillErrorResponse(testResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(testResponse, ErrorCodeEnum.ERROR_OK);
 
         return testResponse;
     }
@@ -169,7 +169,7 @@ public class TEST_ToolsAPI {
         String stringResult = new String(bytesResult);
 
         testResponse.setResult(stringResult);
-        systemErrorResponse.fillErrorResponse(testResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(testResponse, ErrorCodeEnum.ERROR_OK);
 
         return testResponse;
     }
@@ -189,7 +189,7 @@ public class TEST_ToolsAPI {
         String otp = otpHelper.generateOtp(otpParams);
 
         testResponse.setResult(otp);
-        systemErrorResponse.fillErrorResponse(testResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(testResponse, ErrorCodeEnum.ERROR_OK);
 
         return testResponse;
     }

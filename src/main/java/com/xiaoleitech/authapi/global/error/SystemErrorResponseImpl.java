@@ -40,13 +40,13 @@ public class SystemErrorResponseImpl implements SystemErrorResponse {
     }
 
     @Override
-    public void fillErrorResponse(AuthAPIResponse authAPIResponse, ErrorCodeEnum errorCodeEnum) {
+    public void fill(AuthAPIResponse authAPIResponse, ErrorCodeEnum errorCodeEnum) {
         authAPIResponse.setError_code(errorCodeEnum.getCode());
         authAPIResponse.setError_message(errorCodeEnum.getMsg());
     }
 
     @Override
-    public AuthAPIResponse getGeneralResponse(ErrorCodeEnum errorCode) {
+    public AuthAPIResponse response(ErrorCodeEnum errorCode) {
         AuthAPIResponse authAPIResponse = new AuthAPIResponse();
         authAPIResponse.setError_code(errorCode.getCode());
         authAPIResponse.setError_message(errorCode.getMsg());
@@ -55,7 +55,17 @@ public class SystemErrorResponseImpl implements SystemErrorResponse {
     }
 
     @Override
-    public AuthAPIResponse getSuccessResponse() {
-        return getGeneralResponse(ErrorCodeEnum.ERROR_OK);
+    public AuthAPIResponse success() {
+        return response(ErrorCodeEnum.ERROR_OK);
+    }
+
+    @Override
+    public AuthAPIResponse notImplemented() {
+        return response(ErrorCodeEnum.ERROR_NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public AuthAPIResponse needParameters() {
+        return response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
     }
 }

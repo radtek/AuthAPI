@@ -1,4 +1,4 @@
-package com.xiaoleitech.authapi.global.callback;
+package com.xiaoleitech.authapi.global.restcall;
 
 import com.xiaoleitech.authapi.auxiliary.entity.RelyPartHelper;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;

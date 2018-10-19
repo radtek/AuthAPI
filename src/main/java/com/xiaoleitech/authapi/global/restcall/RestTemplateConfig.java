@@ -1,4 +1,4 @@
-package com.xiaoleitech.authapi.global.callback;
+package com.xiaoleitech.authapi.global.restcall;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

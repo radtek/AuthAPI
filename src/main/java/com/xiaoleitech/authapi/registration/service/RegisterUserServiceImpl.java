@@ -104,7 +104,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         if (user == null) {
             errorCode = addNewUserRecord(registerUserRequest);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
             }
         } else {
             // 如果查到该用户，检查用户状态
@@ -113,7 +113,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
                 // 用户状态不是未注册和未注销，则返回用户不能重复注册的错误信息
                 RegisterUserExistResponse registerUserExistResponse = new RegisterUserExistResponse();
                 registerUserExistResponse.setUser_id(user.getUser_uuid());
-                systemErrorResponse.fillErrorResponse(registerUserExistResponse, ErrorCodeEnum.ERROR_USER_REGISTERED);
+                systemErrorResponse.fill(registerUserExistResponse, ErrorCodeEnum.ERROR_USER_REGISTERED);
                 return registerUserExistResponse;
             }
 
@@ -122,12 +122,12 @@ public class RegisterUserServiceImpl implements RegisterUserService {
                     registerUserRequest.getPassword(),
                     user.getPassword(),
                     user.getPassword_salt()))
-                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+                return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
 
             // 更新用户状态及相应数据（身份、地址、号码等等，以API传入的数据为准）
             errorCode = updateRegisterUserRecord(registerUserRequest, user, UserStateEnum.USER_REG_BINDING_L1);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
             }
         }
 
@@ -139,7 +139,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         registerUserResponse.setUser_state(user.getUser_state());
 
         // Request 的服务成功执行，返回
-        systemErrorResponse.fillErrorResponse(registerUserResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(registerUserResponse, ErrorCodeEnum.ERROR_OK);
 
         return registerUserResponse;
     }
@@ -153,16 +153,16 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
         }
 
         // 验证令牌
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 如果用户已经是注销状态，则返回找不到用户
         if (user.getUser_state() == UserStateEnum.USER_UNREGISTERED.getState()) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
         }
 
         ErrorCodeEnum errorCode;
@@ -173,7 +173,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             device.setState(DeviceStateEnum.DEV_LOGICAL_DELETE.getState());
             errorCode = devicesTableHelper.updateOneDeviceRecord(device);
             if (errorCode != ErrorCodeEnum.ERROR_OK)
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
         }
 
         // 逻辑删除账户记录
@@ -183,17 +183,17 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             rpAccount.setState(AccountStateEnum.ACCOUNT_LOGICAL_DELETE.getState());
             errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
             if (errorCode != ErrorCodeEnum.ERROR_OK)
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
         }
 
         // 设置用户状态（未注册，逻辑删除）
         user.setUser_state(UserStateEnum.USER_LOGICAL_DELETE.getState());
         errorCode = usersTableHelper.updateOneUserRecord(user);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
 
-        return systemErrorResponse.getSuccessResponse();
+        return systemErrorResponse.success();
     }
 
     @Transactional
@@ -204,16 +204,16 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
         // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
         if (user == null) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
         }
 
         // 验证令牌
         if (!authenticationHelper.isTokenVerified(updateUserRequest.getVerify_token()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 不需要验证密码
 //        if (!authenticationHelper.isValidPassword(updateUserRequest.getPassword(), user.getPassword(), user.getPassword_salt()))
-//            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+//            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
 
         // 更新用户记录，只更新请求中包含的字段
         // TODO: 是否有更好的方法简化下面代码。(查阅lombok的 @NonNull，set null时会抛出异常)
@@ -238,7 +238,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         user.setFace_enrolled(updateUserRequest.getFace_enrolled());
 
         // 成功更新一条记录，并返回执行结果 (Response)
-        return systemErrorResponse.getGeneralResponse(usersTableHelper.updateOneUserRecord(user));
+        return systemErrorResponse.response(usersTableHelper.updateOneUserRecord(user));
     }
 
     @Transactional
@@ -246,7 +246,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     public AuthAPIResponse recoverUser(String deviceUuid, String password, String phoneNumber) {
         //检查参数，电话号码必须
         if (phoneNumber.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 先使用电话号码读取用户记录。
         Users user = usersTableHelper.getUserByPhoneNo(phoneNumber);
@@ -257,14 +257,14 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
         // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
         if (user == null) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
         }
 
         // 检查手机号码，验证密码
         if (!user.getPhone_no().equals(phoneNumber))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_DEVICE);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_DEVICE);
         if (!authenticationHelper.isValidPassword(password, user.getPassword(), user.getPassword_salt()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
 
         // 设置用户状态（已注册，已绑定设备、手机号，已激活）
         user.setUser_state(UserStateEnum.USER_REG_BINDING_L1.getState());
@@ -272,14 +272,14 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // 更新用户记录，如果失败则返回处理的错误码 (Response)
         ErrorCodeEnum errorCode = usersTableHelper.updateOneUserRecord(user);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // 填充响应数据：用户UUID，密码盐，认证秘钥，保护方法
         recoverUserResponse.setUser_id(user.getUser_uuid());
         recoverUserResponse.setPassword_salt(user.getPassword_salt());
         recoverUserResponse.setAuth_key(user.getAuth_key());
         recoverUserResponse.setProtect_methods(user.getProtect_methods());
-        systemErrorResponse.fillErrorResponse(recoverUserResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(recoverUserResponse, ErrorCodeEnum.ERROR_OK);
 
         return recoverUserResponse;
     }
@@ -291,16 +291,16 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // 按照phone number 从users表中读取用户
         Users user = usersTableHelper.getUserByPhoneNo(phoneNumber);
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
 //        // 从RPAccounts表中查询指定AppID的账户记录
 //        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(appId, user.getUsers_id());
 //        if (rpAccount == null)
-//            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+//            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         //  验证密码
         if (!authenticationHelper.isValidPassword(password, user.getPassword(), user.getPassword_salt()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_PASSWORD);
 
         // 计算 sdk_auth_key
         String base64SdkAuthKey = authenticationHelper.getSdkAuthKey(appUuid, user.getAuth_key());
@@ -313,7 +313,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         getAuthKeyResponse.setSdk_auth_key(base64SdkAuthKey);
 
         // Request 的服务成功执行，返回
-        systemErrorResponse.fillErrorResponse(getAuthKeyResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(getAuthKeyResponse, ErrorCodeEnum.ERROR_OK);
 
         return getAuthKeyResponse;
     }

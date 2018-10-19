@@ -23,13 +23,13 @@ public class CheckUserIdExistServiceImpl implements CheckUserIdExistService {
     public AuthAPIResponse isUserIdExist(String userUuid) {
         // 检查参数
         if (userUuid.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 根据 user_uuid 查找系统中的有效用户
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if ( user == null )
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
-        return systemErrorResponse.getSuccessResponse();
+        return systemErrorResponse.success();
     }
 }

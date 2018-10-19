@@ -32,15 +32,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         // 获取指定UUID的用户记录
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_USER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_USER);
 
         // 验证token
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 用户不是已认证状态，返回未认证错误
         if (user.getAuthenticated() != UserAuthStateEnum.AUTH_STATE_AUTHED.getAuthState())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_ACCOUNT_NOT_AUTHED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_ACCOUNT_NOT_AUTHED);
 
         // 更新token，需清除旧的token
         authenticationHelper.clearToken(verifyToken);
@@ -52,11 +52,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         // 在系统中更新用户记录
         ErrorCodeEnum errorCode = usersTableHelper.updateOneUserRecord(user);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         refreshTokenResponse.setExpire_at(user.getAuth_at());
         refreshTokenResponse.setVerify_token(user.getVerify_token());
-        systemErrorResponse.fillErrorResponse(refreshTokenResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(refreshTokenResponse, ErrorCodeEnum.ERROR_OK);
         return refreshTokenResponse;
     }
 }

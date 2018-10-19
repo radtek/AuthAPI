@@ -17,18 +17,30 @@ public interface SystemErrorResponse {
      * @param authAPIResponse Fill the system error info (code & message)
      * @param errorCodeEnum   Error code
      */
-    void fillErrorResponse(AuthAPIResponse authAPIResponse, ErrorCodeEnum errorCodeEnum);
+    void fill(AuthAPIResponse authAPIResponse, ErrorCodeEnum errorCodeEnum);
 
     /** 创建一个AuthApiResponse对象，并填充传入参数 errorCode 的 code 和 message
      *
      * @param errorCode: 错误码
      * @return authApiResponse: AuthApiResponse 对象
      */
-    AuthAPIResponse getGeneralResponse(ErrorCodeEnum errorCode);
+    AuthAPIResponse response(ErrorCodeEnum errorCode);
 
-    /** 返回一个HTTP成功(200)的响应结果
+    /** 返回一个成功(0)的响应结果
      *
-     * @return HTTP成功的代码和信息，打包在 AuthAPIResponse 对象中返回
+     * @return  成功的代码和信息，打包在 AuthAPIResponse 对象中返回
      */
-    AuthAPIResponse getSuccessResponse();
+    AuthAPIResponse success();
+
+    /**
+     * 返回一个未实现的响应结果
+     * @return ERROR_NOT_IMPLEMENTED
+     */
+    AuthAPIResponse notImplemented();
+
+    /**
+     * 返回一个缺少参数的响应结果
+     * @return ERROR_NEED_PARAMETER
+     */
+    AuthAPIResponse needParameters();
 }

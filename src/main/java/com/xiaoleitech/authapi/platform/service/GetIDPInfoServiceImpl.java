@@ -26,7 +26,7 @@ public class GetIDPInfoServiceImpl implements GetIDPInfoService {
         idpInfoResponse.setSupported_ios_app_version("1.0.0.0");
         idpInfoResponse.setSupported_android_app_version("1.0.0.0");
 
-        systemErrorResponse.fillErrorResponse(idpInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(idpInfoResponse, ErrorCodeEnum.ERROR_OK);
 
         return idpInfoResponse;
     }

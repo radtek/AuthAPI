@@ -26,8 +26,8 @@ public class CheckAccountUniqueServiceImpl implements CheckAccountUniqueService 
     public AuthAPIResponse checkAccountUnique(String appUuid, String appAccountName) {
         boolean existAccount = enrollCommon.isExistAccountName(appUuid, appAccountName);
         if (existAccount)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USERNAME_USED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USERNAME_USED);
         else
-            return systemErrorResponse.getSuccessResponse();
+            return systemErrorResponse.success();
     }
 }

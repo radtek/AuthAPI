@@ -27,7 +27,7 @@ public class GetUserInfoServiceImpl implements GetUserInfoService{
         // 获取指定UUID的 user 记录
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_USER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_USER);
 
         userInfoResponse.setUser_realname(user.getReal_name());
         userInfoResponse.setPhone_no(user.getPhone_no());
@@ -36,7 +36,7 @@ public class GetUserInfoServiceImpl implements GetUserInfoService{
         userInfoResponse.setId_no(user.getId_no());
         userInfoResponse.setFace_enrolled(user.getFace_enrolled());
 
-        systemErrorResponse.fillErrorResponse(userInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(userInfoResponse, ErrorCodeEnum.ERROR_OK);
 
         return userInfoResponse;
     }

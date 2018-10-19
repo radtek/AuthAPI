@@ -71,6 +71,6 @@ public class CommonExceptionAdvice {
                     "\t行数: " + element.getLineNumber();
             logger.error(errorInfo);
         }
-        return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+        return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
     }
 }

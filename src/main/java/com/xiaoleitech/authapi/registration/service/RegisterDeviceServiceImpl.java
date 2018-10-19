@@ -54,7 +54,7 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
                     (device.getState()) == DeviceStateEnum.DEV_REGISTER_NO_BINDING.getState()) {
                 // 设备已注册，不管是否已绑定，均返回错误
                 registerDeviceResponse.setDevice_id(device.getDevice_uuid());
-                systemErrorResponse.fillErrorResponse(registerDeviceResponse, ErrorCodeEnum.ERROR_DEVICE_REGISTERED);
+                systemErrorResponse.fill(registerDeviceResponse, ErrorCodeEnum.ERROR_DEVICE_REGISTERED);
                 return registerDeviceResponse;
             } else {
                 // 更新设备记录（状态、型号、令牌、TEE、SE、更新时间...）
@@ -65,19 +65,19 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
                 device.setState(DeviceStateEnum.DEV_REGISTER_AND_BINDING.getState());
                 errorCode = devicesTableHelper.updateOneDeviceRecord(device);
                 if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                    return systemErrorResponse.getGeneralResponse(errorCode);
+                    return systemErrorResponse.response(errorCode);
                 }
             }
         } else {
             // 系统中找不到该设备，增加一条设备新记录
             errorCode = addNewDeviceRecord(registerDeviceRequest);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
             }
         }
 
         // 返回成功
-        systemErrorResponse.fillErrorResponse(registerDeviceResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(registerDeviceResponse, ErrorCodeEnum.ERROR_OK);
         registerDeviceResponse.setDevice_id(devicesTableHelper.getDevicesUuidByImei(registerDeviceRequest.getImei()));
         return registerDeviceResponse;
     }
@@ -89,14 +89,14 @@ public class RegisterDeviceServiceImpl implements RegisterDeviceService {
 
         // 系统中找不到指定ID的设备，返回无效设备错误信息
         if (device == null) {
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
         }
 
         // 设置设备状态（设备注销）
         device.setState(DeviceStateEnum.DEV_LOGICAL_DELETE.getState());
 
         // 更新设备记录并返回 response
-        return systemErrorResponse.getGeneralResponse(devicesTableHelper.updateOneDeviceRecord(device));
+        return systemErrorResponse.response(devicesTableHelper.updateOneDeviceRecord(device));
     }
 
     private ErrorCodeEnum copyDeviceParamsFromRequest(RegisterDeviceRequest registerDeviceRequest, Devices device) {

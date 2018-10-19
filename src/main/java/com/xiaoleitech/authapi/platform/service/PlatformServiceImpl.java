@@ -36,7 +36,7 @@ public class PlatformServiceImpl implements PlatformService {
         platformSettingResponse.setMqtt_server(mqttUrlsList[0]);
 //        platformSettingResponse.setMqtt_port("");
 
-        systemErrorResponse.fillErrorResponse(platformSettingResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(platformSettingResponse, ErrorCodeEnum.ERROR_OK);
         return platformSettingResponse;
     }
 
@@ -46,7 +46,7 @@ public class PlatformServiceImpl implements PlatformService {
         cloudInfoResponse.setVersion("1.0");
         cloudInfoResponse.setCloud_name("小雷身份认证平台");
         cloudInfoResponse.setSupported_sdk_version("1.0");
-        systemErrorResponse.fillErrorResponse(cloudInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(cloudInfoResponse, ErrorCodeEnum.ERROR_OK);
         return cloudInfoResponse;
     }
 }

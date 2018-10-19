@@ -30,22 +30,22 @@ public class GetUserAuthConfigServiceImpl implements GetUserAuthConfigService {
     public AuthAPIResponse getUserAuthConfig(String userUuid, String deviceUuid) {
         // 检查参数
         if (userUuid.isEmpty() || deviceUuid.isEmpty())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 检查用户是否存在
         Users  user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
         // 检查绑定设备
         Devices device = devicesTableHelper.getDeviceByUuid(deviceUuid);
         if (device == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_DEVICE_NOT_FOUND);
 
         // 获取用户认证参数
         userAuthConfigResponse.setProtect_methods(user.getProtect_methods());
         userAuthConfigResponse.setFace_enrolled(user.getFace_enrolled());
-        systemErrorResponse.fillErrorResponse(userAuthConfigResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(userAuthConfigResponse, ErrorCodeEnum.ERROR_OK);
         return userAuthConfigResponse;
     }
 }

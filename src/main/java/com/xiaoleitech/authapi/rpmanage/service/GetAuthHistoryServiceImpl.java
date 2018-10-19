@@ -75,7 +75,7 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
     public AuthAPIResponse getAuthHistoryRecordsCount(String appUuid, String token, String accountName, String accountUuid) {
         // appUuid不能为空，否则查不到历史记录
         if ( (appUuid == null) || (appUuid.isEmpty())) {
-            systemErrorResponse.fillErrorResponse(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
+            systemErrorResponse.fill(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
             getAuthHistoryCountResponse.setCount(0);
             return getAuthHistoryCountResponse;
         }
@@ -83,12 +83,12 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
         // 查找账号记录，账号名或UUID二选一
         ErrorCodeEnum errorCode = searchRpAccount(appUuid, token, accountName, accountUuid);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // TODO: 暂时先读取所有记录，再取count值，需优化成直接取count
         List<AccountAuthHistories> accountAuthHistoriesList = accountAuthHistoryMapper.selectAuthHistoryByUserIdAndRpId(
                 validRpAccount.getUser_id(), validRpAccount.getRp_id());
-        systemErrorResponse.fillErrorResponse(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
         getAuthHistoryCountResponse.setCount(accountAuthHistoriesList.size());
 
         return getAuthHistoryCountResponse;
@@ -97,11 +97,11 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
     @Override
     public AuthAPIResponse getAuthHistories(String appUuid, String token, String accountName, String accountUuid, int from, int count) {
         if ((from <= 0) || (count <=0))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_PARAMETER);
 
         // appUuid不能为空，否则查不到历史记录
         if ( (appUuid == null) || (appUuid.isEmpty())) {
-            systemErrorResponse.fillErrorResponse(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
+            systemErrorResponse.fill(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
             getAuthHistoryCountResponse.setCount(0);
             return getAuthHistoryCountResponse;
         }
@@ -109,7 +109,7 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
         // 查找账号记录，账号名或UUID二选一
         ErrorCodeEnum errorCode = searchRpAccount(appUuid, token, accountName, accountUuid);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // TODO: 暂时先读取所有记录，再取从结果集中取指定范围的记录
         List<AccountAuthHistories> accountAuthHistoriesList = accountAuthHistoryMapper.selectAuthHistoryByUserIdAndRpId(
@@ -134,7 +134,7 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
             authHistoryRecordList.add(authHistoryRecord);
         }
         getAuthHistoriesResponse.setAuth_history(authHistoryRecordList);
-        systemErrorResponse.fillErrorResponse(getAuthHistoriesResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(getAuthHistoriesResponse, ErrorCodeEnum.ERROR_OK);
         return getAuthHistoriesResponse;
     }
 }

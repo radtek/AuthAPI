@@ -70,11 +70,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 //        // 检查请求参数中指定的 app 和 user
 //        ErrorCodeEnum errorCode = enrollCommon.checkAppAndUser( enrollAppRequest.getApp_id(), enrollAppRequest.getUser_id() );
 //        if (errorCode != ErrorCodeEnum.ERROR_OK)
-//            return systemErrorResponse.getGeneralResponse(errorCode);
+//            return systemErrorResponse.response(errorCode);
 //
 //        // 验证令牌
 //        if (!AuthenticationHelper.isTokenVerified(enrollAppRequest.getVerify_token()))
-//            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+//            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 //
 //        // 如果要求昵称唯一，检查对应的应用账户表，昵称是否唯一。
 //        if (relyPart.getUniq_account_name() == UniqueAccountNameEnum.USING_UNIQUE_NICK_NAME.getUniqueAccountName()) {
@@ -96,16 +96,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         // 用户必须存在
         Users user = usersTableHelper.getUserByUserUuid(enrollAppRequest.getUser_id());
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
         // 通过app_id查找 rps(依赖方) 表中的记录，找不到记录则不能进行登记操作
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(enrollAppRequest.getApp_id());
         if (relyPart == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_APP);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_APP);
 
         // 验证令牌
         if (!authenticationHelper.isTokenVerified(enrollAppRequest.getVerify_token()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 查找 rpaccounts 中的记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(
@@ -115,12 +115,12 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         if (relyPart.getUniq_account_name() == UniqueAccountNameEnum.USING_UNIQUE_NICK_NAME.getUniqueAccountName()) {
             // 要求昵称唯一时，请求参数中的账户名称不能为空
             if (enrollAppRequest.getAccount_name().isEmpty()) {
-                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_PARAMETER);
+                return systemErrorResponse.response(ErrorCodeEnum.ERROR_PARAMETER);
             }
             // 如果在系统中查到重复的 account_name，则返回用户名已经占有
             if (enrollCommon.isExistAccountName(  enrollAppRequest.getApp_id(),
                                                     enrollAppRequest.getAccount_name())) {
-                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USERNAME_USED);
+                return systemErrorResponse.response(ErrorCodeEnum.ERROR_USERNAME_USED);
             }
         }
 
@@ -132,35 +132,35 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             // 新建一条记录
             errorCode = addNewRpAccountRecord(enrollAppRequest, user, relyPart);
             if (errorCode != ErrorCodeEnum.ERROR_OK)
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
         } else {
             // 检查当前注册应用的state，如果是已注册(不管是否激活)，返回已注册的错误信息
             if ( (rpAccount.getState() == AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState()) ||
                     (rpAccount.getState() == AccountStateEnum.ACCOUNT_STATE_INACTIVE.getState())) {
-                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_ALREADY_ENROLLED);
+                return systemErrorResponse.response(ErrorCodeEnum.ERROR_ALREADY_ENROLLED);
             }
 
             // 用请求的参数更新这条记录
             errorCode = copyEnrollAppRequestParams(enrollAppRequest, rpAccount, user, relyPart);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
             }
 
             // 根据应用的 authorization_policy 来设置应用注册状态为：注册即激活或注册未激活
             setAccountState(rpAccount, relyPart);
             errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
             if (errorCode != ErrorCodeEnum.ERROR_OK) {
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
             }
         }
 
         // 重新获取这条记录，执行到此可以获取记录，获取不到说明有未知错误
         rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getId(), user.getId());
         if (rpAccount == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
         // 返回成功
-        systemErrorResponse.fillErrorResponse(enrollAppResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(enrollAppResponse, ErrorCodeEnum.ERROR_OK);
         // 填写RelyPart的资料
         enrollAppResponse.setApp_account_id(rpAccount.getRp_account_uuid());
         enrollAppResponse.setAccount_state(rpAccount.getState());

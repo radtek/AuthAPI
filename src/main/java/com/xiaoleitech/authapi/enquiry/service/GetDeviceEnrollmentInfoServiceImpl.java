@@ -25,15 +25,15 @@ public class GetDeviceEnrollmentInfoServiceImpl implements GetDeviceEnrollmentIn
     public AuthAPIResponse getDeviceEnrollmentInfo(String userUuid, String deviceUuid, String appUuid) {
         // 检查请求参数
         if ( (userUuid.isEmpty()) || (deviceUuid.isEmpty()) || (appUuid.isEmpty()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_NEED_PARAMETER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 获取设备绑定应用信息
         EnrollDeviceInfo enrollDeviceInfo = joinRelyPartAccountHelper.getEnrollDeviceInfo(userUuid, deviceUuid, appUuid);
         if (enrollDeviceInfo == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_ACCOUNT);
 
         BeanUtils.copyProperties(enrollDeviceInfo, deviceEnrollmentInfoResponse);
-        systemErrorResponse.fillErrorResponse(deviceEnrollmentInfoResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(deviceEnrollmentInfoResponse, ErrorCodeEnum.ERROR_OK);
         return deviceEnrollmentInfoResponse;
     }
 

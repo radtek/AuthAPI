@@ -69,19 +69,19 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
         // 获取指定UUID的 users 记录
          Users user = usersTableHelper.getUserByUserUuid(userAuthRequest.getUser_id());
          if (user == null)
-             return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+             return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
 
         // 获取缓存的挑战码（user_uuid作为键值）
         String challenge = challengeHelper.getChallenge(userAuthRequest.getUser_id());
         if ((challenge == null) || (challenge.isEmpty()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_CHALLENGE_EXPIRED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_CHALLENGE_EXPIRED);
 
         int protectMethod = userAuthRequest.getProtect_method();
 
         // 如果是密码校验方式，检查用户密码的状态（是否锁定，剩余次数）
         ErrorCodeEnum errorCode = authenticationHelper.getAuthticateRight(user, protectMethod);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // 如果有 app_id 参数，使用 Rely-Part 的 sdk_auth_key，否则使用 user 的 auth_key
         String authKey;
@@ -90,7 +90,7 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
             rpAccount = rpAccountsTableHelper.getRpAccountByRpUuidAndUserUuid(
                     userAuthRequest.getApp_id(), userAuthRequest.getUser_id());
             if (rpAccount == null)
-                return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_APP);
+                return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_APP);
             authKey = rpAccount.getSdk_auth_key();
         } else {
             authKey = user.getAuth_key();
@@ -123,7 +123,7 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
             // 更新用户数据到数据库中
             errorCode = usersTableHelper.updateOneUserRecord(user);
             if (errorCode != ErrorCodeEnum.ERROR_OK)
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
 
             // 更新 auth_histories 表
             addAuthHistoryRecord(userAuthRequest, ErrorCodeEnum.ERROR_OK.getCode());
@@ -131,7 +131,7 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
             // 成功时返回验证令牌和令牌失效时间
             userAuthSuccessResponse.setVerify_token(user.getVerify_token());
             userAuthSuccessResponse.setExpire_at(authenticationHelper.getTokenExpireTime(user.getVerify_token()));
-            systemErrorResponse.fillErrorResponse(userAuthSuccessResponse, ErrorCodeEnum.ERROR_OK);
+            systemErrorResponse.fill(userAuthSuccessResponse, ErrorCodeEnum.ERROR_OK);
             return userAuthSuccessResponse;
         } else {
             // HMAC 比较不相等，则走验证失败流程
@@ -157,14 +157,14 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
             // 保存尝试次数
             errorCode = usersTableHelper.updateOneUserRecord(user);
             if (errorCode != ErrorCodeEnum.ERROR_OK)
-                return systemErrorResponse.getGeneralResponse(errorCode);
+                return systemErrorResponse.response(errorCode);
 
             // 更新 auth_histories 表
             addAuthHistoryRecord(userAuthRequest, ErrorCodeEnum.ERROR_AUTH_FAILED.getCode());
 
             // 失败时返回剩余尝试次数
             userAuthFailResponse.setRemain_retry_count(remainRetryCount);
-            systemErrorResponse.fillErrorResponse(userAuthFailResponse, ErrorCodeEnum.ERROR_AUTH_FAILED);
+            systemErrorResponse.fill(userAuthFailResponse, ErrorCodeEnum.ERROR_AUTH_FAILED);
             return userAuthFailResponse;
         }
 

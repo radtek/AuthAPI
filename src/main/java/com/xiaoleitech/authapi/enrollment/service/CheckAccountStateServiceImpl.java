@@ -33,9 +33,9 @@ public class CheckAccountStateServiceImpl implements CheckAccountStateService {
         // 联合查询用户注册记录和用户信息
         AppUsers appUser = joinRelyPartAccountHelper.getAppUserAccount(appUuid, userUuid, "");
         if (appUser == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_USER_NOT_FOUND );
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND );
 
-        systemErrorResponse.fillErrorResponse(checkAccountStateResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(checkAccountStateResponse, ErrorCodeEnum.ERROR_OK);
         checkAccountStateResponse.setAccount_state(appUser.getAccount_state());
         return checkAccountStateResponse;
     }

@@ -50,11 +50,11 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 检查请求参数
         ErrorCodeEnum errorCode = checkRelyPartParams(createRelyPartRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // TODO: 是否要求rp名称全局唯一
         if (relyPartsTableHelper.isExistRpName(createRelyPartRequest.getRp_name()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_EXIST_APP_NAME);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_EXIST_APP_NAME);
 
         // 设置应用记录的默认值
         RelyParts relyPartRecord = new RelyParts();
@@ -63,7 +63,7 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 拷贝请求参数到RelyPart记录
         errorCode = fillRelyPartRecordUsingRequestParams(relyPartRecord, createRelyPartRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // 生成 rp_uuid
         relyPartRecord.setRp_uuid(UtilsHelper.generateUuid());
@@ -94,10 +94,10 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 插入这条新APP的记录
         int count = relyPartsTableHelper.insertOneRelyPart(relyPartRecord);
         if (count != 1)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
         // 成功时，返回应用UUID和APP KEY
-        systemErrorResponse.fillErrorResponse(createRelyPartResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(createRelyPartResponse, ErrorCodeEnum.ERROR_OK);
         createRelyPartResponse.setApp_id(relyPartRecord.getRp_uuid());
         createRelyPartResponse.setApp_key(relyPartRecord.getApp_key());
         return createRelyPartResponse;
@@ -108,16 +108,16 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 根据应用UUID读取应用记录
         RelyParts relyPartRecord = relyPartsTableHelper.getRelyPartByRpUuid(setRelyPartParamsRequest.getApp_id());
         if (relyPartRecord == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         // 检查token
         if (!relyPartHelper.verifyToken(relyPartRecord, setRelyPartParamsRequest.getToken()))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 拷贝请求参数到RelyPart记录
         ErrorCodeEnum errorCode = fillRelyPartRecordUsingRequestParams(relyPartRecord, setRelyPartParamsRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return systemErrorResponse.getGeneralResponse(errorCode);
+            return systemErrorResponse.response(errorCode);
 
         // 设置更新时间
         java.sql.Timestamp currentTime = UtilsHelper.getCurrentSystemTimestamp();
@@ -126,9 +126,9 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 更新记录
         int count = relyPartsTableHelper.updateOneRelyPartRecordByUuid(relyPartRecord);
         if (count <= 0)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
-        return systemErrorResponse.getSuccessResponse();
+        return systemErrorResponse.success();
     }
 
     @Override
@@ -136,11 +136,11 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 根据应用UUID读取应用记录
         RelyParts relyPartRecord = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPartRecord == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         // 检查token
         if (!relyPartHelper.verifyToken(relyPartRecord, token))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 提取relypart参数
         getRelyPartParamsResponse.setRp_name(relyPartRecord.getRp_name());
@@ -167,7 +167,7 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         getRelyPartParamsResponse.setRp_account_unenrolled_callback_url(relyPartRecord.getRp_account_unenroll_callback_url());
         getRelyPartParamsResponse.setRp_account_exist_callback_url(relyPartRecord.getRp_account_exist_callback_url());
 
-        systemErrorResponse.fillErrorResponse(getRelyPartParamsResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(getRelyPartParamsResponse, ErrorCodeEnum.ERROR_OK);
 
         return getRelyPartParamsResponse;
     }
@@ -177,11 +177,11 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 根据应用UUID读取应用记录
         RelyParts relyPartRecord = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPartRecord == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
 
         // 检查token
         if (!relyPartHelper.verifyToken(relyPartRecord, token))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 生成新的 app_key
         relyPartRecord.setApp_key(relyPartHelper.generateNewAppKey());
@@ -193,10 +193,10 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 更新记录
         int count = relyPartsTableHelper.updateOneRelyPartRecordByUuid(relyPartRecord);
         if (count <= 0)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INTERNAL_ERROR);
 
         resetRelyPartAuthKeyResponse.setApp_key(relyPartRecord.getApp_key());
-        systemErrorResponse.fillErrorResponse(resetRelyPartAuthKeyResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(resetRelyPartAuthKeyResponse, ErrorCodeEnum.ERROR_OK);
 
         return resetRelyPartAuthKeyResponse;
     }

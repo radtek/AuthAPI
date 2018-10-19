@@ -31,19 +31,19 @@ public class UserAuthStateServiceImpl implements  UserAuthStateService {
         // 获取指定UUID的用户记录
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_USER);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_USER);
 
         // 验证token
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
 
         // 获取用户认证状态
         if (user.getAuthenticated() != UserAuthStateEnum.AUTH_STATE_AUTHED.getAuthState())
-            return systemErrorResponse.getGeneralResponse(ErrorCodeEnum.ERROR_ACCOUNT_NOT_AUTHED);
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_ACCOUNT_NOT_AUTHED);
 
         // 返回过期时间
         userAuthStateResponse.setExpire_at(authenticationHelper.getUserAuthExpireTime(user));
-        systemErrorResponse.fillErrorResponse(userAuthStateResponse, ErrorCodeEnum.ERROR_OK);
+        systemErrorResponse.fill(userAuthStateResponse, ErrorCodeEnum.ERROR_OK);
 
         return userAuthStateResponse;
     }
