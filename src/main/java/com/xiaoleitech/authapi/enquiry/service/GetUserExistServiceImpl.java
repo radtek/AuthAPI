@@ -35,10 +35,10 @@ public class GetUserExistServiceImpl implements GetUserExistService {
         // 按电话号码查询 user 记录
         Users user = usersTableHelper.getUserByPhoneNo(phoneNo);
         if (user == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
-        if ( (user.getUser_state() == UserStateEnum.USER_NOT_REGISTERED.getState()) ||
+            return systemErrorResponse.userNotFound();
+        if ((user.getUser_state() == UserStateEnum.USER_NOT_REGISTERED.getState()) ||
                 (user.getUser_state() == UserStateEnum.USER_UNREGISTERED.getState()))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
 
         // 如果没有指定应用UUID，返回依据电话号码在本系统中获取 user 信息
         if ((appUuid == null) || (appUuid.isEmpty())) {

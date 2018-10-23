@@ -74,7 +74,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 //
 //        // 验证令牌
 //        if (!AuthenticationHelper.isTokenVerified(enrollAppRequest.getVerify_token()))
-//            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+//            return systemErrorResponse.invalidToken();
 //
 //        // 如果要求昵称唯一，检查对应的应用账户表，昵称是否唯一。
 //        if (relyPart.getUniq_account_name() == UniqueAccountNameEnum.USING_UNIQUE_NICK_NAME.getUniqueAccountName()) {
@@ -96,7 +96,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         // 用户必须存在
         Users user = usersTableHelper.getUserByUserUuid(enrollAppRequest.getUser_id());
         if (user == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
 
         // 通过app_id查找 rps(依赖方) 表中的记录，找不到记录则不能进行登记操作
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(enrollAppRequest.getApp_id());
@@ -105,7 +105,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         // 验证令牌
         if (!authenticationHelper.isTokenVerified(enrollAppRequest.getVerify_token()))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 查找 rpaccounts 中的记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(
@@ -118,8 +118,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 return systemErrorResponse.response(ErrorCodeEnum.ERROR_PARAMETER);
             }
             // 如果在系统中查到重复的 account_name，则返回用户名已经占有
-            if (enrollCommon.isExistAccountName(  enrollAppRequest.getApp_id(),
-                                                    enrollAppRequest.getAccount_name())) {
+            if (enrollCommon.isExistAccountName(enrollAppRequest.getApp_id(),
+                    enrollAppRequest.getAccount_name())) {
                 return systemErrorResponse.response(ErrorCodeEnum.ERROR_USERNAME_USED);
             }
         }
@@ -135,7 +135,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 return systemErrorResponse.response(errorCode);
         } else {
             // 检查当前注册应用的state，如果是已注册(不管是否激活)，返回已注册的错误信息
-            if ( (rpAccount.getState() == AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState()) ||
+            if ((rpAccount.getState() == AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState()) ||
                     (rpAccount.getState() == AccountStateEnum.ACCOUNT_STATE_INACTIVE.getState())) {
                 return systemErrorResponse.response(ErrorCodeEnum.ERROR_ALREADY_ENROLLED);
             }
@@ -167,16 +167,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollAppResponse.setAuthorization_policy(relyPart.getAuthorization_policy());
         enrollAppResponse.setOtp_alg(relyPart.getOtp_alg());
         enrollAppResponse.setOtp_inteval(relyPart.getInteval());
-        enrollAppResponse.setOtp_seed( rpAccount.getOtp_seed());
+        enrollAppResponse.setOtp_seed(rpAccount.getOtp_seed());
         enrollAppResponse.setOtp_digits(relyPart.getOtp_digits());
 
         return enrollAppResponse;
     }
 
     private ErrorCodeEnum copyEnrollAppRequestParams(EnrollAppRequest enrollAppRequest,
-                                            RpAccounts rpAccount,
-                                            Users user,
-                                            RelyParts relyPart) {
+                                                     RpAccounts rpAccount,
+                                                     Users user,
+                                                     RelyParts relyPart) {
         rpAccount.setRp_id(relyPart.getId());
         rpAccount.setUser_id(user.getId());
         rpAccount.setProtect_methods(enrollAppRequest.getProtect_methods());
@@ -204,6 +204,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         return ErrorCodeEnum.ERROR_OK;
     }
+
     private ErrorCodeEnum addNewRpAccountRecord(EnrollAppRequest enrollAppRequest,
                                                 Users user,
                                                 RelyParts relyPart) {

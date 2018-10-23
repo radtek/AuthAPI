@@ -23,7 +23,7 @@ public class TOtpProvider {
 
     private static final int[] DIGITS_POWER
             // 0 1 2 3 4 5 6 7 8
-            = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000 };
+            = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
 
     public TOtpProvider() {
     }
@@ -76,12 +76,9 @@ public class TOtpProvider {
      * Hashed Message Authentication Code with the crypto hash algorithm as a
      * parameter.
      *
-     * @param crypto
-     *            : the crypto algorithm (HmacSHA1, HmacSHA256, HmacSHA512)
-     * @param keyBytes
-     *            : the bytes to use for the HMAC key
-     * @param text
-     *            : the message or text to be authenticated
+     * @param crypto   : the crypto algorithm (HmacSHA1, HmacSHA256, HmacSHA512)
+     * @param keyBytes : the bytes to use for the HMAC key
+     * @param text     : the message or text to be authenticated
      */
 
     private byte[] hmacSha(String crypto, byte[] keyBytes, byte[] text) {
@@ -120,7 +117,8 @@ public class TOtpProvider {
 
         return code.toString();
     }
-    public String getCode(String secret, long timeInput){
+
+    public String getCode(String secret, long timeInput) {
         byte[] decodedKey = secret.getBytes();
         long time;
         if (timeInput <= 0) { // if time is 0, then get current time
@@ -155,6 +153,7 @@ public class TOtpProvider {
 
     /**
      * 取当前时间节点。当前时间取秒数，再除以间隔时间段( interval )
+     *
      * @return 整型节点值
      */
     private long getCurrentTimePoint() {

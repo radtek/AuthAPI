@@ -2,8 +2,7 @@ package com.xiaoleitech.authapi.global.enumeration;
 
 public enum TokenCheckModeEnum {
     NOT_CHECK(0, "not check the token"),
-    CHECK_TOKEN(1, "check the token"),
-    ;
+    CHECK_TOKEN(1, "check the token"),;
 
     private int id;
     private String comment;

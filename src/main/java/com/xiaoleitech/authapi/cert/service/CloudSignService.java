@@ -13,7 +13,7 @@ public interface CloudSignService {
 
     AuthAPIResponse verifySignature(VerifySignatureRequest verifySignatureRequest, BindingResult bindingResult);
 
-    AuthAPIResponse requestCloudCert(RequestCloudCertRequest requestCloudCert, BindingResult bindingResult);
+    Object requestCloudCert(RequestCloudCertRequest requestCloudCert, BindingResult bindingResult);
 
     AuthAPIResponse signCloudCert(SignCloudCertRequest signCloudCertRequest, BindingResult bindingResult);
 

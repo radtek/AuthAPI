@@ -74,7 +74,7 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
     @Override
     public AuthAPIResponse getAuthHistoryRecordsCount(String appUuid, String token, String accountName, String accountUuid) {
         // appUuid不能为空，否则查不到历史记录
-        if ( (appUuid == null) || (appUuid.isEmpty())) {
+        if ((appUuid == null) || (appUuid.isEmpty())) {
             systemErrorResponse.fill(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
             getAuthHistoryCountResponse.setCount(0);
             return getAuthHistoryCountResponse;
@@ -96,11 +96,11 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
 
     @Override
     public AuthAPIResponse getAuthHistories(String appUuid, String token, String accountName, String accountUuid, int from, int count) {
-        if ((from <= 0) || (count <=0))
+        if ((from <= 0) || (count <= 0))
             return systemErrorResponse.response(ErrorCodeEnum.ERROR_PARAMETER);
 
         // appUuid不能为空，否则查不到历史记录
-        if ( (appUuid == null) || (appUuid.isEmpty())) {
+        if ((appUuid == null) || (appUuid.isEmpty())) {
             systemErrorResponse.fill(getAuthHistoryCountResponse, ErrorCodeEnum.ERROR_OK);
             getAuthHistoryCountResponse.setCount(0);
             return getAuthHistoryCountResponse;
@@ -117,7 +117,7 @@ public class GetAuthHistoryServiceImpl implements GetAuthHistoryService {
 
         List<AuthHistoryRecord> authHistoryRecordList = new ArrayList();
         int index = 0;
-        for (AccountAuthHistories accountAuthHistories : accountAuthHistoriesList){
+        for (AccountAuthHistories accountAuthHistories : accountAuthHistoriesList) {
             index++;
             if (index < from)
                 continue;

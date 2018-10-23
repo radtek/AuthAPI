@@ -68,7 +68,7 @@ public class SmAlgHelper {
     }
 
     public ErrorCodeEnum verifySignature(String inPlainText, String inSignature, String inCert,
-                                         int[] outVerifySignatureResult){
+                                         int[] outVerifySignatureResult) {
         return smServiceCallHelper.verifySignature(inPlainText, inSignature, inCert, outVerifySignatureResult);
     }
 

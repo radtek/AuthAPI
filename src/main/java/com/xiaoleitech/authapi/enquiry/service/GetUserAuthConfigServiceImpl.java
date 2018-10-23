@@ -33,9 +33,9 @@ public class GetUserAuthConfigServiceImpl implements GetUserAuthConfigService {
             return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 检查用户是否存在
-        Users  user = usersTableHelper.getUserByUserUuid(userUuid);
+        Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
 
         // 检查绑定设备
         Devices device = devicesTableHelper.getDeviceByUuid(deviceUuid);

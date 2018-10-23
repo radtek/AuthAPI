@@ -22,11 +22,10 @@ public class XL_PhoneVerifyAPI {
      * get https://server/api/get_sms_code?phone_no=<phone_no>
      *
      * @param phoneNo 产生验证码，并发送到指定的手机号
-     * @return
-     * 			{
-     * 				error_code: errorcode,
-     * 				error_message: error_message
-     * 			}
+     * @return {
+     * error_code: errorcode,
+     * error_message: error_message
+     * }
      */
     @RequestMapping(value = "/api/get_sms_code", method = RequestMethod.GET)
     public @ResponseBody
@@ -40,12 +39,11 @@ public class XL_PhoneVerifyAPI {
      *
      * @param phoneNo 需验证的手机号
      * @param smsCode 需判定是否有效的验证码
-     * @return
-     * 		return
-     * 			{
-     * 				error_code: errorcode,
-     * 				error_message: error_message
-     * 			}
+     * @return return
+     * {
+     * error_code: errorcode,
+     * error_message: error_message
+     * }
      */
     @RequestMapping(value = "/api/verify_sms_code", method = RequestMethod.GET)
     public @ResponseBody

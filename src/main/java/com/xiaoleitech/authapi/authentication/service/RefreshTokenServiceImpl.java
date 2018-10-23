@@ -36,7 +36,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         // 验证token
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 用户不是已认证状态，返回未认证错误
         if (user.getAuthenticated() != UserAuthStateEnum.AUTH_STATE_AUTHED.getAuthState())

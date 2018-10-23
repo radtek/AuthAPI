@@ -11,11 +11,11 @@ import org.springframework.jms.core.JmsMessagingTemplate;
 public class MyActiveMqProducer {
     @Autowired
     private JmsMessagingTemplate jmsMessagingTemplate;
-//    @Autowired
+    //    @Autowired
 //    private Queue queue;
 //    @Autowired
 //    private Topic topic;
-    private static int count= 0;
+    private static int count = 0;
 
 //    @Scheduled(fixedDelay=3000)
 //    public void send(String message){

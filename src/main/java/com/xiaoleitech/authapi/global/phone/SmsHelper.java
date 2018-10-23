@@ -26,6 +26,7 @@ public class SmsHelper {
             this.code = code;
         }
     }
+
     public ErrorCodeEnum sendSmsVerifyCode(String phoneNo, String verifyCode) {
         //设置超时时间-可自行调整
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
@@ -73,7 +74,7 @@ public class SmsHelper {
         } catch (ClientException e) {
             e.printStackTrace();
         }
-        if(sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
+        if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
             //请求成功
             return ErrorCodeEnum.ERROR_OK;
         }

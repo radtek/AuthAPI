@@ -6,8 +6,7 @@ public enum AccountStateEnum {
     ACCOUNT_LOGICAL_DELETE(-99),
     ACCOUNT_STATE_UNBINDING(0),
     ACCOUNT_STATE_ACTIVE(1),
-    ACCOUNT_STATE_INACTIVE(2),
-    ;
+    ACCOUNT_STATE_INACTIVE(2),;
     private int state;
 
     AccountStateEnum(int state) {

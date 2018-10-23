@@ -30,13 +30,13 @@ public interface RpAccountsMapper {
     @Select("SELECT * " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.id " +
+            "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.id " +
+            "ON a.user_id=u.id " +
             "WHERE " +
-                "r.rp_uuid=#{rp_uuid} " +
-                "AND u.user_uuid=#{user_uuid} " +
-                "AND a.state>0  ")
+            "r.rp_uuid=#{rp_uuid} " +
+            "AND u.user_uuid=#{user_uuid} " +
+            "AND a.state>0  ")
     List<RpAccounts> selectRpAccountsByRpUuidAndUserUuid(@Param("rp_uuid") String rpUuid, @Param("user_uuid") String userUuid);
 
     @Insert("INSERT INTO rpaccounts(" +

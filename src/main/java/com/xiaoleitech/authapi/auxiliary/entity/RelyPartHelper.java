@@ -21,23 +21,24 @@ public class RelyPartHelper {
 
     /**
      * 采用应用方的算法和密钥验证令牌
+     *
      * @param relyPart 应用方数据记录
-     * @param token  待验证令牌
+     * @param token    待验证令牌
      * @return true -- 验证通过；false -- 验证失败
      */
     public boolean verifyToken(RelyParts relyPart, String token) {
-        if ( (relyPart == null) || (token.isEmpty()) )
+        if ((relyPart == null) || (token.isEmpty()))
             return false;
 
         // 如果全局设置了不校验token，则直接返回验证通过
-        if ( systemGlobalParams.getTokenCheckMode() == TokenCheckModeEnum.NOT_CHECK.getId())
+        if (systemGlobalParams.getTokenCheckMode() == TokenCheckModeEnum.NOT_CHECK.getId())
             return true;
 
         // 获取当前系统时间
         java.sql.Timestamp timestamp = UtilsHelper.getCurrentSystemTimestamp();
 
         // 换算成分钟数
-        int currentCount = (int)timestamp.getTime() / 1000 / 60;
+        int currentCount = (int) timestamp.getTime() / 1000 / 60;
         int previousCount = currentCount - 1;
         int nextCount = currentCount + 1;
 
@@ -58,6 +59,7 @@ public class RelyPartHelper {
 
     /**
      * 对指定的APP生成新的 token
+     *
      * @param relyPart 依赖方（应用方）
      * @return token 字符串
      */
@@ -68,7 +70,7 @@ public class RelyPartHelper {
         // 获取当前系统时间
         java.sql.Timestamp timestamp = UtilsHelper.getCurrentSystemTimestamp();
         // 换算成分钟数
-        int currentCount = (int)timestamp.getTime() / 1000 / 60;
+        int currentCount = (int) timestamp.getTime() / 1000 / 60;
 
         String msg = relyPart.getRp_uuid() + relyPart.getApp_key();
 
@@ -79,6 +81,7 @@ public class RelyPartHelper {
 
     /**
      * 获取新应用的失效时间
+     *
      * @return 失效时间戳
      */
     public java.sql.Timestamp getNewAppExpireTime() {

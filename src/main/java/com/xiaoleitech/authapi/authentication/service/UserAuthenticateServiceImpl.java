@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 
 @Component
-public class UserAuthenticateServiceImpl implements UserAuthenticateService{
+public class UserAuthenticateServiceImpl implements UserAuthenticateService {
     private Logger logger = LoggerFactory.getLogger(UserAuthenticateServiceImpl.class);
 
     private final UsersTableHelper usersTableHelper;
@@ -67,9 +67,9 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
     public AuthAPIResponse userAuthenticate(UserAuthRequest userAuthRequest, BindingResult bindingResult) {
 //        logger.info("--> authenticate password is: " + userAuthRequest.get) ;
         // 获取指定UUID的 users 记录
-         Users user = usersTableHelper.getUserByUserUuid(userAuthRequest.getUser_id());
-         if (user == null)
-             return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+        Users user = usersTableHelper.getUserByUserUuid(userAuthRequest.getUser_id());
+        if (user == null)
+            return systemErrorResponse.userNotFound();
 
         // 获取缓存的挑战码（user_uuid作为键值）
         String challenge = challengeHelper.getChallenge(userAuthRequest.getUser_id());
@@ -144,8 +144,7 @@ public class UserAuthenticateServiceImpl implements UserAuthenticateService{
                 user.setPassword_attempt_fail_count(count);
                 if (count >= authenticationHelper.getAuthRetryMax())
                     user.setPassword_lock_to(lockTime);
-            }
-            else {
+            } else {
                 // 非密码模式
                 count = user.getSecond_factor_attempt_fail_count() + 1;
                 user.setSecond_factor_attempt_fail_count(count);

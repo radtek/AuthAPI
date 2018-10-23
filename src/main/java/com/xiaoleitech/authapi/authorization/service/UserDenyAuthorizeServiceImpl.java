@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserDenyAuthorizeServiceImpl implements UserDenyAuthorizeService{
+public class UserDenyAuthorizeServiceImpl implements UserDenyAuthorizeService {
     private final SystemErrorResponse systemErrorResponse;
 
     @Autowired

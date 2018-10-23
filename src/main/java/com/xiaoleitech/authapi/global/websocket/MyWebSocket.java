@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.xiaoleitech.authapi.global.utils.UtilsHelper;
 //import net.sf.json.JSONObject;
 import org.springframework.stereotype.Component;
+
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -24,7 +25,8 @@ public class MyWebSocket {
     private String identifier;
 
     /**
-     * 连接建立成功调用的方法*/
+     * 连接建立成功调用的方法
+     */
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
@@ -56,7 +58,8 @@ public class MyWebSocket {
     /**
      * 收到客户端消息后调用的方法
      *
-     * @param message 客户端发送过来的消息*/
+     * @param message 客户端发送过来的消息
+     */
     @OnMessage
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
@@ -71,71 +74,72 @@ public class MyWebSocket {
 
     /**
      * 发生错误时调用
-     * */
-     @OnError
-     public void onError(Session session, Throwable error) {
-     System.out.println("发生错误");
-     error.printStackTrace();
-     }
+     */
+    @OnError
+    public void onError(Session session, Throwable error) {
+        System.out.println("发生错误");
+        error.printStackTrace();
+    }
 
-     public static void websocketNotifyRedirect(String appUuid,
-                                                String accountUuid,
-                                                String authorizeToken,
-                                                String nonce,
-                                                String redirectUrl) {
-         // 查找对应的socket连接
-         MyWebSocket socket = getConnectSocket(appUuid, nonce);
-         if (socket == null)
-             return;
+    public static void websocketNotifyRedirect(String appUuid,
+                                               String accountUuid,
+                                               String authorizeToken,
+                                               String nonce,
+                                               String redirectUrl) {
+        // 查找对应的socket连接
+        MyWebSocket socket = getConnectSocket(appUuid, nonce);
+        if (socket == null)
+            return;
 
-         // 构建通知消息对象
-         JSONObject messageJson = new JSONObject();
-         messageJson.put("account_id", accountUuid);
-         messageJson.put("authorization_token", authorizeToken);
+        // 构建通知消息对象
+        JSONObject messageJson = new JSONObject();
+        messageJson.put("account_id", accountUuid);
+        messageJson.put("authorization_token", authorizeToken);
 //         messageJson.put("nonce", nonce);
-         messageJson.put("redirect_url", redirectUrl);
-         String message = messageJson.toString();
+        messageJson.put("redirect_url", redirectUrl);
+        String message = messageJson.toString();
 
-         // 消息又包了两层
-         JSONObject packJsonL1 = new JSONObject();
-         packJsonL1.put("message", message);
-         JSONObject packJsonL2 = new JSONObject();
-         packJsonL2.put("message", packJsonL1.toString());
+        // 消息又包了两层
+        JSONObject packJsonL1 = new JSONObject();
+        packJsonL1.put("message", message);
+        JSONObject packJsonL2 = new JSONObject();
+        packJsonL2.put("message", packJsonL1.toString());
 
-         // 发送消息
-         try {
-             socket.sendMessage(packJsonL2.toString());
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
-     }
+        // 发送消息
+        try {
+            socket.sendMessage(packJsonL2.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 根据appUuid和nonce查找对应的socket连接
+     *
      * @param appUuid 应用UUID
      * @return 查到的socket连接
      */
-     public static MyWebSocket getConnectSocket(String appUuid, String nonce) {
-         for (MyWebSocket socket : webSocketSet) {
-             String inputIdentifier = formatIdentifier(appUuid, nonce);
-             String socketIdentifier = socket.getIdentifier();
+    public static MyWebSocket getConnectSocket(String appUuid, String nonce) {
+        for (MyWebSocket socket : webSocketSet) {
+            String inputIdentifier = formatIdentifier(appUuid, nonce);
+            String socketIdentifier = socket.getIdentifier();
 
-             if (socketIdentifier.equals(inputIdentifier))
-                 return socket;
-         }
-         return null;
-     }
+            if (socketIdentifier.equals(inputIdentifier))
+                return socket;
+        }
+        return null;
+    }
 
-     public void sendMessage(String message) throws IOException {
-         System.out.println("WebSocket SendMessage: " + message);
+    public void sendMessage(String message) throws IOException {
+        System.out.println("WebSocket SendMessage: " + message);
         this.session.getBasicRemote().sendText(message);
         //this.session.getAsyncRemote().sendText(message);
-     }
+    }
 
 
-     /**
-      * 群发自定义消息
-      * */
+    /**
+     * 群发自定义消息
+     */
     public static void broadcast(String message) throws IOException {
         for (MyWebSocket item : webSocketSet) {
             try {
@@ -148,17 +152,18 @@ public class MyWebSocket {
 
     /**
      * 从message中提取能跟Session唯一对应的信息，绑定，以便Server能发送信息给指定的客户端
+     *
      * @param message 客户端发送来的消息
      * @return identifier;
      */
     public String generateIdentifier(String message) {
-        if ( (message == null) || (message.isEmpty()) )
+        if ((message == null) || (message.isEmpty()))
             return "";
 
-            String identString = UtilsHelper.getValueFromJsonString(message, "identifier");
-            String appUuid = UtilsHelper.getValueFromJsonString(identString, "app_id");
-            String nonce = UtilsHelper.getValueFromJsonString(identString, "nonce");
-            return formatIdentifier(appUuid, nonce);
+        String identString = UtilsHelper.getValueFromJsonString(message, "identifier");
+        String appUuid = UtilsHelper.getValueFromJsonString(identString, "app_id");
+        String nonce = UtilsHelper.getValueFromJsonString(identString, "nonce");
+        return formatIdentifier(appUuid, nonce);
     }
 
     private static String formatIdentifier(String appUuid, String nonce) {
@@ -167,15 +172,16 @@ public class MyWebSocket {
 
     /**
      * 从message中提取command类型
+     *
      * @param message 客户端发送来的消息
      * @return command类型字串
      */
     public String getCommand(String message) {
-        if ( (message == null) || (message.isEmpty()) )
+        if ((message == null) || (message.isEmpty()))
             return "";
 
-            String command = UtilsHelper.getValueFromJsonString(message, "command");
-            return command;
+        String command = UtilsHelper.getValueFromJsonString(message, "command");
+        return command;
     }
 
     public static synchronized int getOnlineCount() {

@@ -68,4 +68,21 @@ public class SystemErrorResponseImpl implements SystemErrorResponse {
     public AuthAPIResponse needParameters() {
         return response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
     }
+
+    @Override
+    public AuthAPIResponse userNotFound() {
+        return response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+    }
+
+    @Override
+    public AuthAPIResponse invalidToken() {
+        return response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+    }
+
+    @Override
+    public AuthAPIResponse appNotFound() {
+        return response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+    }
+
+
 }

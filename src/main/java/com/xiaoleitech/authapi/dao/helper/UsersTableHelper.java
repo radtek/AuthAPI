@@ -18,11 +18,11 @@ public class UsersTableHelper {
         this.usersMapper = usersMapper;
     }
 
-    /** 检查系统中是否存在指定ID的用户，不管该用户处于何种状态
+    /**
+     * 检查系统中是否存在指定ID的用户，不管该用户处于何种状态
      *
      * @param userUuid 用户UUID
-     * @return
-     *      true: 找到该用户；false: 找不到该用户
+     * @return true: 找到该用户；false: 找不到该用户
      */
     public boolean isValidUserUuid(String userUuid) {
         Users user = getUserByUserUuid(userUuid);
@@ -74,12 +74,13 @@ public class UsersTableHelper {
 //        return (usersList.size() == 0) ? null : usersList.get(0);
 //    }
 
-    /** 获取指定user_id的用户记录
+    /**
+     * 获取指定user_id的用户记录
      *
      * @param userId: 用户id (integer)
      * @return Users记录
      */
-    public  Users getUserByUserId(int userId) {
+    public Users getUserByUserId(int userId) {
         List<Users> usersList = usersMapper.selectUsersByUserId(userId);
         return UtilsHelper.getFirstValid(usersList);
     }

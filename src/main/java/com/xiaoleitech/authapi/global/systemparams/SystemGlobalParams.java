@@ -26,7 +26,6 @@ public class SystemGlobalParams {
     private static String activemqPassword = "";     // AcitveMQ 密码
 
 
-
     @Autowired
     public SystemGlobalParams(SystemDictHelper systemDictHelper) {
         this.systemDictHelper = systemDictHelper;

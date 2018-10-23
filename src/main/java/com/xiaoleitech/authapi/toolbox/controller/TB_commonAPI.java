@@ -13,14 +13,15 @@ public class TB_commonAPI {
 
     /**
      * 获取一组GUID
+     *
      * @param count GUID的需求数量
      * @return 返回数据例子
      * [
-     *     "dd83577d-606d-4b26-96ad-2fe7925d6c87",
-     *     "8f40ae20-e7c8-4287-adc0-e8fe5fe35d4b",
-     *     "4f71c691-df9e-401f-bf23-f65af24e6db2",
-     *     "8744a994-6805-4734-8516-a615e6c1e52a",
-     *     "16e9fb82-be23-43f2-b4d9-bd3f1ddfc76f"
+     * "dd83577d-606d-4b26-96ad-2fe7925d6c87",
+     * "8f40ae20-e7c8-4287-adc0-e8fe5fe35d4b",
+     * "4f71c691-df9e-401f-bf23-f65af24e6db2",
+     * "8744a994-6805-4734-8516-a615e6c1e52a",
+     * "16e9fb82-be23-43f2-b4d9-bd3f1ddfc76f"
      * ]
      */
     @RequestMapping(value = "/toolbox/common/generate_uuid", method = RequestMethod.GET)
@@ -28,7 +29,7 @@ public class TB_commonAPI {
     List<String> generateUuids(@RequestParam("count") int count) {
         List<String> uuidList = new ArrayList();
 
-        for (int i=0; i<count; i++) {
+        for (int i = 0; i < count; i++) {
             String uuid = UtilsHelper.generateUuid();
             uuidList.add(uuid);
         }
@@ -37,8 +38,9 @@ public class TB_commonAPI {
 
     /**
      * 对输入数字返回多进制格式，缺省返回2进制，8进制，10进制和16进制，如extraOutputRadix不为空，则输出中增加指定的进制
-     * @param input 输入数字
-     * @param inputRadix input的进制，比如2表示二进制，16表示16进制，为0，则表示默认10进制
+     *
+     * @param input            输入数字
+     * @param inputRadix       input的进制，比如2表示二进制，16表示16进制，为0，则表示默认10进制
      * @param extraOutputRadix 额外的output进制
      * @return
      */

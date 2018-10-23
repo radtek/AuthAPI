@@ -43,16 +43,16 @@ public class GetAuthorizeStateServiceImpl implements GetAuthorizeStateService {
         // 读取用户记录
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
 
         // 校验 verifyToken
         if (!authenticationHelper.isValidVerifyToken(verifyToken))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 读取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
 
         // 读取应用账户记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(relyPart.getId(), user.getId());

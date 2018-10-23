@@ -19,10 +19,10 @@ public class RegisterDeviceRequest {
     private int device_type;
     @NotBlank(message = "设备型号不能为空！")
     private String device_model;
-//    @Range(min = 1, max = 9, message = "TEE取值范围1--9！")
+    //    @Range(min = 1, max = 9, message = "TEE取值范围1--9！")
     private int device_tee;
-//    @Range(min = 1, max = 9, message = "SE取值范围1--9！")
+    //    @Range(min = 1, max = 9, message = "SE取值范围1--9！")
     private int device_se;
-//    @NotBlank(message = "设备令牌不能为空！")
+    //    @NotBlank(message = "设备令牌不能为空！")
     private String device_token;
 }

@@ -26,7 +26,7 @@ public class ApnGateway {
             payload.addAlert(alert);
             payload.addBadge(badge);
             payload.addCustomAlertBody(message);
-            if ( !sound.isEmpty() )
+            if (!sound.isEmpty())
                 payload.addSound(sound);
             PushNotificationManager pushNotificationManager = new PushNotificationManager();
 

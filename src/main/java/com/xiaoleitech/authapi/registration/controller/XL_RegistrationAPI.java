@@ -172,7 +172,7 @@ public class XL_RegistrationAPI {
      * 获得用户信息（客户SDK需求，实际是获取用户认证信息）
      * get https://server/api/get_sdk_auth_key?phone_no=<phone_no>&password=<password>&app_id=<app_id>
      *
-     * @param appUuid:       APP UUID
+     * @param appUuid:     APP UUID
      * @param password:    用户密码
      * @param phoneNumber: 用户绑定的手机号码
      * @return {

@@ -48,7 +48,8 @@ public class AuthenticationHelper {
 //        }
 //    }
 
-    /** 密码明文使用固定的加密方式，返回密码的密文
+    /**
+     * 密码明文使用固定的加密方式，返回密码的密文
      *
      * @param passwordPlainText: 密码明文
      * @return 密码加密后的16进制字串
@@ -57,28 +58,30 @@ public class AuthenticationHelper {
         return getEncryptedPassword(passwordPlainText, "");
     }
 
-    /** 模块内部统一的密码加密算法
+    /**
+     * 模块内部统一的密码加密算法
      *
      * @return 密码加密算法的枚举值
-     *  目前统一且固定采用SHA256
+     * 目前统一且固定采用SHA256
      */
     private int getPasswordEncryptMethod() {
         return systemGlobalParams.getPasswordMode();
 //        return PasswordEncryptMethodEnum.ENCRYPT_METHOD_SHA256;
     }
 
-    /** 按指定的加密方式和盐，返回密码的密文
+    /**
+     * 按指定的加密方式和盐，返回密码的密文
      * e.g., 密文 = SHA256( SHA256(明文) + 盐 )
      *
      * @param passwordPlainText: 密码明文
-     * @param salt: 盐
+     * @param salt:              盐
      * @return 密码密文，16进制的字符串
      */
     public String getEncryptedPassword(
             String passwordPlainText,
             String salt) {
         // 未给定密码明文的，返回空字符串
-        if ( (passwordPlainText == null) || (passwordPlainText.isEmpty()) )
+        if ((passwordPlainText == null) || (passwordPlainText.isEmpty()))
             return "";
 
         int passwordMode = getPasswordEncryptMethod();
@@ -102,13 +105,13 @@ public class AuthenticationHelper {
         }
     }
 
-    /** 将密码的明文和密文做一致性匹配
+    /**
+     * 将密码的明文和密文做一致性匹配
      *
-     * @param passwordPlainText: 密码明文
+     * @param passwordPlainText:  密码明文
      * @param passwordCipherText: 密码密文
-     * @param salt: 加密采用的盐
-     * @return
-     *      true: 密码正确；false: 密码错误
+     * @param salt:               加密采用的盐
+     * @return true: 密码正确；false: 密码错误
      */
     public boolean isValidPassword(
             String passwordPlainText,
@@ -119,12 +122,12 @@ public class AuthenticationHelper {
 //        return getEncryptedPassword(passwordPlainText, salt).equals(passwordCipherText);
     }
 
-    /** 检查指定令牌是否已校验或有效
+    /**
+     * 检查指定令牌是否已校验或有效
      *
-     * @Deprecated
      * @param verifyToken 需验证的token
-     * @return
-     *      true: 令牌验证已通过或有效；false: 令牌无效或验证失败
+     * @return true: 令牌验证已通过或有效；false: 令牌无效或验证失败
+     * @Deprecated
      */
     public boolean isTokenVerified(String verifyToken) {
         // TODO: 检查令牌 verifyToken
@@ -132,11 +135,11 @@ public class AuthenticationHelper {
         return true;
     }
 
-    /** 检查指定令牌是否已校验或有效
+    /**
+     * 检查指定令牌是否已校验或有效
      *
      * @param verifyToken 需验证的token
-     * @return
-     *      true: 令牌验证已通过或有效；false: 令牌无效或验证失败
+     * @return true: 令牌验证已通过或有效；false: 令牌无效或验证失败
      */
     public boolean isValidVerifyToken(String verifyToken) {
         // TODO: 检查令牌 verifyToken
@@ -146,7 +149,8 @@ public class AuthenticationHelper {
 
     /**
      * 用user的 authkey对appuuid进行分散，得到分散密钥（base64编码）
-     * @param appUuid APP（或RP）的UUID
+     *
+     * @param appUuid     APP（或RP）的UUID
      * @param userAuthKey 用户的authkey
      * @return 分散密钥的base64编码
      */
@@ -170,7 +174,8 @@ public class AuthenticationHelper {
 
     /**
      * 获取验证许可，如果验证尝试次数已达到最大值，则检查锁定时间，锁定时间已过，需对user的尝试次数清零
-     * @param user 用户记录
+     *
+     * @param user          用户记录
      * @param protectMethod 保护方式，密码和非密码两种
      * @return 错误代码，允许验证时返回 ERROR_OK，否则返回对应的错误码
      */
@@ -180,7 +185,7 @@ public class AuthenticationHelper {
             // 密码失败次数是否达到锁定的阈值
             if (user.getPassword_attempt_fail_count() >= authRetryMax) {
                 // 检查密码锁定时间
-                if (user.getPassword_lock_to().before(UtilsHelper.getCurrentSystemTimestamp())){
+                if (user.getPassword_lock_to().before(UtilsHelper.getCurrentSystemTimestamp())) {
                     // 清除密码尝试次数
                     user.setPassword_attempt_fail_count(0);
                 } else {
@@ -206,6 +211,7 @@ public class AuthenticationHelper {
 
     /**
      * 获取最大尝试次数
+     *
      * @return 最大尝试次数
      */
     public int getAuthRetryMax() {
@@ -214,6 +220,7 @@ public class AuthenticationHelper {
 
     /**
      * 获取锁定时间段
+     *
      * @return 毫秒单位的整数
      */
     public long getLockPeriod() {
@@ -223,6 +230,7 @@ public class AuthenticationHelper {
 
     /**
      * 获取锁定时间
+     *
      * @return 锁定时间
      */
     public java.sql.Timestamp getLockTime() {
@@ -233,6 +241,7 @@ public class AuthenticationHelper {
 
     /**
      * 获取token的有效时间
+     *
      * @param token 系统产生的验证令牌
      * @return token有效时间
      */
@@ -245,6 +254,7 @@ public class AuthenticationHelper {
 
     /**
      * 维护用户验证的有效时间跨度
+     *
      * @return 暂定10分钟，可以由应用方指定，在数据库中维护
      */
     private int getUserAuthValidPeriod() {
@@ -253,6 +263,7 @@ public class AuthenticationHelper {
 
     /**
      * 获取用户过期时间
+     *
      * @param user users 记录
      * @return 用户验证的过期时间
      */
@@ -264,6 +275,7 @@ public class AuthenticationHelper {
 
     /**
      * 维护验证令牌的有效期跨度
+     *
      * @return 暂定60秒，可以由应用方指定，在数据库中维护
      */
     private int getVerifyTokenValidPeriod() {
@@ -272,6 +284,7 @@ public class AuthenticationHelper {
 
     /**
      * 产生一个验证令牌
+     *
      * @return 验证令牌字符串格式
      */
     public String generateTimingToken() {

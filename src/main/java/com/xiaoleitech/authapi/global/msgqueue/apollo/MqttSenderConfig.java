@@ -18,7 +18,6 @@ import org.springframework.messaging.MessageHandler;
 
 /**
  * 〈MQTT发送消息配置〉
- *
  */
 @Configuration
 @IntegrationComponentScan
@@ -46,32 +45,35 @@ public class MqttSenderConfig {
     }
 
     @Bean
-    public MqttConnectOptions getMqttConnectOptions(){
+    public MqttConnectOptions getMqttConnectOptions() {
         String username = systemGlobalParams.getMqttUserName();
         String password = systemGlobalParams.getMqttPassword();
         String hostUrl = systemGlobalParams.getMqttServerUrl();
 
-        MqttConnectOptions mqttConnectOptions=new MqttConnectOptions();
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setUserName(username);
         mqttConnectOptions.setPassword(password.toCharArray());
         mqttConnectOptions.setServerURIs(new String[]{hostUrl});
         mqttConnectOptions.setKeepAliveInterval(2);
         return mqttConnectOptions;
     }
+
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         factory.setConnectionOptions(getMqttConnectOptions());
         return factory;
     }
+
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler mqttOutbound() {
-        MqttPahoMessageHandler messageHandler =  new MqttPahoMessageHandler(clientId, mqttClientFactory());
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(clientId, mqttClientFactory());
         messageHandler.setAsync(true);
         messageHandler.setDefaultTopic(defaultTopic);
-        return  messageHandler;
+        return messageHandler;
     }
+
     @Bean
     public MessageChannel mqttOutboundChannel() {
         return new DirectChannel();

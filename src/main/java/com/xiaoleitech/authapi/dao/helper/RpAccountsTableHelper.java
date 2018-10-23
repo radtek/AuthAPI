@@ -18,14 +18,15 @@ public class RpAccountsTableHelper {
         this.rpAccountsMapper = rpAccountsMapper;
     }
 
-    public RpAccounts getRpAccountByRpAccountUuid(String rpAccountUuid){
+    public RpAccounts getRpAccountByRpAccountUuid(String rpAccountUuid) {
         List<RpAccounts> rpAccountsList = rpAccountsMapper.selectRpAccountsByRpAccountUuid(rpAccountUuid);
         return UtilsHelper.getFirstValid(rpAccountsList);
     }
 
     /**
      * 读取活跃状态的账户记录
-     * @param rpId 应用ID
+     *
+     * @param rpId   应用ID
      * @param userId 用户ID
      * @return 单条账户记录
      */
@@ -36,7 +37,8 @@ public class RpAccountsTableHelper {
 
     /**
      * 读取系统中存在的账户记录，包括活跃和非活跃
-     * @param rpId 应用ID
+     *
+     * @param rpId   应用ID
      * @param userId 用户ID
      * @return 单条账户记录
      */

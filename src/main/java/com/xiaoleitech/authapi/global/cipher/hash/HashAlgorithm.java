@@ -10,20 +10,21 @@ import java.security.NoSuchAlgorithmException;
 
 public class HashAlgorithm {
 
-    /** 对输入的字符串，按照指定算法进行散列运算，并返回字符串形式的16进制结果
+    /**
+     * 对输入的字符串，按照指定算法进行散列运算，并返回字符串形式的16进制结果
      *
-     * @param message: 输入明文(纯字符串)
+     * @param message:   输入明文(纯字符串)
      * @param algorithm: HASH算法
      * @return 返回字符串形式的16进制结果
      */
-   static public String getHash(String message, HashAlgorithmEnum algorithm) {
-       if (algorithm == HashAlgorithmEnum.HASH_ALG_SHA256)
-           return getSHA256(message);
-       else if (algorithm == HashAlgorithmEnum.HASH_ALG_MD5)
-           return getMD5(message);
+    static public String getHash(String message, HashAlgorithmEnum algorithm) {
+        if (algorithm == HashAlgorithmEnum.HASH_ALG_SHA256)
+            return getSHA256(message);
+        else if (algorithm == HashAlgorithmEnum.HASH_ALG_MD5)
+            return getMD5(message);
 
-       return "";
-   }
+        return "";
+    }
 
     static public String getMD5(String message) {
         MessageDigest messageDigest;
@@ -42,12 +43,13 @@ public class HashAlgorithm {
         return hashResult;
     }
 
-    /** 对输入字符串，返回字符串形式的散列结果 (SHA-256)
+    /**
+     * 对输入字符串，返回字符串形式的散列结果 (SHA-256)
      *
      * @param message: 输入的明文（纯字符串）
      * @return 返回字符串形式的散列结果 (SHA-256)
      */
-   static public String getSHA256(String message) {
+    static public String getSHA256(String message) {
         MessageDigest messageDigest;
         String hashResult = "";
 
@@ -60,7 +62,7 @@ public class HashAlgorithm {
             e.printStackTrace();
         }
 
-       return hashResult;
+        return hashResult;
     }
 
 }

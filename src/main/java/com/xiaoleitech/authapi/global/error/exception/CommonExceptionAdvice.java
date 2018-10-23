@@ -38,7 +38,8 @@ public class CommonExceptionAdvice {
         return authAPIResponse;
     }
 
-    /** 必须在 application.properties 中设置
+    /**
+     * 必须在 application.properties 中设置
      * spring.mvc.throw-exception-if-no-handler-found=true
      * 404 - Not Found
      */
@@ -60,8 +61,8 @@ public class CommonExceptionAdvice {
      * 500 - Internal Server Error
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RuntimeException .class)
-    public AuthAPIResponse handleServiceException(RuntimeException  e) {
+    @ExceptionHandler(RuntimeException.class)
+    public AuthAPIResponse handleServiceException(RuntimeException e) {
         if (e instanceof NullPointerException) {
             logger.error("系统发生异常: 空指针");
             StackTraceElement element = e.getStackTrace()[0];

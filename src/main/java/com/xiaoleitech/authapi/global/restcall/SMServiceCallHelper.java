@@ -218,7 +218,7 @@ public class SMServiceCallHelper {
     }
 
     public ErrorCodeEnum verifySignature(String inPlainText, String inSignature, String inCert,
-                                         int[] outVerifySignatureResult){
+                                         int[] outVerifySignatureResult) {
         JSONObject jsonInput = new JSONObject();
         jsonInput.put("Plaintext", inPlainText);
         jsonInput.put("Signature", inSignature);

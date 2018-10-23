@@ -32,7 +32,8 @@ public class DevicesTableHelper {
         return device.getDevice_uuid();
     }
 
-    /** 根据指定的串号返回系统定义的设备ID
+    /**
+     * 根据指定的串号返回系统定义的设备ID
      *
      * @param imei 手机串号
      * @return 设备ID（大于等于1），如果是找不到设备，返回-1
@@ -45,10 +46,11 @@ public class DevicesTableHelper {
         return device.getId();
     }
 
-    /** 查询指定ID号的设备记录
+    /**
+     * 查询指定ID号的设备记录
      *
      * @param deviceId 设备ID号，系统定义整型自增
-     * @return  设备记录，找不到则返回null
+     * @return 设备记录，找不到则返回null
      */
     public Devices getDeviceById(int deviceId) {
         List<Devices> devicesList = devicesMapper.selectDevicesById(deviceId);

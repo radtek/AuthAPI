@@ -15,11 +15,11 @@ public class AuthControllerInterceptor implements HandlerInterceptor {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(RegisterUserServiceImpl.class);
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  throws Exception{
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 获取类名
-        String className = ((HandlerMethod)handler).getBean().getClass().getName();
+        String className = ((HandlerMethod) handler).getBean().getClass().getName();
         // 获取方法名
-        String methodName = ((HandlerMethod)handler).getMethod().getName();
+        String methodName = ((HandlerMethod) handler).getMethod().getName();
         //
         logger.info("---PreHandle---:\t" + "Class: " + className + "\tMethod: " + methodName);
 
@@ -32,9 +32,9 @@ public class AuthControllerInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object obj, ModelAndView modelAndView) throws Exception {
         // 获取类名
-        String className = ((HandlerMethod)obj).getBean().getClass().getName();
+        String className = ((HandlerMethod) obj).getBean().getClass().getName();
         // 获取方法名
-        String methodName = ((HandlerMethod)obj).getMethod().getName();
+        String methodName = ((HandlerMethod) obj).getMethod().getName();
         logger.info("---PostHandle---:\t" + "Class: " + className + "\tMethod: " + methodName);
 
     }

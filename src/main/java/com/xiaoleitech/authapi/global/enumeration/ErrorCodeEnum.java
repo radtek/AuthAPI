@@ -65,6 +65,7 @@ public enum ErrorCodeEnum {
     ERROR_FAIL_CALLBACK(2003, "回调失败"),
     ERROR_EXIST_APP_NAME(2004, "应用名称已存在"),
     ERROR_INTERFACE_NOT_FOUND(2005, "请求接口不存在"),
+    ERROR_UNKNOWN_CA(2006, "CA服务不能识别"),
     ;
 
     private Integer code;
@@ -80,7 +81,9 @@ public enum ErrorCodeEnum {
         return code;
     }
 
-    public String getCodeString() { return Integer.toString(this.code); }
+    public String getCodeString() {
+        return Integer.toString(this.code);
+    }
 
     public void setCode(Integer code) {
         this.code = code;

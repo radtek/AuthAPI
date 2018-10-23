@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserAuthStateServiceImpl implements  UserAuthStateService {
+public class UserAuthStateServiceImpl implements UserAuthStateService {
     private final UsersTableHelper usersTableHelper;
     private final SystemErrorResponse systemErrorResponse;
     private final UserAuthStateResponse userAuthStateResponse;
@@ -35,7 +35,7 @@ public class UserAuthStateServiceImpl implements  UserAuthStateService {
 
         // 验证token
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 获取用户认证状态
         if (user.getAuthenticated() != UserAuthStateEnum.AUTH_STATE_AUTHED.getAuthState())

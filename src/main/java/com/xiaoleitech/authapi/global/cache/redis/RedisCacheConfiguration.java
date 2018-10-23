@@ -36,7 +36,7 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
     @Value("${spring.redis.timeout}")
     private String timeout;
 
-//    @Value("${spring.redis.pool.max-idle}")
+    //    @Value("${spring.redis.pool.max-idle}")
 //    private int maxIdle;
     @Value("${spring.redis.jedis.pool.max-wait}")
     private String maxWaitMillis;
@@ -59,7 +59,7 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
 
         int timeoutSeconds = 0;
         String redisHost = systemGlobalParams.getRedisHost();
-        int redisPort  =systemGlobalParams.getRedisPort();
+        int redisPort = systemGlobalParams.getRedisPort();
         String redisPassword = systemGlobalParams.getRedisPassword();
 
         logger.info("JedisPool注入成功！！");

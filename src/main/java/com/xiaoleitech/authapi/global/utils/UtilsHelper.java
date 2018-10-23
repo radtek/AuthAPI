@@ -23,7 +23,7 @@ public class UtilsHelper {
         StringBuilder stringBuilder = new StringBuilder();
         String authKey = "";
         Random random = new Random();
-        for (int i=0; i<length; i++) {
+        for (int i = 0; i < length; i++) {
             int index = random.nextInt(valueBuff.length());
             stringBuilder.append(valueBuff.charAt(index));
         }
@@ -33,6 +33,7 @@ public class UtilsHelper {
 
     /**
      * 获取一个List集合的第一项
+     *
      * @param objList List 集合
      * @return List 集合的第一项，如果集合为空，则返回 null
      */
@@ -48,11 +49,11 @@ public class UtilsHelper {
 
     /**
      * 判定传入的属性字符串里，是否含有指定的属性
-     * @param props 属性字符串，含 0 到多个属性
+     *
+     * @param props    属性字符串，含 0 到多个属性
      * @param property 属性（个位正整数，0-9）
-     * @return
-     *          true -- 字符串中含有指定属性
-     *          false -- 字符串中找不到指定属性
+     * @return true -- 字符串中含有指定属性
+     * false -- 字符串中找不到指定属性
      */
     static public boolean isPropertyExist(String props, int property) {
         if ((props == null) || props.isEmpty())
@@ -74,19 +75,21 @@ public class UtilsHelper {
 
     /**
      * 获取当前时间 java.util.Date 类型
+     *
      * @return java.util.Date currentDate
      */
     static public java.util.Date getCurrentDate() {
         return new java.util.Date();
     }
 
-    /** 提取字符串中的数字，并转换成整数。支持负数。
+    /**
+     * 提取字符串中的数字，并转换成整数。支持负数。
      *
      * @param origin 可能带有非数字的字符串
      * @return 提取并转换得到的整数
      */
     static public int extractInt(String origin) {
-        String regex="[^\\d^-]+";
+        String regex = "[^\\d^-]+";
         origin = origin.replaceAll(regex, "");
         return Integer.parseInt(origin);
     }
@@ -95,7 +98,8 @@ public class UtilsHelper {
 //        return Integer.parseInt(origin);
 //    }
 
-    /** 从字符串中提取时间，并转换成 java.sql.Timestamp 类型返回
+    /**
+     * 从字符串中提取时间，并转换成 java.sql.Timestamp 类型返回
      *
      * @param timeString 含有时间的字符串
      * @param timeFormat 字符串内时间格式，比如: "yyyy/MM/dd"
@@ -133,10 +137,11 @@ public class UtilsHelper {
 
     /**
      * Convert byte[] to hex string.这里我们可以将byte转换成int，然后利用Integer.toHexString(int)来转换成16进制字符串。
-    * @param src byte[] data
-    * @return hex string
-    */
-    public static String bytesToHexString(byte[] src){
+     *
+     * @param src byte[] data
+     * @return hex string
+     */
+    public static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder();
         if (src == null || src.length <= 0) {
             return null;
@@ -151,8 +156,10 @@ public class UtilsHelper {
         }
         return stringBuilder.toString();
     }
+
     /**
      * Convert hex string to byte[]
+     *
      * @param hexString the hex string
      * @return byte[]
      */
@@ -170,8 +177,10 @@ public class UtilsHelper {
         }
         return d;
     }
+
     /**
      * Convert char to byte
+     *
      * @param c char
      * @return byte
      */

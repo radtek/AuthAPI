@@ -52,7 +52,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
         System.out.println("--->otpAuthorize" + otp);
         // 检查频繁调用的限制
         String value = redisService.getValue("OtpAuthCalling");
-        if ( (value != null) && (value.equals("1")))
+        if ((value != null) && (value.equals("1")))
             return systemErrorResponse.response(ErrorCodeEnum.ERROR_REQUEST_TOO_OFTEN);
 
         // 设置频繁调用限制
@@ -83,7 +83,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
 
         // 检查令牌
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 流程修改，免去 get_otp_code 接口调用，在本接口中一步完成
         // 生成OTP，并存放到缓存中
@@ -116,7 +116,7 @@ public class OtpAuthorizeServiceImpl implements OtpAuthorizeService {
 
         // 取出登录成功的回调URL
         String url = relyPart.getRp_login_redirection_url();
-        if ( (url != null) && !url.isEmpty()) {
+        if ((url != null) && !url.isEmpty()) {
             // 拼接回调接口参数
             url += "?account_id=" + accountUuid + "&authorization_token=" + authToken;
             otpAuthResponse.setRedirect_url(url);

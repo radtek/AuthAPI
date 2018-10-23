@@ -40,7 +40,7 @@ public class AppLogoutAccountServiceImpl implements AppLogoutAccountService {
         // 读取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
 
         // 读取应用账户记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(appAccountUuid);
@@ -49,7 +49,7 @@ public class AppLogoutAccountServiceImpl implements AppLogoutAccountService {
 
         // 校验 token
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 设置未认证状态，并保存账户记录
         rpAccount.setAuthred(UserAuthStateEnum.AUTH_STATE_NOT_AUTHED.getAuthState());

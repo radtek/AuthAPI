@@ -30,19 +30,20 @@ public class TB_cipherAPI {
 
     /**
      * base64 编码和解码
+     *
      * @param source 输入数据，待计算数据
-     * @param mode  模式：1表示编码；2表示解码。
+     * @param mode   模式：1表示编码；2表示解码。
      * @return 返回数据例子
      * {
-     *     "error_code": 0,
-     *     "error_message": "OK",
-     *     "response": "eefe22f887abd4e84b1386edaa1abca0b6edd8227c9defe83b667f97d64c0c47"
+     * "error_code": 0,
+     * "error_message": "OK",
+     * "response": "eefe22f887abd4e84b1386edaa1abca0b6edd8227c9defe83b667f97d64c0c47"
      * }
      */
     @RequestMapping(value = "/toolbox/cipher/base64", method = RequestMethod.POST)
     public @ResponseBody
-    AuthAPIResponse  base64Decoding(@RequestParam("source") String source,
-                                    @RequestParam("mode") int mode) {
+    AuthAPIResponse base64Decoding(@RequestParam("source") String source,
+                                   @RequestParam("mode") int mode) {
         if (mode == 1) {
             byte[] sourceBytes = UtilsHelper.hexStringToBytes(source);
             String result = Base64Coding.encode(sourceBytes);
@@ -59,16 +60,17 @@ public class TB_cipherAPI {
 
     /**
      * AES 计算，目前仅支持 AES 加密和解密
+     *
      * @param inputFormat 输入数据格式，包括source和key。为空或0表示HexString；1表示原生字符串；其他待实现。
-     * @param source    输入数据，待计算数据
-     * @param key   AES密钥
-     * @param bits  算法位数
-     * @param mode  1表示加密，2表示解密
+     * @param source      输入数据，待计算数据
+     * @param key         AES密钥
+     * @param bits        算法位数
+     * @param mode        1表示加密，2表示解密
      * @return 返回数据例子
      * {
-     *     "error_code": 0,
-     *     "error_message": "OK",
-     *     "response": "7fe8b4022a557afcde5a7bf3c749d9cee9ec0338481c296d5831f2020065525b"
+     * "error_code": 0,
+     * "error_message": "OK",
+     * "response": "7fe8b4022a557afcde5a7bf3c749d9cee9ec0338481c296d5831f2020065525b"
      * }
      */
     @RequestMapping(value = "/toolbox/cipher/AES", method = RequestMethod.POST)
@@ -96,7 +98,7 @@ public class TB_cipherAPI {
             }
         }
 
-        byte[] result = { };
+        byte[] result = {};
 
         switch (inputDataFormat) {
             case 0:     // HexString

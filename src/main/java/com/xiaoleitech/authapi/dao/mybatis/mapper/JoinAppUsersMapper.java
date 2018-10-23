@@ -10,30 +10,30 @@ import java.util.List;
 @Component
 public interface JoinAppUsersMapper {
     @Select("SELECT " +
-                "a.rp_id rp_id, " +
-                "r.rp_uuid	rp_uuid, " +
-                "r.rp_name rp_name, " +
-                "u.id user_id, " +
-                "u.user_uuid user_uuid, " +
-                "u.real_name user_name, " +
-                "d.id device_id, " +
-                "d.device_uuid device_uuid, " +
-                "a.id account_id, " +
-                "a.rp_account_uuid account_uuid, " +
-                "a.rp_account_name account_name, " +
-                "a.state account_state " +
+            "a.rp_id rp_id, " +
+            "r.rp_uuid	rp_uuid, " +
+            "r.rp_name rp_name, " +
+            "u.id user_id, " +
+            "u.user_uuid user_uuid, " +
+            "u.real_name user_name, " +
+            "d.id device_id, " +
+            "d.device_uuid device_uuid, " +
+            "a.id account_id, " +
+            "a.rp_account_uuid account_uuid, " +
+            "a.rp_account_name account_name, " +
+            "a.state account_state " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.id " +
+            "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.id " +
+            "ON a.user_id=u.id " +
             "LEFT JOIN devices d " +
-                "ON d.id=u.device_id " +
+            "ON d.id=u.device_id " +
             "WHERE " +
-                "r.rp_uuid LIKE '%${rp_uuid}%' " +
-                "AND u.user_uuid LIKE '%${user_uuid}%' " +
-                "AND a.rp_account_name LIKE '%${account_name}%' " +
-                "AND a.state>0  ")
+            "r.rp_uuid LIKE '%${rp_uuid}%' " +
+            "AND u.user_uuid LIKE '%${user_uuid}%' " +
+            "AND a.rp_account_name LIKE '%${account_name}%' " +
+            "AND a.state>0  ")
     /**
      * 联合查询用户在指定 app （Rely-Part）下的账户(account)信息
      *  查询数据参见 AppUsers POJO类
@@ -47,30 +47,30 @@ public interface JoinAppUsersMapper {
             @Param("account_name") String accountName);
 
     @Select("SELECT " +
-                "a.rp_id rp_id, " +
-                "r.rp_uuid	rp_uuid, " +
-                "r.rp_name rp_name, " +
-                "u.id user_id, " +
-                "u.user_uuid user_uuid, " +
-                "u.real_name user_name, " +
-                "d.id device_id, " +
-                "d.device_uuid device_uuid, " +
-                "a.id account_id, " +
-                "a.rp_account_uuid account_uuid, " +
-                "a.rp_account_name account_name, " +
-                "a.state account_state " +
+            "a.rp_id rp_id, " +
+            "r.rp_uuid	rp_uuid, " +
+            "r.rp_name rp_name, " +
+            "u.id user_id, " +
+            "u.user_uuid user_uuid, " +
+            "u.real_name user_name, " +
+            "d.id device_id, " +
+            "d.device_uuid device_uuid, " +
+            "a.id account_id, " +
+            "a.rp_account_uuid account_uuid, " +
+            "a.rp_account_name account_name, " +
+            "a.state account_state " +
             "FROM rpaccounts a " +
             "LEFT JOIN rps r " +
-                "ON a.rp_id=r.id " +
+            "ON a.rp_id=r.id " +
             "LEFT JOIN  users u " +
-                "ON a.user_id=u.id " +
+            "ON a.user_id=u.id " +
             "LEFT JOIN devices d " +
-                "ON d.id=u.device_id " +
+            "ON d.id=u.device_id " +
             "WHERE " +
-                "r.rp_uuid LIKE '%${rp_uuid}%' " +
-                "AND u.user_uuid != #{user_uuid}" +
-                "AND a.rp_account_name LIKE '%${account_name}%' " +
-                "AND a.state>0 ")
+            "r.rp_uuid LIKE '%${rp_uuid}%' " +
+            "AND u.user_uuid != #{user_uuid}" +
+            "AND a.rp_account_name LIKE '%${account_name}%' " +
+            "AND a.state>0 ")
     /**
      * @param appUuid 指定查询范围的APP UUID，如果为空，则全局查询
      * @param userSelfUuid 查询时要排除的用户UUID，表示自己的记录不用查，不能为空

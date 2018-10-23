@@ -11,8 +11,7 @@ public enum SystemDictKeyEnum {
     DICT_KEY_MQTT_PASSWORD(8, "GLOBAL_PARAMS_mqtt_password"),
     DICT_KEY_ACTIVEMQ_URL(9, "GLOBAL_PARAMS_activemq_url"),
     DICT_KEY_ACTIVEMQ_USER_NAME(10, "GLOBAL_PARAMS_activemq_user_name"),
-    DICT_KEY_ACTIVEMQ_PASSWORD(11, "GLOBAL_PARAMS_activemq_password"),
-    ;
+    DICT_KEY_ACTIVEMQ_PASSWORD(11, "GLOBAL_PARAMS_activemq_password"),;
 
     private int index;
     private String key;

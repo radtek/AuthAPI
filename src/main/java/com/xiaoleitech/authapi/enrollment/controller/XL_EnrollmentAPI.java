@@ -65,9 +65,9 @@ public class XL_EnrollmentAPI {
      * 用户解绑应用 (APP)
      * get https://server/api/unenroll?user_id=<user_id>&verify_token=<verify_token>&app_id=<app_id>
      *
-     * @param userUuid:      user_id 系统定义的用户UUID号
+     * @param userUuid:    user_id 系统定义的用户UUID号
      * @param verifyToken: verify_token 验证令牌
-     * @param appUuid:       app_id 系统定义的应用UUID号
+     * @param appUuid:     app_id 系统定义的应用UUID号
      * @return {
      * error_code: errercode,
      * error_message: error_message
@@ -104,7 +104,7 @@ public class XL_EnrollmentAPI {
      * 检查用户名是否唯一 (APP)
      * get https://server/api/check_account_name?app_id=<app_id>&app_account_name=<app_account_name>
      *
-     * @param appUuid:          应用UUID号 rp_uuid
+     * @param appUuid:        应用UUID号 rp_uuid
      * @param appAccountName: 应用账户名 app_account_name
      * @return {
      * error_code: errorcode,
@@ -113,8 +113,8 @@ public class XL_EnrollmentAPI {
      */
     @RequestMapping(value = "/api/check_account_name", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse checkAccountUnique(@RequestParam("app_id")String appUuid,
-                                       @RequestParam("app_account_name")String appAccountName) {
+    AuthAPIResponse checkAccountUnique(@RequestParam("app_id") String appUuid,
+                                       @RequestParam("app_account_name") String appAccountName) {
         return checkAccountUniqueService.checkAccountUnique(appUuid, appAccountName);
     }
 
@@ -122,9 +122,9 @@ public class XL_EnrollmentAPI {
      * 检查用户是否激活 (APP)
      * get http://server/api/check_account_state?user_id=<user_id>&verify_token=<verify_token>&app_id=<app_id>
      *
-     * @param userUuid:      用户UUID号 user_id
+     * @param userUuid:    用户UUID号 user_id
      * @param verifyToken: 验证令牌 verify_token
-     * @param appUuid:       APP应用UUID号 app_id
+     * @param appUuid:     APP应用UUID号 app_id
      * @return {
      * error_code: errorcode,
      * error_message: error_message
@@ -144,9 +144,9 @@ public class XL_EnrollmentAPI {
      * 用户修改账号登录项设置 (APP)
      * get http://server/api/set_account_protect_methods?user_id=<user_id>&verify_token=<verify_token>&app_id=<app_id>&protect_methods=<protect_methods>
      *
-     * @param userUuid:         用户UUID号 user_id
+     * @param userUuid:       用户UUID号 user_id
      * @param verifyToken:    验证令牌 verify_token
-     * @param appUuid:          APP 应用UUID app_id
+     * @param appUuid:        APP 应用UUID app_id
      * @param protectMethods: 保护方法 protect_methods
      * @return {
      * error_code: errorcode,

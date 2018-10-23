@@ -17,10 +17,11 @@ public class JoinDeviceUserHelper {
         this.joinDeviceUserMapper = joinDeviceUserMapper;
     }
 
-    /** 联合查询devices和users表，找到deviceUuid关联的user
+    /**
+     * 联合查询devices和users表，找到deviceUuid关联的user
      *
      * @param deviceUuid 设备的UUID
-     * @return  单条（如果找到，取首条）Users记录
+     * @return 单条（如果找到，取首条）Users记录
      */
     public Users getUserByDeviceUuid(String deviceUuid) {
         List<Users> usersList = joinDeviceUserMapper.getUserByDeviceUuid(deviceUuid);

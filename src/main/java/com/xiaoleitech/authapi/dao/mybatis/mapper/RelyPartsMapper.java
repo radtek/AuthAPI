@@ -58,7 +58,7 @@ public interface RelyPartsMapper {
             "need_info=#{need_info}, rp_account_exist_callback_url=#{rp_account_exist_callback_url} " +
             "WHERE " +
             "r.rp_uuid=#{rp_uuid}  AND r.state>0  ")
-    int  updateOneRecordByUuid(RelyParts relyPart);
+    int updateOneRecordByUuid(RelyParts relyPart);
 
 
 }

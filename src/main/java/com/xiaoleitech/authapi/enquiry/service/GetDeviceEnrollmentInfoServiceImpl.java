@@ -24,7 +24,7 @@ public class GetDeviceEnrollmentInfoServiceImpl implements GetDeviceEnrollmentIn
     @Override
     public AuthAPIResponse getDeviceEnrollmentInfo(String userUuid, String deviceUuid, String appUuid) {
         // 检查请求参数
-        if ( (userUuid.isEmpty()) || (deviceUuid.isEmpty()) || (appUuid.isEmpty()))
+        if ((userUuid.isEmpty()) || (deviceUuid.isEmpty()) || (appUuid.isEmpty()))
             return systemErrorResponse.response(ErrorCodeEnum.ERROR_NEED_PARAMETER);
 
         // 获取设备绑定应用信息

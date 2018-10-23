@@ -22,7 +22,7 @@ public class RedisService {
     }
 
     public String setValue(String key, String value) {
-        return jedis.set(key,value);
+        return jedis.set(key, value);
     }
 
     public void clearKey(String key) {
@@ -31,13 +31,13 @@ public class RedisService {
 
     /**
      * jedis.set(key, value, nxxx, expx, time)
-     *      nxxx: "NX" -- Only set the key if it does not already exist. XX -- Only set the key if it already exist.
-     *      expx: "EX" -- time的单位是秒；"PX" -- time的单位是毫秒；
+     * nxxx: "NX" -- Only set the key if it does not already exist. XX -- Only set the key if it already exist.
+     * expx: "EX" -- time的单位是秒；"PX" -- time的单位是毫秒；
      *
-     * @param key 键
-     * @param value 键对应的值
+     * @param key     键
+     * @param value   键对应的值
      * @param seconds 生存秒数
-     * @return  set 的结果： "OK" -- 成功
+     * @return set 的结果： "OK" -- 成功
      */
     public String setValueForSeconds(String key, String value, int seconds) {
         if (!jedis.exists(key))

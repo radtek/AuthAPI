@@ -80,10 +80,10 @@ public class TEST_ToolsAPI {
         this.authenticationHelper = authenticationHelper;
     }
 
-    @RequestMapping(value ="/test/send_sms_code", method = RequestMethod.GET)
+    @RequestMapping(value = "/test/send_sms_code", method = RequestMethod.GET)
     public @ResponseBody
-    Object sendSmsCode(@RequestParam("phone_no")String phoneNo,
-                       @RequestParam("verify_code")String verifyCode) {
+    Object sendSmsCode(@RequestParam("phone_no") String phoneNo,
+                       @RequestParam("verify_code") String verifyCode) {
 
         String smsCode = challengeHelper.generateSmsCode(phoneNo, verifyCode);
         ErrorCodeEnum errorCode = smsHelper.sendSmsVerifyCode(phoneNo, smsCode);
@@ -95,7 +95,7 @@ public class TEST_ToolsAPI {
         return jsonObject;
     }
 
-    @RequestMapping(value ="/test/show_sms_code", method = RequestMethod.GET)
+    @RequestMapping(value = "/test/show_sms_code", method = RequestMethod.GET)
     public @ResponseBody
     Object showSmsCode(@RequestParam("phone_no") String phoneNo) {
         TestResponse testResponse = new TestResponse();
@@ -110,7 +110,7 @@ public class TEST_ToolsAPI {
     @RequestMapping(value = "/test/get_encrypted_password", method = RequestMethod.GET)
     public @ResponseBody
     Object getEncryptedPassword(@RequestParam("password") String password,
-                                         @RequestParam("salt") String salt) {
+                                @RequestParam("salt") String salt) {
         String result = authenticationHelper.getEncryptedPassword(password, salt);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("error_code", ErrorCodeEnum.ERROR_OK.getCode());
@@ -119,7 +119,7 @@ public class TEST_ToolsAPI {
         return jsonObject;
     }
 
-    @RequestMapping(value ="/test/hmac_challenge", method = RequestMethod.GET)
+    @RequestMapping(value = "/test/hmac_challenge", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse testHmac(@RequestParam("challenge") String challenge,
                              @RequestParam("password") String password,
@@ -139,7 +139,7 @@ public class TEST_ToolsAPI {
         return testResponse;
     }
 
-    @RequestMapping(value ="/test/aes_encrypt_nonce", method = RequestMethod.GET)
+    @RequestMapping(value = "/test/aes_encrypt_nonce", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse testAesNonce(@RequestParam("nonce") String nonce,
                                  @RequestParam("auth_key") String authKey) {
@@ -147,7 +147,7 @@ public class TEST_ToolsAPI {
 
 //        String cryptResult = symmetricAlgorithm.doAes(UtilsHelper.bytesToHexString(nonce.getBytes()), authKey, 256, Cipher.ENCRYPT_MODE);
 //        byte [] bytesResult = UtilsHelper.hexStringToBytes(cryptResult);
-        byte [] bytesResult = symmetricAlgorithm.doAes(nonce.getBytes(), authKey.getBytes(), 256, Cipher.ENCRYPT_MODE);
+        byte[] bytesResult = symmetricAlgorithm.doAes(nonce.getBytes(), authKey.getBytes(), 256, Cipher.ENCRYPT_MODE);
         String encodeResult = Base64Coding.encode(bytesResult);
         testResponse.setResult(encodeResult);
         systemErrorResponse.fill(testResponse, ErrorCodeEnum.ERROR_OK);
@@ -155,7 +155,7 @@ public class TEST_ToolsAPI {
         return testResponse;
     }
 
-    @RequestMapping(value ="/test/aes_decrypt_nonce", method = RequestMethod.GET)
+    @RequestMapping(value = "/test/aes_decrypt_nonce", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse testAesDecrypt(@RequestParam("cipher_text") String cipherText,
                                    @RequestParam("auth_key") String authKey) {
@@ -174,7 +174,7 @@ public class TEST_ToolsAPI {
         return testResponse;
     }
 
-    @RequestMapping(value ="/test/show_otp", method = RequestMethod.GET)
+    @RequestMapping(value = "/test/show_otp", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse showOtp(@RequestParam("account_uuid") String accountUuid,
                             @RequestParam("app_uuid") String appUuid) {
@@ -202,7 +202,7 @@ public class TEST_ToolsAPI {
 
     @RequestMapping(value = "/test/pushPhoneMsg", method = RequestMethod.GET)
     public String pushPhoneMsg(@RequestParam("device_id") String deviceUuid,
-                               @RequestParam("message")String message) {
+                               @RequestParam("message") String message) {
         Devices device = devicesTableHelper.getDeviceByUuid(deviceUuid);
         if (device == null)
             return "Error";
@@ -211,25 +211,26 @@ public class TEST_ToolsAPI {
         return "OK";
     }
 
-    @RequestMapping(value ="/test/get_token", method = RequestMethod.GET)
-    public String getToken(@RequestParam("app_uuid")String rpUuid) {
+    @RequestMapping(value = "/test/get_token", method = RequestMethod.GET)
+    public String getToken(@RequestParam("app_uuid") String rpUuid) {
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(rpUuid);
         String token = relyPartHelper.generateToken(relyPart);
         return token;
     }
 
-    @Autowired private MyActiveMqProducer myActiveMqProducer;
+    @Autowired
+    private MyActiveMqProducer myActiveMqProducer;
 
     @RequestMapping(value = "/test/activemq_produce", method = RequestMethod.GET)
     public String activeMqProduce(@RequestParam("topic") String topic,
                                   @RequestParam("queue") String queue,
                                   @RequestParam("message") String message) {
 
-        if ( (topic != null) && !topic.isEmpty()) {
+        if ((topic != null) && !topic.isEmpty()) {
             myActiveMqProducer.sendToTopic(topic, message);
         }
 
-        if ( (queue != null) && !queue.isEmpty()) {
+        if ((queue != null) && !queue.isEmpty()) {
             myActiveMqProducer.sendToQueue(queue, message);
         }
 

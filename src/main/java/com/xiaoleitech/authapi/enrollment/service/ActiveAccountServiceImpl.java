@@ -46,20 +46,20 @@ public class ActiveAccountServiceImpl implements ActiveAccountService {
 
         // 从 rpaccounts 表中查找用户注册的记录，appAccountId 即 userId
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(appAccountUuid);
-        if (rpAccount == null )
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED );
+        if (rpAccount == null)
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED);
 
         // 如果不是待激活或已激活状态，则返回错误提示（允许多次重复激活）
         if (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_INACTIVE.getState() &&
-                (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState()))  {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED );
+                (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState())) {
+            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_ENROLLED);
         }
 
         // 校验 token
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 //        if (!authenticationHelper.isTokenVerified(token))
-//            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+//            return systemErrorResponse.invalidToken();
 
         // 将用户应用绑定记录设置为激活状态，然后更新记录
         rpAccount.setState(AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState());

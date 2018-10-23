@@ -17,15 +17,15 @@ public class AuthapiApplicationTests {
     @Autowired
     private RedisService redisService;
 
-//    @Test
-    public void testStringBytes(){
+    //    @Test
+    public void testStringBytes() {
         String hexData = "CFA783EA";
 //        Arrays.
         byte[] bytes = hexData.getBytes();
         System.out.println(bytes);
     }
 
-//    @Test
+    //    @Test
     public void testRedisStep1() {
 //        RedisService redisService = new RedisService();
 //        redisService.select(9);
@@ -54,7 +54,7 @@ public class AuthapiApplicationTests {
         System.out.println("li = " + redisService.getValue("li"));
     }
 
-//    @Test
+    //    @Test
     public void testRedisStep2() {
 //        RedisService redisService = new RedisService();
 //        redisService.select(9);
@@ -67,7 +67,7 @@ public class AuthapiApplicationTests {
 
     private Jedis jedis;
 
-//    @Before
+    //    @Before
     public void setJedis() {
         jedis = new Jedis("115.28.34.226", 6379);
         jedis.auth("Cloud@629");
@@ -77,7 +77,7 @@ public class AuthapiApplicationTests {
     @Autowired
     private JedisPool jedisPool;
 
-//    @Test
+    //    @Test
     public void testRedis() {
 //        setJedis();
         jedis = jedisPool.getResource();

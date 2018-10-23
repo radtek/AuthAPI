@@ -153,23 +153,23 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null) {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
         }
 
         // 验证令牌
         if (!authenticationHelper.isTokenVerified(verifyToken))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 如果用户已经是注销状态，则返回找不到用户
         if (user.getUser_state() == UserStateEnum.USER_UNREGISTERED.getState()) {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
         }
 
         ErrorCodeEnum errorCode;
 
         // 逻辑删除关联设备记录
         Devices device = devicesTableHelper.getDeviceById(user.getDevice_id());
-        if (device != null){
+        if (device != null) {
             device.setState(DeviceStateEnum.DEV_LOGICAL_DELETE.getState());
             errorCode = devicesTableHelper.updateOneDeviceRecord(device);
             if (errorCode != ErrorCodeEnum.ERROR_OK)
@@ -178,7 +178,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
         // 逻辑删除账户记录
         List<RpAccounts> rpAccountsList = rpAccountsMapper.selectRpAccountsByUserId(user.getId());
-        for (int i=0; i<rpAccountsList.size(); i++) {
+        for (int i = 0; i < rpAccountsList.size(); i++) {
             RpAccounts rpAccount = rpAccountsList.get(i);
             rpAccount.setState(AccountStateEnum.ACCOUNT_LOGICAL_DELETE.getState());
             errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
@@ -204,12 +204,12 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
         // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
         if (user == null) {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
         }
 
         // 验证令牌
         if (!authenticationHelper.isTokenVerified(updateUserRequest.getVerify_token()))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 不需要验证密码
 //        if (!authenticationHelper.isValidPassword(updateUserRequest.getPassword(), user.getPassword(), user.getPassword_salt()))
@@ -257,7 +257,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
         // 系统中找不到用户，则返回错误：用户未找到 (ERROR_USER_NOT_FOUND)
         if (user == null) {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
         }
 
         // 检查手机号码，验证密码
@@ -291,12 +291,12 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         // 按照phone number 从users表中读取用户
         Users user = usersTableHelper.getUserByPhoneNo(phoneNumber);
         if (user == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
 
 //        // 从RPAccounts表中查询指定AppID的账户记录
 //        RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndUserId(appId, user.getUsers_id());
 //        if (rpAccount == null)
-//            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+//            return systemErrorResponse.appNotFound();
 
         //  验证密码
         if (!authenticationHelper.isValidPassword(password, user.getPassword(), user.getPassword_salt()))

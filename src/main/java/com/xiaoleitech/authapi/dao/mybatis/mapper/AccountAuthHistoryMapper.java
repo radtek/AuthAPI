@@ -12,7 +12,7 @@ import java.util.List;
 public interface AccountAuthHistoryMapper {
     @Select("SELECT * FROM auth_histories h " +
             "WHERE h.user_id=#{user_id} AND h.rp_id=#{rp_id} ")
-    List<AccountAuthHistories> selectAuthHistoryByUserIdAndRpId(@Param("user_id")int userId, @Param("rp_id") int relyPartId);
+    List<AccountAuthHistories> selectAuthHistoryByUserIdAndRpId(@Param("user_id") int userId, @Param("rp_id") int relyPartId);
 
     @Insert("INSERT INTO auth_histories( " +
             "user_id, rp_id, protect_method, " +
@@ -21,6 +21,6 @@ public interface AccountAuthHistoryMapper {
             "VALUES ( " +
             "#{user_id}, #{rp_id}, #{protect_method}, " +
             "#{auth_ip}, #{auth_latitude}, #{auth_longitude}, " +
-            "#{auth_at, jdbcType=TIMESTAMP}, #{created_at, jdbcType=TIMESTAMP}, #{updated_at, jdbcType=TIMESTAMP}) " )
+            "#{auth_at, jdbcType=TIMESTAMP}, #{created_at, jdbcType=TIMESTAMP}, #{updated_at, jdbcType=TIMESTAMP}) ")
     int insertOneHistory(AccountAuthHistories accountAuthHistorie);
 }

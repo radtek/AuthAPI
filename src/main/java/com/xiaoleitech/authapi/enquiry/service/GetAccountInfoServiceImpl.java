@@ -44,14 +44,14 @@ public class GetAccountInfoServiceImpl implements GetAccountInfoService {
         // 检查应用是否有效
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
 
         // 获取账户
         RpAccounts rpAccount = null;
         if (!accountName.isEmpty()) {
             // 通过账户名
             rpAccount = rpAccountsTableHelper.getRpAccountByRpIdAndAccountName(relyPart.getId(), accountName);
-        } else  if (!accountUuid.isEmpty()) {
+        } else if (!accountUuid.isEmpty()) {
             // 通过账户UUID
             rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(accountUuid);
         }
@@ -60,7 +60,7 @@ public class GetAccountInfoServiceImpl implements GetAccountInfoService {
 
         // 校验 token
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         accountInfoResponse.setAccount_id(rpAccount.getRp_account_uuid());
         accountInfoResponse.setAccount_name(rpAccount.getRp_account_name());

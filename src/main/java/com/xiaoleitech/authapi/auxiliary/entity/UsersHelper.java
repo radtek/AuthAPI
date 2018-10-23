@@ -16,12 +16,12 @@ public class UsersHelper {
 
     /**
      * 检查指定用户的令牌是否有效
+     *
+     * @param user        users表中用户的记录
+     * @param verifyToken 待验证令牌
+     * @return true -- 令牌验证成功
+     * false -- 令牌验证失败
      * @Deprecated
-     * @param user  users表中用户的记录
-     * @param verifyToken  待验证令牌
-     * @return
-     *       true -- 令牌验证成功
-     *       false -- 令牌验证失败
      */
     static public boolean isUserVerifyToken(Users user, String verifyToken) {
         // TODO: 验证令牌方式待定，返回

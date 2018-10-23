@@ -27,15 +27,14 @@ public class XL_RpManageAPI {
      * 获取指定账户授权登录记录条数
      * get https://server/api/get_account_auth_history_count?app_id=<app_id>&token=<token>&account_id=<account_id>&account_name=<account_name>
      *
-     * @param appUuid 应用UUID
-     * @param token 令牌
-     * @param accountName  账户名
-     * @param accountUuid  账户UUID
-     * @return
-     * {
-     *      error_code: errorCode,
-     *      error_message: errorMessage
-     *      count: 授权记录条数
+     * @param appUuid     应用UUID
+     * @param token       令牌
+     * @param accountName 账户名
+     * @param accountUuid 账户UUID
+     * @return {
+     * error_code: errorCode,
+     * error_message: errorMessage
+     * count: 授权记录条数
      * }
      */
     @RequestMapping(value = "/api/get_account_auth_history_count", method = RequestMethod.GET)
@@ -51,28 +50,28 @@ public class XL_RpManageAPI {
     /**
      * 获取账户授权登录记录
      * get https://server/api/get_account_auth_history_count?app_id=<app_id>&token=<token>&account_id=<account_id>&
-     *          account_name=<account_name>&from=<from>&count=<count>
-     * @param appUuid 应用UUID
-     * @param token 令牌
-     * @param accountName  账户名
-     * @param accountUuid  账户UUID
-     * @param from 从第几条记录开始
-     * @param count 需要返回几条记录
-     * @return
+     * account_name=<account_name>&from=<from>&count=<count>
+     *
+     * @param appUuid     应用UUID
+     * @param token       令牌
+     * @param accountName 账户名
+     * @param accountUuid 账户UUID
+     * @param from        从第几条记录开始
+     * @param count       需要返回几条记录
+     * @return {
+     * error_code: 0,
+     * error_message: "OK",
+     * auth_history:
+     * [
      * {
-     *      error_code: 0,
-     *      error_message: "OK",
-     *      auth_history:
-     *      [
-     *          {
-     *              auth_ip: "202.196.0.101", // IP地址
-     *              auth_latitude: "23.1234", // 纬度
-     *              auth_longitude: "109.3244", // 经度
-     *              auth_at: "2018-1-1 12:00:00", // 授权登录时间
-     *              verify_method: "2" // 身份验证方式
-     *          },
-     *          ...
-     *      ]
+     * auth_ip: "202.196.0.101", // IP地址
+     * auth_latitude: "23.1234", // 纬度
+     * auth_longitude: "109.3244", // 经度
+     * auth_at: "2018-1-1 12:00:00", // 授权登录时间
+     * verify_method: "2" // 身份验证方式
+     * },
+     * ...
+     * ]
      * }
      */
     @RequestMapping(value = "/api/get_account_auth_history", method = RequestMethod.GET)
@@ -92,15 +91,13 @@ public class XL_RpManageAPI {
      * post https://server/api/create_rp
      *
      * @param createRelyPartRequest 请求参数
-     * @param bindingResult 数据绑定结果
-     * @return
-     *   {
-     *      error_code: 0,
-     *      error_message: "OK",
-     *      app_id: XXXXXXXXXXX
-     *      app_key: XXXXXXXXXXXXX
-     *   }
-     *
+     * @param bindingResult         数据绑定结果
+     * @return {
+     * error_code: 0,
+     * error_message: "OK",
+     * app_id: XXXXXXXXXXX
+     * app_key: XXXXXXXXXXXXX
+     * }
      */
     @RequestMapping(value = "/api/create_rp", method = RequestMethod.POST)
     public @ResponseBody
@@ -112,12 +109,11 @@ public class XL_RpManageAPI {
      * 设置应用参数
      * post https://server/api/set_rp_param
      *
-     * @param setRelyPartParamsRequest  relypart参数
-     * @param bindingResult 数据绑定结果
-     * @return
-     * {
-     *      error_code: 0,
-     *      error_message: "OK"
+     * @param setRelyPartParamsRequest relypart参数
+     * @param bindingResult            数据绑定结果
+     * @return {
+     * error_code: 0,
+     * error_message: "OK"
      * }
      */
     @RequestMapping(value = "/api/set_rp_param", method = RequestMethod.POST)
@@ -130,8 +126,8 @@ public class XL_RpManageAPI {
      * 获取应用方（依赖方）参数
      * get https://server/api/get_rp_param?app_id=<app_id>&token=<token>
      *
-     * @param appUuid  应用UUID
-     * @param token  验证令牌
+     * @param appUuid 应用UUID
+     * @param token   验证令牌
      * @return 应用或依赖方记录
      */
     @RequestMapping(value = "/api/get_rp_param", method = RequestMethod.GET)
@@ -145,13 +141,12 @@ public class XL_RpManageAPI {
      * 重置应用认证密钥
      * get https://server/api/reset_rp_appkey?app_id=<app_id>&token=<token>
      *
-     * @param appUuid  应用UUID
-     * @param token  验证令牌
-     * @return
-     * {
-     *      error_code: 0,
-     *      error_message: "OK",
-     *      app_key: "hijklmn"
+     * @param appUuid 应用UUID
+     * @param token   验证令牌
+     * @return {
+     * error_code: 0,
+     * error_message: "OK",
+     * app_key: "hijklmn"
      * }
      */
     @RequestMapping(value = "/api/reset_rp_appkey", method = RequestMethod.GET)

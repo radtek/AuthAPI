@@ -35,15 +35,15 @@ public class JoinRelyPartAccountHelper {
         return UtilsHelper.getFirstValid(appUsersList);
     }
 
-    public List<AppUsers> getAppUserListWithSameName (String appUuid,
-                                                      String userSelfUuid,
-                                                      String accountName) {
+    public List<AppUsers> getAppUserListWithSameName(String appUuid,
+                                                     String userSelfUuid,
+                                                     String accountName) {
         return joinAppUsersMapper.findOtherAppAccountWithSameName(appUuid, userSelfUuid, accountName);
     }
 
-    public AppUsers getAppUserWithSameName (String appUuid,
-                                            String userSelfUuid,
-                                            String accountName) {
+    public AppUsers getAppUserWithSameName(String appUuid,
+                                           String userSelfUuid,
+                                           String accountName) {
         List<AppUsers> appUsersList = getAppUserListWithSameName(appUuid, userSelfUuid, accountName);
         return UtilsHelper.getFirstValid(appUsersList);
     }

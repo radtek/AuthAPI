@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetUserInfoServiceImpl implements GetUserInfoService{
+public class GetUserInfoServiceImpl implements GetUserInfoService {
     private final UsersTableHelper usersTableHelper;
     private final SystemErrorResponse systemErrorResponse;
     private final UserInfoResponse userInfoResponse;

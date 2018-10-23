@@ -38,7 +38,7 @@ public interface DevicesMapper {
 
     @Update("UPDATE devices d " +
             "SET state=#{state}, updated_at=#{updated_at, jdbcType=TIMESTAMP} " +
-            "WHERE device_uuid=#{device_uuid}  AND d.state>-1 " )
+            "WHERE device_uuid=#{device_uuid}  AND d.state>-1 ")
     int updateDeviceRegisterStatusByUuid(Devices device);
 
     @Update("UPDATE devices d " +

@@ -3,8 +3,7 @@ package com.xiaoleitech.authapi.global.enumeration;
 public enum PasswordModeEnum {
     PASSWORD_MODE_PLAIN(1, "Plain Password"),
     PASSWORD_MODE_SHA256(2, "SHA256(pwd)"),
-    PASSWORD_MODE_SALT_SHA256(3, "SHA256(SHA256(pwd)+salt)"),
-    ;
+    PASSWORD_MODE_SALT_SHA256(3, "SHA256(SHA256(pwd)+salt)"),;
     private int id;
     private String comment;
 

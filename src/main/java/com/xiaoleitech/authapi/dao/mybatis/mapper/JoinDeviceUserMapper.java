@@ -11,8 +11,8 @@ import java.util.List;
 public interface JoinDeviceUserMapper {
     @Select("SELECT * FROM users u " +
             "LEFT JOIN devices d " +
-                "ON u.device_id=d.id " +
+            "ON u.device_id=d.id " +
             "WHERE d.device_uuid=#{device_uuid} " +
-                "AND d.state>0 AND u.user_state>0")
+            "AND d.state>0 AND u.user_state>0")
     List<Users> getUserByDeviceUuid(@Param("device_uuid") String deviceUuid);
 }

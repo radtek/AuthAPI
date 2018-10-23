@@ -6,8 +6,7 @@ public enum OtpAlgEnum {
     NO_OTP(0),
     GOOGLE(1),
     SHA1(2),
-    SM3(3),
-    ;
+    SM3(3),;
 
     private int algorithm;
 

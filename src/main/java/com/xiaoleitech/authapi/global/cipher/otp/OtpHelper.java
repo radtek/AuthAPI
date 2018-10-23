@@ -19,7 +19,9 @@ public class OtpHelper {
         initOtpValidPeriod();
     }
 
-    private int getOtpValidPeriod() { return otpValidPeriod; }
+    private int getOtpValidPeriod() {
+        return otpValidPeriod;
+    }
 
     private void initOtpValidPeriod() {
         if (otpValidPeriod == -1)
@@ -32,6 +34,7 @@ public class OtpHelper {
 
     /**
      * 根据输入的OTP参数，生成OTP，并存放到缓存中（指定生存时间）
+     *
      * @param otpParams OTP计算所需的各种参数，以及所有者 ( owner )
      * @return OTP字符串
      */
@@ -47,8 +50,9 @@ public class OtpHelper {
 
     /**
      * 校验OTP，检查缓存中的OTP是否还存活，并检查是否和输入的OTP一致
+     *
      * @param otpParams OTP计算所需的各种参数，以及所有者 ( owner )
-     * @param otp 待检查的OTP
+     * @param otp       待检查的OTP
      * @return true -- OTP有效且正确；false -- OTP校验失败
      */
     public boolean checkOtp(OtpParams otpParams, String otp) {

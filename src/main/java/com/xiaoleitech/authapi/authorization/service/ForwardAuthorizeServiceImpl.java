@@ -24,7 +24,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class ForwardAuthorizeServiceImpl implements ForwardAuthorizeService{
+public class ForwardAuthorizeServiceImpl implements ForwardAuthorizeService {
     private final RelyPartsTableHelper relyPartsTableHelper;
     private final RpAccountsTableHelper rpAccountsTableHelper;
     private final DevicesTableHelper devicesTableHelper;

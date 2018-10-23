@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserAuthStateResponse  extends AuthAPIResponse {
-//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+public class UserAuthStateResponse extends AuthAPIResponse {
+    //    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private java.sql.Timestamp expire_at;
 }

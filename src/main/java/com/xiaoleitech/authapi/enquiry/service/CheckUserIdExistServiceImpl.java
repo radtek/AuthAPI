@@ -27,8 +27,8 @@ public class CheckUserIdExistServiceImpl implements CheckUserIdExistService {
 
         // 根据 user_uuid 查找系统中的有效用户
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
-        if ( user == null )
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+        if (user == null)
+            return systemErrorResponse.userNotFound();
 
         return systemErrorResponse.success();
     }

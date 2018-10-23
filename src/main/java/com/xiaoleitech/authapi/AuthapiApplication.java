@@ -27,7 +27,6 @@ public class AuthapiApplication {
 //    }
 
 
-
     public static void main(String[] args) {
 //        ApplicationContext applicationContext;
 //        applicationContext = new AnnotationConfigApplicationContext(com.xiaoleitech.authapi.AuthapiApplication.class);

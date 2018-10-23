@@ -34,7 +34,7 @@ public class EnrollCommon {
         }
 
         // 如果 userUuid 不为空串，检查 users 表，是否存在此记录
-        if (! userUuid.isEmpty()) {
+        if (!userUuid.isEmpty()) {
             Users user = usersTableHelper.getUserByUserUuid(userUuid);
             if (user == null)
                 return ErrorCodeEnum.ERROR_USER_NOT_FOUND;

@@ -44,7 +44,7 @@ public class VerifyAuthStateServiceImpl implements VerifyAuthStateService {
         // 读取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
 
         // 读取应用账户记录
         RpAccounts rpAccount = rpAccountsTableHelper.getRpAccountByRpAccountUuid(appAccountUuid);
@@ -53,7 +53,7 @@ public class VerifyAuthStateServiceImpl implements VerifyAuthStateService {
 
         // 校验 token
         if (!relyPartHelper.verifyToken(relyPart, token))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 校验认证状态和 authorization_token
         if (!rpAccountHelper.checkAuthState(rpAccount, authorizeToken))

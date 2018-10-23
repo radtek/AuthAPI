@@ -16,16 +16,19 @@ import org.springframework.jms.core.JmsMessagingTemplate;
 @EnableJms
 public class MyActiveMqConfig {
     private static String userName;
+
     static {
         userName = "admin2";
     }
 
     private static String password;
+
     static {
         password = "admin";
     }
 
     private static String brokerUrl;
+
     static {
         brokerUrl = "tcp://115.28.34.226:62616";
     }
@@ -58,6 +61,7 @@ public class MyActiveMqConfig {
     public ActiveMQConnectionFactory connectionFactory() {
         return new ActiveMQConnectionFactory(userName, password, brokerUrl);
     }
+
     @Bean
     public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ActiveMQConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
@@ -65,14 +69,16 @@ public class MyActiveMqConfig {
         bean.setConnectionFactory(connectionFactory);
         return bean;
     }
+
     @Bean
     public JmsListenerContainerFactory<?> jmsListenerContainerQueue(ActiveMQConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
         bean.setConnectionFactory(connectionFactory);
         return bean;
     }
+
     @Bean
-    public JmsMessagingTemplate jmsMessagingTemplate(ActiveMQConnectionFactory connectionFactory){
+    public JmsMessagingTemplate jmsMessagingTemplate(ActiveMQConnectionFactory connectionFactory) {
         return new JmsMessagingTemplate(connectionFactory);
     }
 

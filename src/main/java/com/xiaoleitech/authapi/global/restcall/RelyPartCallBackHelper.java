@@ -30,7 +30,7 @@ public class RelyPartCallBackHelper {
     public ErrorCodeEnum rpRestfulCallback(RelyParts relyPart, String url) {
         if (relyPart == null)
             return ErrorCodeEnum.ERROR_INVALID_APP;
-        if ( (url == null) || (url.isEmpty() ) )
+        if ((url == null) || (url.isEmpty()))
             return ErrorCodeEnum.ERROR_NEED_APP_CALLBACK_URL;
 
         // 生成一个令牌

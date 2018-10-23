@@ -47,19 +47,19 @@ public class UserRevokeAuthorizeServiceImpl implements UserRevokeAuthorizeServic
         // 读取用户记录
         Users user = usersTableHelper.getUserByUserUuid(userUuid);
         if (user == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
 
         // 检查验证令牌
         if (user.getAuthenticated() != UserAuthStateEnum.AUTH_STATE_AUTHED.getAuthState())
             return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_AUTHENTICATED);
-        if ( !authenticationHelper.isTokenVerified(verifyToken))  {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+        if (!authenticationHelper.isTokenVerified(verifyToken)) {
+            return systemErrorResponse.invalidToken();
         }
 
         // 读取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPart == null) {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
         }
 
         // 获取应用账户记录

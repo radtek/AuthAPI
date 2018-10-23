@@ -35,6 +35,6 @@ public class RelyPartsTableHelper {
 
     public boolean isExistRpName(String appName) {
         List<RelyParts> relyPartsList = relyPartsMapper.selectRelyPartsByRpName(appName);
-        return  (relyPartsList.size() > 0);
+        return (relyPartsList.size() > 0);
     }
 }

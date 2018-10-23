@@ -75,20 +75,20 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         // 获取用户记录
         Users user = usersTableHelper.getUserByUserUuid(userAuthorizeRequest.getUser_id());
         if (user == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_FOUND);
+            return systemErrorResponse.userNotFound();
 
         // 检查验证令牌
         if (user.getAuthenticated() != UserAuthStateEnum.AUTH_STATE_AUTHED.getAuthState()) {
             return systemErrorResponse.response(ErrorCodeEnum.ERROR_USER_NOT_AUTHENTICATED);
         }
-        if ( !authenticationHelper.isTokenVerified(userAuthorizeRequest.getVerify_token()) ) {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+        if (!authenticationHelper.isTokenVerified(userAuthorizeRequest.getVerify_token())) {
+            return systemErrorResponse.invalidToken();
         }
 
         // 获取应用记录
         RelyParts relyPart = relyPartsTableHelper.getRelyPartByRpUuid(userAuthorizeRequest.getApp_id());
         if (relyPart == null) {
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
         }
 
         // 获取应用账户记录
@@ -114,9 +114,9 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
             String verifyResponse = userAuthorizeRequest.getResponse();
             // base64编码中可能存在\n
             verifyResponse = verifyResponse.replace("\n", "");
-            if ( !cryptBase64.equals(verifyResponse) ) {
+            if (!cryptBase64.equals(verifyResponse)) {
                 // 验证失败，则返回错误，并返回应用账户的UUID
-                systemErrorResponse.fill( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
+                systemErrorResponse.fill(userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED);
                 userAuthorizeFailedResponse.setAccount_id(rpAccount.getRp_account_uuid());
                 return userAuthorizeFailedResponse;
             }
@@ -148,7 +148,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         rpAccount.setAuthorization_token(authToken);
         ErrorCodeEnum errorCode = rpAccountsTableHelper.updateOneRpAccountRecord(rpAccount);
         if (errorCode != ErrorCodeEnum.ERROR_OK) {
-            systemErrorResponse.fill( userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED );
+            systemErrorResponse.fill(userAuthorizeFailedResponse, ErrorCodeEnum.ERROR_AUTH_FAILED);
             userAuthorizeFailedResponse.setAccount_id(rpAccount.getRp_account_uuid());
             return userAuthorizeFailedResponse;
         }
@@ -167,7 +167,7 @@ public class UserAuthorizeServiceImpl implements UserAuthorizeService {
         MyWebSocket.websocketNotifyRedirect(relyPart.getRp_uuid(), rpAccount.getRp_account_uuid(),
                 authToken, userAuthorizeRequest.getNonce(), url);
 
-        systemErrorResponse.fill( userAuthorizeSuccessResponse, ErrorCodeEnum.ERROR_OK );
+        systemErrorResponse.fill(userAuthorizeSuccessResponse, ErrorCodeEnum.ERROR_OK);
         userAuthorizeSuccessResponse.setAccount_id(rpAccount.getRp_account_uuid());
         userAuthorizeSuccessResponse.setAuthorization_token(authToken);
         return userAuthorizeSuccessResponse;

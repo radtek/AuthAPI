@@ -25,7 +25,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class RelyPartManageServiceImpl implements RelyPartManageService{
+public class RelyPartManageServiceImpl implements RelyPartManageService {
     private final SystemErrorResponse systemErrorResponse;
     private final RelyPartsTableHelper relyPartsTableHelper;
     private final RelyPartHelper relyPartHelper;
@@ -108,11 +108,11 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 根据应用UUID读取应用记录
         RelyParts relyPartRecord = relyPartsTableHelper.getRelyPartByRpUuid(setRelyPartParamsRequest.getApp_id());
         if (relyPartRecord == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
 
         // 检查token
         if (!relyPartHelper.verifyToken(relyPartRecord, setRelyPartParamsRequest.getToken()))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 拷贝请求参数到RelyPart记录
         ErrorCodeEnum errorCode = fillRelyPartRecordUsingRequestParams(relyPartRecord, setRelyPartParamsRequest);
@@ -136,11 +136,11 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 根据应用UUID读取应用记录
         RelyParts relyPartRecord = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPartRecord == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
 
         // 检查token
         if (!relyPartHelper.verifyToken(relyPartRecord, token))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 提取relypart参数
         getRelyPartParamsResponse.setRp_name(relyPartRecord.getRp_name());
@@ -177,11 +177,11 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
         // 根据应用UUID读取应用记录
         RelyParts relyPartRecord = relyPartsTableHelper.getRelyPartByRpUuid(appUuid);
         if (relyPartRecord == null)
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_APP_NOT_FOUND);
+            return systemErrorResponse.appNotFound();
 
         // 检查token
         if (!relyPartHelper.verifyToken(relyPartRecord, token))
-            return systemErrorResponse.response(ErrorCodeEnum.ERROR_INVALID_TOKEN);
+            return systemErrorResponse.invalidToken();
 
         // 生成新的 app_key
         relyPartRecord.setApp_key(relyPartHelper.generateNewAppKey());
@@ -256,7 +256,7 @@ public class RelyPartManageServiceImpl implements RelyPartManageService{
     }
 
     private ErrorCodeEnum fillRelyPartRecordUsingRequestParams(RelyParts relyPartRecord, RelyPartParams relyPartParams) {
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String value;
 
         // 应用名称不能为空
