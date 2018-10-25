@@ -179,7 +179,7 @@ public class XL_CertAPI {
      */
     @RequestMapping(value = "/api/cloud_sign", method = RequestMethod.POST)
     public @ResponseBody
-    AuthAPIResponse cloudSign(@ModelAttribute CloudSignRequest cloudSignRequest, BindingResult bindingResult) {
+    Object cloudSign(@ModelAttribute CloudSignRequest cloudSignRequest, BindingResult bindingResult) {
         return cloudSignService.cloudSignature(cloudSignRequest, bindingResult);
     }
 
@@ -201,7 +201,7 @@ public class XL_CertAPI {
      */
     @RequestMapping(value = "/api/get_cert_info", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse getCertInfo(@ModelAttribute GetCertInfoRequest getCertInfoRequest, BindingResult bindingResult) {
+    Object getCertInfo(@ModelAttribute GetCertInfoRequest getCertInfoRequest, BindingResult bindingResult) {
         return cloudSignService.getCertInfo(getCertInfoRequest, bindingResult);
     }
 
@@ -265,7 +265,7 @@ public class XL_CertAPI {
      */
     @RequestMapping(value = "/api/parse_cert", method = RequestMethod.POST)
     public @ResponseBody
-    AuthAPIResponse parseCert(@RequestParam("Cert") String cert) {
+    Object parseCert(@RequestParam("Cert") String cert) {
         return cloudSignService.parseCert(cert);
     }
 }

@@ -2,6 +2,7 @@ package com.xiaoleitech.authapi.ca_service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
+import com.xiaoleitech.authapi.global.error.SystemErrorResponse;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -111,42 +112,42 @@ public class CAProvider {
         return "failed to call service";
     }
 
-    public ErrorCodeEnum requestP10(String inDN, String inPubKey, String inHashAlg, String inExtension,
-                                    StringBuffer outE, StringBuffer outQ1, StringBuffer outK1,
-                                    StringBuffer outP10) {
-        if ((caServiceClass != null) && (caService != null)) {
-            // 创建实例
-            Method requestP10 = null;
-            try {
-                JSONObject jsonInput = new JSONObject();
-                jsonInput.put("DN", inDN);
-                jsonInput.put("PubKey", inPubKey);
-                jsonInput.put("HashAlg", inHashAlg);
-                jsonInput.put("Extension", inExtension);
-                requestP10 = caServiceClass.getMethod("requestP10", String.class);
-                String callResult = (String) requestP10.invoke(caService, jsonInput.toJSONString());
-
-                JSONObject jsonOutput = (JSONObject) JSONObject.parse(callResult);
-                ErrorCodeEnum errorCode = ErrorCodeEnum.ERROR_OK;
-                errorCode.setCode(jsonOutput.getIntValue("error_code"));
-                errorCode.setMsg(jsonOutput.getString("error_message"));
-                if (errorCode == ErrorCodeEnum.ERROR_OK) {
-                    outE.append(jsonOutput.getString("E"));
-                    outQ1.append(jsonOutput.getString("Q1"));
-                    outK1.append(jsonOutput.getString("K1"));
-                    outP10.append(jsonOutput.getString("P10"));
-                }
-                return errorCode;
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
+    private JSONObject callCAClassMethod(String methodName, JSONObject jsonInput) {
+        JSONObject jsonOutput = new JSONObject();
+        if ((caServiceClass == null) || (caService == null)) {
+            return SystemErrorResponse.getJSON(ErrorCodeEnum.ERROR_UNKNOWN_CA);
         }
 
-        return ErrorCodeEnum.ERROR_UNKNOWN_CA;
+        Method method = null;
+        try {
+            method = caServiceClass.getMethod(methodName, String.class);
+            String callResult = (String) method.invoke(caService, jsonInput.toJSONString());
+            jsonOutput = JSONObject.parseObject(callResult);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return jsonOutput;
+    }
+
+    public JSONObject requestP10(JSONObject jsonInput) {
+        return callCAClassMethod("requestP10", jsonInput);
+    }
+
+    public JSONObject generateP10(JSONObject jsonInput) {
+        return callCAClassMethod("generateP10", jsonInput);
+    }
+
+    public JSONObject getCert(JSONObject jsonInput) {
+        return callCAClassMethod("getCert", jsonInput);
+    }
+
+    public JSONObject revokeCert(JSONObject jsonInput)  {
+        return callCAClassMethod("revokeCert", jsonInput);
     }
 
 

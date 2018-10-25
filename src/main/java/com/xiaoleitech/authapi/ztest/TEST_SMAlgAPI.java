@@ -38,54 +38,40 @@ public class TEST_SMAlgAPI {
 
     @RequestMapping(value = "/test/smalg/sm3", method = RequestMethod.POST)
     public @ResponseBody
-    AuthAPIResponse callSM3(HttpServletRequest request) {
-        String input = request.getParameter("inputData");
+    Object callSM3(HttpServletRequest request) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("inputData", request.getParameter("inputData"));
 
-        StringBuffer hash = new StringBuffer("");
-        ErrorCodeEnum errorCode = smAlgHelper.sm3Hash(input, hash);
-        testResponse.setResult(hash.toString());
-        systemErrorResponse.fill(testResponse, errorCode);
+        String outResult = smAlgHelper.sm3Hash(jsonInput.toJSONString());
 
-        return testResponse;
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/generate_privkey", method = RequestMethod.GET)
     public @ResponseBody
-    AuthAPIResponse callGeneratePrivateKey() {
-        StringBuffer privateKey = new StringBuffer("");
-        ErrorCodeEnum errorCode = smAlgHelper.generatePrivKey(privateKey);
-        testResponse.setResult(privateKey.toString());
-        systemErrorResponse.fill(testResponse, errorCode);
-
-        return testResponse;
+    Object callGeneratePrivateKey() {
+        String outResult = smAlgHelper.generatePrivKey();
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/get_p1", method = RequestMethod.POST)
     public @ResponseBody
-    AuthAPIResponse callGetP1(String d) {
-        StringBuffer p1 = new StringBuffer("");
-        ErrorCodeEnum errorCode = smAlgHelper.getP1(d, p1);
-        testResponse.setResult(p1.toString());
-        systemErrorResponse.fill(testResponse, errorCode);
+    Object callGetP1(String d) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("D", d);
 
-        return testResponse;
+        String outResult = smAlgHelper.getP1(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/get_pubkey", method = RequestMethod.POST)
     public @ResponseBody
     Object callGetPubKey(String p1) {
-        StringBuffer pubKey = new StringBuffer("");
-        StringBuffer d2 = new StringBuffer("");
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("P1", p1);
 
-        ErrorCodeEnum errorCode = smAlgHelper.getPubKey(p1, pubKey, d2);
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("error_code", errorCode.getCode());
-        jsonObject.put("error_message", errorCode.getMsg());
-        jsonObject.put("pub-key", pubKey.toString());
-        jsonObject.put("d2", d2.toString());
-
-        return jsonObject;
+        String outResult = smAlgHelper.getPubKey(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/coSign", method = RequestMethod.POST)
@@ -93,20 +79,13 @@ public class TEST_SMAlgAPI {
     Object callCoSign(@RequestParam("E") String requestE,
                       @RequestParam("Q1") String requestQ1,
                       @RequestParam("D2") String requestD2) {
-        StringBuffer outS2 = new StringBuffer("");
-        StringBuffer outS3 = new StringBuffer("");
-        StringBuffer outR = new StringBuffer("");
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("E", requestE);
+        jsonInput.put("Q1", requestQ1);
+        jsonInput.put("D2", requestD2);
 
-        ErrorCodeEnum errorCode = smAlgHelper.coSign(requestE, requestQ1, requestD2, outS2, outS3, outR);
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("error_code", errorCode.getCode());
-        jsonObject.put("error_message", errorCode.getMsg());
-        jsonObject.put("S2", outS2.toString());
-        jsonObject.put("S3", outS3.toString());
-        jsonObject.put("R", outR.toString());
-
-        return jsonObject;
+        String outResult = smAlgHelper.coSign(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/requestP10", method = RequestMethod.POST)
@@ -115,22 +94,14 @@ public class TEST_SMAlgAPI {
                       @RequestParam("PubKey") String requestPubKey,
                       @RequestParam("hashAlg") String hashAlg,
                       @RequestParam("extension") String extension) {
-        StringBuffer outE = new StringBuffer("");
-        StringBuffer outQ1 = new StringBuffer("");
-        StringBuffer outK1 = new StringBuffer("");
-        StringBuffer outP10 = new StringBuffer("");
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("DN", requestDN);
+        jsonInput.put("PubKey", requestPubKey);
+        jsonInput.put("hashAlg", hashAlg);
+        jsonInput.put("extension", extension);
 
-        ErrorCodeEnum errorCode = smAlgHelper.requestP10(requestDN, requestPubKey, hashAlg, extension,
-                outE, outQ1, outK1, outP10);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("error_code", errorCode.getCode());
-        jsonObject.put("error_message", errorCode.getMsg());
-        jsonObject.put("E", outE.toString());
-        jsonObject.put("Q1", outQ1.toString());
-        jsonObject.put("K1", outK1.toString());
-        jsonObject.put("P10", outP10.toString());
-
-        return jsonObject;
+        String outResult = smAlgHelper.requestP10(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/sayhello", method = RequestMethod.GET)
@@ -147,30 +118,34 @@ public class TEST_SMAlgAPI {
                       @RequestParam("hashAlg") String hashAlg,
                       @RequestParam("extension") String extension) {
 
+        JSONObject jsonInput = new JSONObject();
+        JSONObject jsonResult = new JSONObject();
+
+        // 获取DN、hsah算法、以及扩展字段
+        jsonInput.put("DN", requestDN);
+        jsonInput.put("PubKey", requestPubKey);
+        jsonInput.put("HashAlg", hashAlg);
+        jsonInput.put("Extension", extension);
+
+        // 获取 CA-Provider
         CAProvider caProvider = getCaProvider();
 
-        StringBuffer outE = new StringBuffer("");
-        StringBuffer outQ1 = new StringBuffer("");
-        StringBuffer outK1 = new StringBuffer("");
-        StringBuffer outP10 = new StringBuffer("");
-        ErrorCodeEnum errorCode = caProvider.requestP10(requestDN, requestPubKey, hashAlg, extension, outE, outQ1, outK1, outP10);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("error_code", errorCode.getCode());
-        jsonObject.put("error_message", errorCode.getMsg());
-        jsonObject.put("E", outE.toString());
-        jsonObject.put("Q1", outQ1.toString());
-        jsonObject.put("K1", outK1.toString());
-        jsonObject.put("P10", outP10.toString());
+        // 向XLCA请求P10
+        jsonResult = caProvider.requestP10(jsonInput);
+        if (jsonResult.getIntValue("error_code") != ErrorCodeEnum.ERROR_OK.getCode()) {
+            return jsonResult;
+        }
 
-        return jsonObject;
-//        return caProvider.getModuleFilePath();
-//        StringBuffer outE = new StringBuffer("");
-//        StringBuffer outQ1 = new StringBuffer("");
-//        StringBuffer outK1 = new StringBuffer("");
-//        StringBuffer outP10 = new StringBuffer("");
-//
-//        ErrorCodeEnum errorCode = smAlgHelper.requestP10(requestDN, requestPubKey, hashAlg, extension,
-//                outE, outQ1, outK1, outP10);
+        // 添加公钥
+        jsonResult.put("P", requestPubKey);
+        // 转换证书键
+        jsonResult.put("x509req", jsonResult.getString("P10"));
+        jsonResult.remove("P10");
+
+        // 添加成功代码
+        jsonResult.put("error_code", ErrorCodeEnum.ERROR_OK.getCode());
+        jsonResult.put("error_message", ErrorCodeEnum.ERROR_OK.getMsg());
+        return jsonResult;
     }
 
     private CAProvider getCaProvider() {
@@ -185,33 +160,29 @@ public class TEST_SMAlgAPI {
                        @RequestParam("S2") String requestS2,
                        @RequestParam("S3") String requestS3,
                        @RequestParam("R") String requestR) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("k1", requestK1);
+        jsonInput.put("P10", requestP10);
+        jsonInput.put("D2", requestD2);
+        jsonInput.put("S2", requestS2);
+        jsonInput.put("S3", requestS3);
+        jsonInput.put("R", requestR);
         StringBuffer outP10 = new StringBuffer("");
 
-        ErrorCodeEnum errorCode = smAlgHelper.generateP10(requestK1, requestP10, requestD2,
-                requestS2, requestS3, requestR,
-                outP10);
+        String outResult = smAlgHelper.generateP10(jsonInput.toJSONString());
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("error_code", errorCode.getCode());
-        jsonObject.put("error_message", errorCode.getMsg());
-        jsonObject.put("P10", outP10.toString());
-
-        return jsonObject;
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/getCert", method = RequestMethod.POST)
     public @ResponseBody
     Object getCert(@RequestParam("P10") String requestP10) {
-        StringBuffer outCert = new StringBuffer("");
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("P10", requestP10);
 
-        ErrorCodeEnum errorCode = smAlgHelper.getCert(requestP10, outCert);
+        String outResult = smAlgHelper.getCert(jsonInput.toJSONString());
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("error_code", errorCode.getCode());
-        jsonObject.put("error_message", errorCode.getMsg());
-        jsonObject.put("Cert", outCert.toString());
-
-        return jsonObject;
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/verifySignature", method = RequestMethod.POST)
@@ -219,29 +190,23 @@ public class TEST_SMAlgAPI {
     Object verifySignature(@RequestParam("Plaintext") String requestPlainText,
                            @RequestParam("Signature") String requestSignature,
                            @RequestParam("Cert") String requestCert) {
-        int[] verifyResult = {-1};
-        ErrorCodeEnum errorCode = smAlgHelper.verifySignature(requestPlainText, requestSignature, requestCert, verifyResult);
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("Plaintext", requestPlainText);
+        jsonInput.put("Signature", requestSignature);
+        jsonInput.put("Cert", requestCert);
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("error_code", errorCode.getCode());
-        jsonObject.put("error_message", errorCode.getMsg());
-        jsonObject.put("verifySignatureResult", verifyResult[0]);
-
-        return jsonObject;
+        String outResult = smAlgHelper.verifySignature(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
     }
 
     @RequestMapping(value = "/test/smalg/parseCert", method = RequestMethod.POST)
     public @ResponseBody
     Object parseCert(@RequestParam("Cert") String requestCert) {
-        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("Cert", requestCert);
 
-        ErrorCodeEnum errorCode = smAlgHelper.parseCert(requestCert, jsonArray);
-
-        JSONObject jsonOutput = (JSONObject) jsonArray.get(0);
-        jsonOutput.put("error_code", errorCode.getCode());
-        jsonOutput.put("error_message", errorCode.getMsg());
-
-        return jsonOutput;
+        String outResult = smAlgHelper.parseCert(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
     }
 
 }

@@ -66,6 +66,7 @@ public enum ErrorCodeEnum {
     ERROR_EXIST_APP_NAME(2004, "应用名称已存在"),
     ERROR_INTERFACE_NOT_FOUND(2005, "请求接口不存在"),
     ERROR_UNKNOWN_CA(2006, "CA服务不能识别"),
+    ERROR_FAILED_GET_CERT(2007, "获取证书失败"),
     ;
 
     private Integer code;

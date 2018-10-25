@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.global.error;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
 import org.springframework.validation.BindingResult;
@@ -30,6 +31,25 @@ public interface SystemErrorResponse {
      * @return authApiResponse: AuthApiResponse 对象
      */
     AuthAPIResponse response(ErrorCodeEnum errorCode);
+
+    /**
+     * 创建一个AuthApiResponse对象，并填充传入参数 jsonObject 的 code 和 message
+     * @param jsonObject 含错误码和错误信息的JSON对象
+     * @return AuthApiResponse 对象
+     */
+    AuthAPIResponse response(JSONObject jsonObject);
+
+    /**
+     * 将 errorCode 转换为JSON对象返回给调用者
+     * @param errorCode  错误码
+     * @return  jsonObject 含错误码和错误信息的JSON对象
+     */
+    public static JSONObject getJSON(ErrorCodeEnum errorCode){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("error_code", errorCode.getCode());
+        jsonObject.put("error_message", errorCode.getMsg());
+        return jsonObject;
+    }
 
     /**
      * 返回一个成功(0)的响应结果

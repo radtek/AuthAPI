@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.cert.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xiaoleitech.authapi.cert.bean.*;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import org.springframework.stereotype.Component;
@@ -19,13 +20,13 @@ public interface CloudSignService {
 
     AuthAPIResponse downloadCert(DownloadCertRequest downloadCertRequest, BindingResult bindingResult);
 
-    AuthAPIResponse cloudSignature(CloudSignRequest cloudSignRequest, BindingResult bindingResult);
+    Object cloudSignature(CloudSignRequest cloudSignRequest, BindingResult bindingResult);
 
-    AuthAPIResponse getCertInfo(GetCertInfoRequest getCertInfoRequest, BindingResult bindingResult);
+    Object getCertInfo(GetCertInfoRequest getCertInfoRequest, BindingResult bindingResult);
 
     AuthAPIResponse revokeCert(RevokeCertRequest revokeCertRequest, BindingResult bindingResult);
 
     AuthAPIResponse updateCert(UpdateCertRequest updateCertRequest, BindingResult bindingResult);
 
-    AuthAPIResponse parseCert(String cert);
+    JSONObject parseCert(String cert);
 }

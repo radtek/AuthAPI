@@ -1,5 +1,6 @@
 package com.xiaoleitech.authapi.global.error;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,15 @@ public class SystemErrorResponseImpl implements SystemErrorResponse {
         AuthAPIResponse authAPIResponse = new AuthAPIResponse();
         authAPIResponse.setError_code(errorCode.getCode());
         authAPIResponse.setError_message(errorCode.getMsg());
+
+        return authAPIResponse;
+    }
+
+    @Override
+    public AuthAPIResponse response(JSONObject jsonObject) {
+        AuthAPIResponse authAPIResponse = new AuthAPIResponse();
+        authAPIResponse.setError_code(jsonObject.getIntValue("error_code"));
+        authAPIResponse.setError_message(jsonObject.getString("error_message"));
 
         return authAPIResponse;
     }
