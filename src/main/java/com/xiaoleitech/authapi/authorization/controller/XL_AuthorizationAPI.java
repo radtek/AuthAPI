@@ -5,11 +5,13 @@ import com.xiaoleitech.authapi.authorization.service.*;
 import com.xiaoleitech.authapi.authorization.bean.request.UserAuthorizeRequest;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Api(value = "授权接口控制器", tags = "5-Authorization")
 public class XL_AuthorizationAPI {
     private final UserAuthorizeService userAuthorizeService;
     private final UserRevokeAuthorizeService userRevokeAuthorizeService;

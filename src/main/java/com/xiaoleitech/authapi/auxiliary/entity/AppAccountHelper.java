@@ -1,11 +1,14 @@
 package com.xiaoleitech.authapi.auxiliary.entity;
 
+import com.xiaoleitech.authapi.auxiliary.authentication.AuthenticationHelper;
 import com.xiaoleitech.authapi.dao.helper.RelyPartsTableHelper;
 import com.xiaoleitech.authapi.dao.helper.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.dao.helper.UsersTableHelper;
 import com.xiaoleitech.authapi.dao.pojo.RelyParts;
 import com.xiaoleitech.authapi.dao.pojo.RpAccounts;
 import com.xiaoleitech.authapi.dao.pojo.Users;
+import com.xiaoleitech.authapi.global.bean.AppAccountRequest;
+import com.xiaoleitech.authapi.global.enumeration.AccountStateEnum;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,14 +45,41 @@ public class AppAccountHelper {
     private final UsersTableHelper usersTableHelper;
     private final RelyPartsTableHelper relyPartsTableHelper;
     private final RpAccountsTableHelper rpAccountsTableHelper;
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public AppAccountHelper(UsersTableHelper usersTableHelper, RelyPartsTableHelper relyPartsTableHelper, RpAccountsTableHelper rpAccountsTableHelper) {
+    public AppAccountHelper(UsersTableHelper usersTableHelper, RelyPartsTableHelper relyPartsTableHelper, RpAccountsTableHelper rpAccountsTableHelper, AuthenticationHelper authenticationHelper) {
         this.usersTableHelper = usersTableHelper;
         this.relyPartsTableHelper = relyPartsTableHelper;
         this.rpAccountsTableHelper = rpAccountsTableHelper;
+        this.authenticationHelper = authenticationHelper;
     }
 
+    public ErrorCodeEnum getAppAccount(AppAccountRequest appAccountRequest) {
+        String userUuid = appAccountRequest.getUser_id();
+        String appUuid = appAccountRequest.getApp_id();
+        String verifyToken = appAccountRequest.getVerify_token();
+
+        // 检查参数
+        if (userUuid.isEmpty() || appUuid.isEmpty() || verifyToken.isEmpty())
+            return ErrorCodeEnum.ERROR_NEED_PARAMETER;
+
+        // 取应用账户记录（同时也获取了user和rp记录）
+        ErrorCodeEnum errorCode = fetchAppAccount(appUuid, userUuid);
+        if (errorCode != ErrorCodeEnum.ERROR_OK)
+            return errorCode;
+
+        // 验证令牌
+        if (!authenticationHelper.isTokenVerified(verifyToken))
+            return ErrorCodeEnum.ERROR_INVALID_TOKEN;
+
+        // 应用账户必须激活
+        if (rpAccount.getState() != AccountStateEnum.ACCOUNT_STATE_ACTIVE.getState()) {
+            return ErrorCodeEnum.ERROR_USER_NOT_ACTIVATED;
+        }
+
+        return ErrorCodeEnum.ERROR_OK;
+    }
 
     public ErrorCodeEnum fetchAppAccount(String appUuid, String userUuid) {
         // 获取用户记录，失败则返回 ERROR_USER_NOT_FOUND

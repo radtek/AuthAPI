@@ -54,7 +54,81 @@ public class TEST_SMAlgAPI {
         return JSONObject.parseObject(outResult);
     }
 
-    @RequestMapping(value = "/test/smalg/get_p1", method = RequestMethod.POST)
+    @RequestMapping(value = "/test/smalg/getPublicParam", method = RequestMethod.POST)
+    public @ResponseBody
+    Object callGetPublicParam(@RequestParam("D1") String d1) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("D1", d1);
+
+        String outResult = smAlgHelper.getPublicParam(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
+    }
+
+    @RequestMapping(value = "/test/smalg/coSignInitWithMessage", method = RequestMethod.POST)
+    public @ResponseBody
+    Object callCoSignInitWithMessage(@RequestParam("hashAlg") int hashAlg,
+                                     @RequestParam("Plaintext") String plainText,
+                                     @RequestParam("Z") String coSignZ) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("hashAlg", hashAlg);
+        jsonInput.put("Plaintext", plainText);
+        jsonInput.put("Z", coSignZ);
+
+        String outResult = smAlgHelper.coSignInitWithMessage(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
+    }
+
+    @RequestMapping(value = "/test/smalg/coSignInitwithDigest", method = RequestMethod.POST)
+    public @ResponseBody
+    Object callCoSignInitWithDigest(@RequestParam("hash") String hash) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("hash", hash);
+
+        String outResult = smAlgHelper.coSignInitWithDigest(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
+    }
+
+    @RequestMapping(value = "/test/smalg/coSignFinal", method = RequestMethod.POST)
+    public @ResponseBody
+    Object callCoSignFinal(@RequestParam("k1") String sm2K1,
+                           @RequestParam("D1") String sm2D1,
+                           @RequestParam("S2") String sm2S2,
+                           @RequestParam("S3") String sm2S3,
+                           @RequestParam("R") String sm2R) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("k1", sm2K1);
+        jsonInput.put("D1", sm2D1);
+        jsonInput.put("S2", sm2S2);
+        jsonInput.put("S3", sm2S3);
+        jsonInput.put("R", sm2R);
+
+        String outResult = smAlgHelper.coSignFinal(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
+    }
+
+    @RequestMapping(value = "/test/smalg/getPubKeyFromCert", method = RequestMethod.POST)
+    public @ResponseBody
+    Object callGetPubKeyFromCert(@RequestParam("Cert") String cert) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("Cert", cert);
+
+        String outResult = smAlgHelper.getPubKeyFromCert(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
+    }
+
+    @RequestMapping(value = "/test/smalg/calcZ", method = RequestMethod.POST)
+    public @ResponseBody
+    Object callCalcZ(@RequestParam("PubKey") String pubKey,
+                     @RequestParam("ID") String id) {
+        JSONObject jsonInput = new JSONObject();
+        jsonInput.put("PubKey", pubKey);
+        jsonInput.put("ID", id);
+
+        String outResult = smAlgHelper.calcZ(jsonInput.toJSONString());
+        return JSONObject.parseObject(outResult);
+    }
+
+        @RequestMapping(value = "/test/smalg/get_p1", method = RequestMethod.POST)
     public @ResponseBody
     Object callGetP1(String d) {
         JSONObject jsonInput = new JSONObject();
@@ -105,8 +179,8 @@ public class TEST_SMAlgAPI {
     }
 
     @RequestMapping(value = "/test/smalg/sayhello", method = RequestMethod.GET)
-    public String sayHello() {
-        CAProvider caProvider = getCaProvider();
+    public String sayHello(@RequestParam("ca_id") int caId) {
+        CAProvider caProvider = getCaProvider(caId);
 
         return caProvider.callSayHello();
     }
@@ -128,7 +202,7 @@ public class TEST_SMAlgAPI {
         jsonInput.put("Extension", extension);
 
         // 获取 CA-Provider
-        CAProvider caProvider = getCaProvider();
+        CAProvider caProvider = getDefaultCaProvider();
 
         // 向XLCA请求P10
         jsonResult = caProvider.requestP10(jsonInput);
@@ -148,8 +222,12 @@ public class TEST_SMAlgAPI {
         return jsonResult;
     }
 
-    private CAProvider getCaProvider() {
-        return new CAProvider(0);
+    private CAProvider getDefaultCaProvider() {
+        return getCaProvider(0);
+    }
+
+    private CAProvider getCaProvider(int caId) {
+        return new CAProvider(caId);
     }
 
     @RequestMapping(value = "/test/smalg/generateP10", method = RequestMethod.POST)

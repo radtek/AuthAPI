@@ -3,10 +3,12 @@ package com.xiaoleitech.authapi.phoneverify.controller;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.phoneverify.service.GetSmsCodeService;
 import com.xiaoleitech.authapi.phoneverify.service.VerifySmsCodeService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Api(value = "手机验证接口控制器", tags = "9-Phone Verify")
 public class XL_PhoneVerifyAPI {
     private final GetSmsCodeService getSmsCodeService;
     private final VerifySmsCodeService verifySmsCodeService;

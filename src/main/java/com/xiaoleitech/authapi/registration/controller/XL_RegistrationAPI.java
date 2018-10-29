@@ -6,6 +6,7 @@ import com.xiaoleitech.authapi.registration.bean.request.RegisterUserRequest;
 import com.xiaoleitech.authapi.registration.bean.request.UpdateUserRequest;
 import com.xiaoleitech.authapi.registration.service.RegisterDeviceService;
 import com.xiaoleitech.authapi.registration.service.RegisterUserService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 
 @RestController
 //@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@Api(value = "注册接口控制器", tags = "2-Registration")
 public class XL_RegistrationAPI {
     private final RegisterDeviceService registerDeviceService;
     private final RegisterUserService registerUserService;

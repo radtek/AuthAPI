@@ -2,10 +2,12 @@ package com.xiaoleitech.authapi.global.utils;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -212,4 +214,27 @@ public class UtilsHelper {
         HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         return req.getRemoteAddr();
     }
+
+    /**
+     * 获取工作目录
+     * @return 当前运行环境，本包的工作目录
+     */
+    public static String getWorkingPath() {
+        String workingPath = System.getProperty("user.dir");
+        System.out.println("user.dir : " + workingPath);
+        return workingPath;
+    }
+
+    /**
+     * 运行环境中，获取本包或本模块的类根目录，形如：
+     * file:/home/ytwei/deploy/authapi/20181026/authapi-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/
+     * 或：/E:/Develop/IDEA%20Projects/AuthApi/target/classes/
+     *
+     * @return 包的根目录
+     */
+    public static String getClassRootPath() {
+//        getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        return ClassUtils.getDefaultClassLoader().getResource("").getPath();
+    }
+
 }

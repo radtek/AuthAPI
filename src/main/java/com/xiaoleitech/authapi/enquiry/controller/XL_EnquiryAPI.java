@@ -2,10 +2,12 @@ package com.xiaoleitech.authapi.enquiry.controller;
 
 import com.xiaoleitech.authapi.enquiry.service.*;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Api(value = "查询接口控制器", tags = "6-Enquiry")
 public class XL_EnquiryAPI {
     private final GetUserInfoService getUserInfoService;
     private final GetAppEnrollmentInfoService getAppEnrollmentInfoService;

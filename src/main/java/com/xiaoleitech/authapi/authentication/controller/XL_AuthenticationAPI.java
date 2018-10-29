@@ -3,11 +3,13 @@ package com.xiaoleitech.authapi.authentication.controller;
 import com.xiaoleitech.authapi.authentication.service.*;
 import com.xiaoleitech.authapi.authentication.bean.request.UserAuthRequest;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Api(value = "认证接口控制器", tags = "4-Authentication")
 public class XL_AuthenticationAPI {
     private final PrepareAuthService prepareAuthService;
     private final UserAuthenticateService userAuthenticateService;

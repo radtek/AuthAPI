@@ -1,4 +1,4 @@
-package com.xiaoleitech.authapi.cert.bean;
+package com.xiaoleitech.authapi.global.bean;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

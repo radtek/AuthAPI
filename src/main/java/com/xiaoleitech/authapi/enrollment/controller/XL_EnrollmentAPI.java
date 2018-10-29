@@ -3,6 +3,7 @@ package com.xiaoleitech.authapi.enrollment.controller;
 import com.xiaoleitech.authapi.enrollment.service.*;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.enrollment.bean.request.EnrollAppRequest;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+@Api(value = "登记接口控制器", tags = "3-Enrollment")
 public class XL_EnrollmentAPI {
     private final EnrollmentService enrollmentService;
     private final UnenrollAppService unenrollAppService;

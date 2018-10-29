@@ -3,11 +3,13 @@ package com.xiaoleitech.authapi.cert.controller;
 import com.xiaoleitech.authapi.cert.bean.*;
 import com.xiaoleitech.authapi.cert.service.CloudSignService;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Api(value = "手机盾接口控制器", tags = "12-CloudCert")
 public class XL_CertAPI {
     private final CloudSignService cloudSignService;
 

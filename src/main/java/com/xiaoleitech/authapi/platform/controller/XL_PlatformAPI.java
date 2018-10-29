@@ -2,6 +2,8 @@ package com.xiaoleitech.authapi.platform.controller;
 
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.platform.service.PlatformService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 // TODO: How to use the same parent-request name, then the sub-request name just using the function name
+@Api(value = "平台接口控制器", tags = "1-Platform")
 //@RequestMapping("/api")
 public class XL_PlatformAPI {
     private final
@@ -33,6 +36,7 @@ public class XL_PlatformAPI {
      * }
      */
     //    @RequestMapping(value = "{name}", method = RequestMethod.GET)
+    @ApiOperation(value="获取平台设置", notes="get <server>/api/get_platform_setting")
     @RequestMapping(value = "/api/get_platform_setting", method = RequestMethod.GET)
     public @ResponseBody
     AuthAPIResponse getPlatformSetting() {

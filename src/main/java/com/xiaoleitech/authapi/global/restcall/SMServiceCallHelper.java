@@ -43,6 +43,11 @@ public class SMServiceCallHelper {
         return response;
     }
 
+    public String callMethod(String method, String inParams) {
+        String output = postForResult(SM3_SERVER_PATH + method, inParams);
+        return checkCallResult(output);
+    }
+
     public String hello() {
         return postForResult(SM3_SERVER_PATH + "areuok", "");
     }

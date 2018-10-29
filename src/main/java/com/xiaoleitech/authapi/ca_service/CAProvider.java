@@ -3,6 +3,8 @@ package com.xiaoleitech.authapi.ca_service;
 import com.alibaba.fastjson.JSONObject;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.global.error.SystemErrorResponse;
+import com.xiaoleitech.authapi.global.utils.UtilsHelper;
+import org.springframework.util.ClassUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -38,8 +40,8 @@ public class CAProvider {
             return ErrorCodeEnum.ERROR_OK;
 
         // 获取当前路径下的ca配置文件的完整路径
-        String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        String caConfigFilePath = currentPath + "ca_config.properties";
+        String caModulesPath = UtilsHelper.getWorkingPath() + "/ca_modules/";
+        String caConfigFilePath = caModulesPath + "ca_config.properties";
 
         Properties properties = new Properties();
 
@@ -62,13 +64,14 @@ public class CAProvider {
         }
 
         // 获取指定CA的jar包文件名
-        String moduleFileName = properties.getProperty("CA_id" + caID);
+        String moduleFileName = properties.getProperty("CA_id" + caID + "_lib");
         // 获取指定CA提供的服务类名
         String serviceClassName = properties.getProperty("CA_id" + caID + "_service_class");
 
-        // 对jar包的路径做url解码
-        String moduleFilePath = currentPath + moduleFileName;
+        // 设置CA的JAR包路径
+        String moduleFilePath = caModulesPath + moduleFileName;
         try {
+            // 对jar包的路径做url解码
             moduleFilePath = java.net.URLDecoder.decode(moduleFilePath, "UTF-8");
             File file = new File(moduleFilePath);
 
@@ -128,6 +131,8 @@ public class CAProvider {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
+            jsonOutput.put("error_code", ErrorCodeEnum.ERROR_UNKNOWN_CA.getCode());
+            jsonOutput.put("error_message", ErrorCodeEnum.ERROR_UNKNOWN_CA.getMsg());
             e.printStackTrace();
         }
 

@@ -4,13 +4,17 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@EnableAutoConfiguration
+//@EnableAutoConfiguration
 @SpringBootApplication
-//@ComponentScan(basePackages = {"com.xiaoleitech.authapi.dao.mybatis.mapper", "com.xiaoleitech.authapi.zold.service", "com.xiaoleitech.authapi.zold.controller"})
+//@ComponentScan(basePackages = {"com.xiaoleitech.authapi"})
 @MapperScan(basePackages = {"com.xiaoleitech.authapi.dao.mybatis.mapper", "com.xiaoleitech.authapi.zold.Test.mapper", "com.xiaoleitech.authapi.zold.dictionary"})
-//@MapperScan(basePackages = {"com.xiaoleitech.authapi.dao.mybatis.mapper"})
-public class AuthapiApplication {
+//@MapperScan(basePackages = {"com.xiaoleitech.authapi"})
+public class AuthapiApplication{
 //    @Bean
 //    public HttpMessageConverters fastJsonHttpMessageConverters() {
 //        // 1.定义一个converters转换消息的对象
@@ -25,6 +29,17 @@ public class AuthapiApplication {
 //        // 5.返回HttpMessageConverters对象
 //        return new HttpMessageConverters(converter);
 //    }
+//@Override
+//public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//    registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+//    registry.addResourceHandler("swagger-ui.html")
+//            .addResourceLocations("classpath:/META-INF/resources/");
+//    registry.addResourceHandler("doc.html")
+//            .addResourceLocations("classpath:/META-INF/resources/");
+//    registry.addResourceHandler("/webjars/**")
+//            .addResourceLocations("classpath:/META-INF/resources/webjars/");
+//    WebMvcConfigurer.super.addResourceHandlers(registry);
+//}
 
 
     public static void main(String[] args) {

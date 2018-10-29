@@ -13,7 +13,6 @@ import com.xiaoleitech.authapi.dao.pojo.RelyParts;
 import com.xiaoleitech.authapi.dao.pojo.RpAccounts;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.global.cipher.sm_alg.SmAlgHelper;
-import com.xiaoleitech.authapi.global.enumeration.CaAgencyEnum;
 import com.xiaoleitech.authapi.global.enumeration.CertStateEnum;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.global.enumeration.UserCertEnum;
@@ -21,10 +20,6 @@ import com.xiaoleitech.authapi.global.error.SystemErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class CloudSignServiceImpl implements CloudSignService {
@@ -37,9 +32,10 @@ public class CloudSignServiceImpl implements CloudSignService {
     private final AuthenticationHelper authenticationHelper;
     private final AppAccountHelper appAccountHelper;
     private final SmAlgHelper smAlgHelper;
+    private final CAOperationResponse caOperationResponse;
 
     @Autowired
-    public CloudSignServiceImpl(SystemErrorResponse systemErrorResponse, UsersTableHelper usersTableHelper, UsersHelper usersHelper, RelyPartsTableHelper relyPartsTableHelper, RpAccountsTableHelper rpAccountsTableHelper, AuthenticationHelper authenticationHelper, AppAccountHelper appAccountHelper, SmAlgHelper smAlgHelper) {
+    public CloudSignServiceImpl(SystemErrorResponse systemErrorResponse, UsersTableHelper usersTableHelper, UsersHelper usersHelper, RelyPartsTableHelper relyPartsTableHelper, RpAccountsTableHelper rpAccountsTableHelper, AuthenticationHelper authenticationHelper, AppAccountHelper appAccountHelper, SmAlgHelper smAlgHelper, CAOperationResponse caOperationResponse) {
         this.systemErrorResponse = systemErrorResponse;
         this.usersTableHelper = usersTableHelper;
         this.usersHelper = usersHelper;
@@ -48,6 +44,7 @@ public class CloudSignServiceImpl implements CloudSignService {
         this.authenticationHelper = authenticationHelper;
         this.appAccountHelper = appAccountHelper;
         this.smAlgHelper = smAlgHelper;
+        this.caOperationResponse = caOperationResponse;
     }
 
     @Override
@@ -68,7 +65,7 @@ public class CloudSignServiceImpl implements CloudSignService {
     @Override
     public Object requestCloudCert(RequestCloudCertRequest requestCloudCert, BindingResult bindingResult) {
         // 在系统中读取请求参数中指定的用户、应用和账户记录
-        ErrorCodeEnum errorCode = getAppAccount(requestCloudCert);
+        ErrorCodeEnum errorCode = appAccountHelper.getAppAccount(requestCloudCert);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
             return systemErrorResponse.response(errorCode);
 
@@ -110,7 +107,7 @@ public class CloudSignServiceImpl implements CloudSignService {
     @Override
     public AuthAPIResponse signCloudCert(SignCloudCertRequest signCloudCertRequest, BindingResult bindingResult) {
         // 在系统中读取请求参数中指定的用户、应用和账户记录
-        ErrorCodeEnum errorCode = getAppAccount(signCloudCertRequest);
+        ErrorCodeEnum errorCode = appAccountHelper.getAppAccount(signCloudCertRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
             return systemErrorResponse.response(errorCode);
 
@@ -139,21 +136,18 @@ public class CloudSignServiceImpl implements CloudSignService {
 
         // =============================================================
         // TODO: 临时测试用代码
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-
-        // 应用名称不能为空
-        String newK1 = request.getParameter("k1");
-        if ((newK1 != null) && !newK1.isEmpty())
-            jsonInput.put("k1", newK1);
-        String newP10 = request.getParameter("P10");
-        if ((newP10 != null) && !newP10.isEmpty())
-            jsonInput.put("P10", newP10);
-        String newD2 = request.getParameter("D2");
-        if ((newD2 != null) && !newD2.isEmpty())
-            jsonInput.put("D2", newD2);
-//        jsonInput.put("k1", "wTs6sRpF5lzFOiv29PYhGQjCdPnrdvJADLz/ZVfqEeM=");
-//        jsonInput.put("P10", "MIHTMH4CAQAwHDENMAsGA1UEAwwEdGVzdDELMAkGA1UEBhMCQ04wWTATBgcqhkjOPQIBBggqgRzPVQGCLQNCAATW09pTL4LbNZ6wgZlyC9nF5BAPIBbCytxstyVTgdoRvg+vV8m6eiqYG8mCQ3A35AuhDVBfr8kAYOdciayyOYAtoAAwCgYIKoEcz1UBg3UDRQAwRAIgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==");
-//        jsonInput.put("D2", "zH7eIYcgdF8XFXzrOuYAd4yXNbXm74B68D1utXnbe1E=");
+//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+//
+//        // 应用名称不能为空
+//        String newK1 = request.getParameter("k1");
+//        if ((newK1 != null) && !newK1.isEmpty())
+//            jsonInput.put("k1", newK1);
+//        String newP10 = request.getParameter("P10");
+//        if ((newP10 != null) && !newP10.isEmpty())
+//            jsonInput.put("P10", newP10);
+//        String newD2 = request.getParameter("D2");
+//        if ((newD2 != null) && !newD2.isEmpty())
+//            jsonInput.put("D2", newD2);
         // =============================================================
 
         // 调用关联CA的方法生成P10证书
@@ -181,13 +175,16 @@ public class CloudSignServiceImpl implements CloudSignService {
         if (errorCode != ErrorCodeEnum.ERROR_OK)
             return systemErrorResponse.response(errorCode);
 
-        return systemErrorResponse.success();
+        caOperationResponse.setCa_id(jsonCert.getIntValue("ca_id"));
+        systemErrorResponse.fill(caOperationResponse, ErrorCodeEnum.ERROR_OK);
+
+        return caOperationResponse;
     }
 
     @Override
     public AuthAPIResponse downloadCert(DownloadCertRequest downloadCertRequest, BindingResult bindingResult) {
         // 在系统中读取请求参数中指定的用户、应用和账户记录
-        ErrorCodeEnum errorCode = getAppAccount(downloadCertRequest);
+        ErrorCodeEnum errorCode = appAccountHelper.getAppAccount(downloadCertRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
             return systemErrorResponse.response(errorCode);
 
@@ -207,7 +204,7 @@ public class CloudSignServiceImpl implements CloudSignService {
     @Override
     public Object cloudSignature(CloudSignRequest cloudSignRequest, BindingResult bindingResult) {
         // 在系统中读取请求参数中指定的用户、应用和账户记录
-        ErrorCodeEnum errorCode = getAppAccount(cloudSignRequest);
+        ErrorCodeEnum errorCode = appAccountHelper.getAppAccount(cloudSignRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
             return systemErrorResponse.response(errorCode);
 
@@ -234,7 +231,7 @@ public class CloudSignServiceImpl implements CloudSignService {
     @Override
     public Object getCertInfo(GetCertInfoRequest getCertInfoRequest, BindingResult bindingResult) {
         // 在系统中读取请求参数中指定的用户、应用和账户记录
-        ErrorCodeEnum errorCode = getAppAccount(getCertInfoRequest);
+        ErrorCodeEnum errorCode = appAccountHelper.getAppAccount(getCertInfoRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
             return systemErrorResponse.response(errorCode);
 
@@ -263,7 +260,7 @@ public class CloudSignServiceImpl implements CloudSignService {
     @Override
     public AuthAPIResponse revokeCert(RevokeCertRequest revokeCertRequest, BindingResult bindingResult) {
         // 在系统中读取请求参数中指定的用户、应用和账户记录
-        ErrorCodeEnum errorCode = getAppAccount(revokeCertRequest);
+        ErrorCodeEnum errorCode = appAccountHelper.getAppAccount(revokeCertRequest);
         if (errorCode != ErrorCodeEnum.ERROR_OK)
             return systemErrorResponse.response(errorCode);
 
@@ -397,27 +394,6 @@ public class CloudSignServiceImpl implements CloudSignService {
         return errorCode;
     }
 
-    private ErrorCodeEnum getAppAccount(AppAccountRequest appAccountRequest) {
-        String userUuid = appAccountRequest.getUser_id();
-        String appUuid = appAccountRequest.getApp_id();
-        String verifyToken = appAccountRequest.getVerify_token();
-
-        // 检查参数
-        if (userUuid.isEmpty() || appUuid.isEmpty() || verifyToken.isEmpty())
-            return ErrorCodeEnum.ERROR_NEED_PARAMETER;
-
-        // 取应用账户记录（同时也获取了user和rp记录）
-        ErrorCodeEnum errorCode = appAccountHelper.fetchAppAccount(appUuid, userUuid);
-        if (errorCode != ErrorCodeEnum.ERROR_OK)
-            return errorCode;
-
-        // 验证令牌
-        if (!authenticationHelper.isTokenVerified(verifyToken))
-            return ErrorCodeEnum.ERROR_INVALID_TOKEN;
-
-        return ErrorCodeEnum.ERROR_OK;
-    }
-
     private String getEntension() {
         return "ext-json";
 //        return "{\"D2\" : \"cU3iUq+I42phS0HYfMon/R763mTaLaew+3sKV8Yp2bo=\",\"PubKey\" : \"BCRp0jPAeLn6gyr6s84CKmnuNOpDdauRWHSXiiRIxEMdB9CtEjzTtMy4ZwsiJ7OwKu4Nkt56upXZ4MEnIY85IIo=\"}";
@@ -432,8 +408,8 @@ public class CloudSignServiceImpl implements CloudSignService {
     }
 
     private String getPrivKey() {
-//        return certD2;
-        return "cU3iUq+I42phS0HYfMon/R763mTaLaew+3sKV8Yp2bo=";
+        return certD2;
+//        return "cU3iUq+I42phS0HYfMon/R763mTaLaew+3sKV8Yp2bo=";
     }
 
     private CAProvider getCAProvider() {

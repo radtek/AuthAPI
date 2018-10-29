@@ -1,12 +1,14 @@
 package com.xiaoleitech.authapi.authorization.bean.request;
 
+import com.xiaoleitech.authapi.global.bean.AppAccountRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.stereotype.Component;
 
+@Component
 @Data
-public class UserAuthorizeRequest {
-    private String app_id;
-    private String user_id;
-    private String verify_token;
+@EqualsAndHashCode(callSuper = true)
+public class UserAuthorizeRequest extends AppAccountRequest {
     private String nonce;
     private int client_type;
     private String response;
