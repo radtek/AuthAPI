@@ -11,6 +11,7 @@ import com.xiaoleitech.authapi.dao.helper.RpAccountsTableHelper;
 import com.xiaoleitech.authapi.dao.helper.UsersTableHelper;
 import com.xiaoleitech.authapi.dao.pojo.RelyParts;
 import com.xiaoleitech.authapi.dao.pojo.RpAccounts;
+import com.xiaoleitech.authapi.dao.pojo.Users;
 import com.xiaoleitech.authapi.global.bean.AuthAPIResponse;
 import com.xiaoleitech.authapi.global.cipher.sm_alg.SmAlgHelper;
 import com.xiaoleitech.authapi.global.enumeration.CertStateEnum;
@@ -133,6 +134,8 @@ public class CloudSignServiceImpl implements CloudSignService {
         jsonInput.put("S2", signCloudCertRequest.getS2());
         jsonInput.put("S3", signCloudCertRequest.getS3());
         jsonInput.put("R", signCloudCertRequest.getR());
+        jsonInput.put("DN", getDN());
+        jsonInput.put("Extension", getEntension());
 
         // =============================================================
         // TODO: 临时测试用代码
@@ -395,16 +398,44 @@ public class CloudSignServiceImpl implements CloudSignService {
     }
 
     private String getEntension() {
-        return "ext-json";
+        Users user = appAccountHelper.getUser();
+        JSONObject jsonExtension = new JSONObject();
+
+        if (user == null) {
+            jsonExtension.put("owner_name", "");
+            jsonExtension.put("id_no", "");
+            jsonExtension.put("phone_no", "");
+        } else {
+            jsonExtension.put("owner_name", user.getReal_name());
+            jsonExtension.put("id_no", user.getId_no());
+            jsonExtension.put("phone_no", user.getPhone_no());
+        }
+
+        return jsonExtension.toJSONString();
 //        return "{\"D2\" : \"cU3iUq+I42phS0HYfMon/R763mTaLaew+3sKV8Yp2bo=\",\"PubKey\" : \"BCRp0jPAeLn6gyr6s84CKmnuNOpDdauRWHSXiiRIxEMdB9CtEjzTtMy4ZwsiJ7OwKu4Nkt56upXZ4MEnIY85IIo=\"}";
     }
 
     private String getHashAlg() {
         return "SM3";
     }
+//
+//    private String getDN() {
+//        return "C=CN,CN=test";
+//    }
 
-    private String getDN() {
-        return "C=CN,CN=test";
+    private String getDN(){
+        Users user = appAccountHelper.getUser();
+        RelyParts relyPart = appAccountHelper.getRelyPart();
+        if ((user == null) || (relyPart == null))
+            return "C=CN,CN=TEST,O=NONE";
+
+        String owner;
+        if ( user.getReal_name().isEmpty())
+            owner = user.getPhone_no();
+        else
+            owner = user.getPhone_no() + "_" + user.getReal_name();
+
+        return "C=CN,CN=" + owner + ",O=" + relyPart.getRp_name();
     }
 
     private String getPrivKey() {
