@@ -8,6 +8,8 @@ import com.xiaoleitech.authapi.global.cipher.sm_alg.SmAlgHelper;
 import com.xiaoleitech.authapi.global.enumeration.ErrorCodeEnum;
 import com.xiaoleitech.authapi.global.error.SystemErrorResponse;
 import com.xiaoleitech.authapi.global.restcall.SMServiceCallHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,8 @@ import java.io.IOException;
 
 @RestController
 public class TEST_SMAlgAPI {
+    private final Logger logger = LoggerFactory.getLogger(TEST_SMAlgAPI.class);
+
     private final SMServiceCallHelper smServiceCallHelper;
     private final CallSMAlgService callSMAlgService;
     private final SmAlgHelper smAlgHelper;
@@ -43,6 +47,7 @@ public class TEST_SMAlgAPI {
         jsonInput.put("inputData", request.getParameter("inputData"));
 
         String outResult = smAlgHelper.sm3Hash(jsonInput.toJSONString());
+        logger.info("SM3 result: " + outResult);
 
         return JSONObject.parseObject(outResult);
     }
