@@ -67,6 +67,8 @@ public enum ErrorCodeEnum {
     ERROR_INTERFACE_NOT_FOUND(2005, "请求接口不存在"),
     ERROR_UNKNOWN_CA(2006, "CA服务不能识别"),
     ERROR_FAILED_GET_CERT(2007, "获取证书失败"),
+    ERROR_NEED_P10_DATA(2008, "需要P10数据"),
+
     ;
 
     private Integer code;
